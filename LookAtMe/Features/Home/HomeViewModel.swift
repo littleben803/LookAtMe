@@ -36,10 +36,14 @@ final class HomeViewModel: ObservableObject {
             text: trimmedText,
             selectedScene: selectedScene,
             selectedStyle: selectedStyle,
-            textColor: LookTheme.Colors.primaryPink,
-            backgroundColor: LookTheme.Colors.backgroundBlack,
+            textColorHex: LookTheme.Hex.primaryPink,
+            backgroundColorHex: LookTheme.Hex.backgroundBlack,
             fontScale: 1.0,
-            speed: 1.0
+            speed: 1.0,
+            fontStyle: .roundedHeavy,
+            scrollDirection: .rightToLeft,
+            isMirrored: false,
+            isBlinking: false
         )
     }
 

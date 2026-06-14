@@ -9,62 +9,71 @@ struct NeonTextInput: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: LookRadius.input, style: .continuous)
-                .fill(LookTheme.Colors.cardPurple.opacity(0.92))
+        ZStack {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(hex: "#13091F").opacity(0.9))
                 .overlay(
-                    RoundedRectangle(cornerRadius: LookRadius.input, style: .continuous)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .stroke(
-                            isFocused ? LookTheme.Colors.primaryPink : LookTheme.Colors.primaryPink.opacity(0.38),
-                            lineWidth: isFocused ? 1.5 : 1
+                            isFocused ? LookTheme.Colors.primaryPink.opacity(0.86) : LookTheme.Colors.primaryPink.opacity(0.45),
+                            lineWidth: isFocused ? 1.2 : 0.8
                         )
                 )
                 .shadow(
-                    color: LookTheme.Colors.primaryPink.opacity(isFocused ? 0.42 : 0.18),
-                    radius: isFocused ? 18 : 10
+                    color: LookTheme.Colors.primaryPink.opacity(isFocused ? 0.28 : 0.14),
+                    radius: isFocused ? 14 : 8
                 )
 
-            VStack(alignment: .leading, spacing: LookSpacing.xs) {
-                ZStack(alignment: .topLeading) {
-                    if text.isEmpty {
-                        VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                            Text(placeholder)
-                                .font(LookTypography.body)
-                                .foregroundColor(LookTheme.Colors.textTertiary)
-                            Text(example)
-                                .font(LookTypography.caption)
-                                .foregroundColor(LookTheme.Colors.hotPink.opacity(0.76))
-                        }
-                        .padding(.top, LookSpacing.xs)
-                        .padding(.horizontal, LookSpacing.xs)
+            TextEditor(text: $text)
+                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .foregroundColor(LookTheme.Colors.textPrimary)
+                .focused($isFocused)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .tint(LookTheme.Colors.primaryPink)
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+                .padding(.bottom, 26)
+                .onChange(of: text) { _, newValue in
+                    if newValue.count > limit {
+                        text = String(newValue.prefix(limit))
                     }
-
-                    TextEditor(text: $text)
-                        .font(LookTypography.body)
-                        .foregroundColor(LookTheme.Colors.textPrimary)
-                        .focused($isFocused)
-                        .scrollContentBackground(.hidden)
-                        .background(Color.clear)
-                        .tint(LookTheme.Colors.primaryPink)
-                        .frame(minHeight: 76, maxHeight: 96)
-                        .padding(.horizontal, LookSpacing.xxs)
-                        .onChange(of: text) { _, newValue in
-                            if newValue.count > limit {
-                                text = String(newValue.prefix(limit))
-                            }
-                        }
                 }
 
+            if text.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(placeholder)
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
+                        .padding(.top, 16)
+                        .padding(.horizontal, 16)
+
+                    Spacer()
+
+                    HStack(alignment: .center) {
+                        Spacer()
+                        Text(example)
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .foregroundColor(LookTheme.Colors.softPink.opacity(0.78))
+                        Spacer(minLength: 36)
+                    }
+                    .padding(.bottom, 17)
+                }
+                .allowsHitTesting(false)
+            }
+
+            VStack {
+                Spacer()
                 HStack {
                     Spacer()
                     Text("\(text.count)/\(limit)")
-                        .font(LookTypography.caption.monospacedDigit())
-                        .foregroundColor(text.count >= limit ? LookTheme.Colors.warning : LookTheme.Colors.textTertiary)
+                        .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
+                        .foregroundColor(text.count >= limit ? LookTheme.Colors.warning : LookTheme.Colors.textTertiary.opacity(0.82))
                 }
+                .padding(.trailing, 14)
+                .padding(.bottom, 17)
             }
-            .padding(LookSpacing.md)
         }
-        .frame(minHeight: 132)
+        .frame(height: 94)
     }
 }
-

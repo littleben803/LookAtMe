@@ -51,6 +51,8 @@ struct RootTabView: View {
         }
         .tint(LookTheme.Colors.primaryPink)
         .environmentObject(navigationState)
+        .preferredColorScheme(.dark)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 

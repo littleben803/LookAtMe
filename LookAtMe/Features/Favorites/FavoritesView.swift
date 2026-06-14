@@ -2,12 +2,11 @@ import SwiftUI
 
 struct FavoritesView: View {
     @EnvironmentObject private var navigationState: AppNavigationState
+    @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @EnvironmentObject private var favoriteStore: FavoriteStore
+    @EnvironmentObject private var styleStore: StyleStore
 
-    private let sampleFavorites = [
-        ("周深我爱你！", "mock/sample - 演唱会"),
-        ("老婆我爱你", "mock/sample - 表白"),
-        ("生日快乐🎂", "mock/sample - 生日")
-    ]
+    @State private var isEditing = false
 
     var body: some View {
         ZStack {
@@ -17,7 +16,7 @@ struct FavoritesView: View {
                 VStack(alignment: .leading, spacing: LookSpacing.lg) {
                     header
 
-                    if sampleFavorites.isEmpty {
+                    if favoriteStore.favorites.isEmpty {
                         EmptyStateView(
                             systemImage: "heart",
                             title: "还没有收藏哦~",
@@ -28,15 +27,15 @@ struct FavoritesView: View {
                         }
                     } else {
                         VStack(spacing: LookSpacing.sm) {
-                            ForEach(sampleFavorites, id: \.0) { favorite in
-                                favoriteCard(title: favorite.0, subtitle: favorite.1)
+                            ForEach(favoriteStore.favorites) { favorite in
+                                favoriteCard(favorite)
                             }
                         }
                     }
                 }
                 .padding(.horizontal, LookSpacing.pageHorizontal)
                 .padding(.top, LookSpacing.xl)
-                .padding(.bottom, LookSpacing.xxxl)
+                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
     }
@@ -49,50 +48,103 @@ struct FavoritesView: View {
 
             Spacer()
 
-            Button("编辑") {}
-                .font(LookTypography.body)
-                .foregroundColor(LookTheme.Colors.hotPink)
+            Button(isEditing ? "完成" : "编辑") {
+                withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+                    isEditing.toggle()
+                }
+            }
+            .font(LookTypography.body)
+            .foregroundColor(LookTheme.Colors.hotPink)
+            .disabled(favoriteStore.favorites.isEmpty)
+            .opacity(favoriteStore.favorites.isEmpty ? 0.45 : 1)
         }
     }
 
-    private func favoriteCard(title: String, subtitle: String) -> some View {
-        NeonCard {
-            HStack(spacing: LookSpacing.md) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
-                        .fill(LookTheme.Colors.backgroundBlack)
-                        .frame(width: 46, height: 46)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
-                                .stroke(LookTheme.Colors.primaryPink.opacity(0.42), lineWidth: 1)
-                        )
+    private func favoriteCard(_ favorite: FavoriteBanner) -> some View {
+        Button {
+            if isEditing {
+                favoriteStore.removeFavorite(id: favorite.id)
+            } else {
+                displayConfigStore.applyFavorite(favorite)
+                navigationState.selectedTab = .home
+            }
+        } label: {
+            NeonCard {
+                HStack(spacing: LookSpacing.md) {
+                    preview(for: favorite)
 
-                    Text(title.prefix(2))
-                        .font(.system(size: 13, weight: .heavy, design: .rounded))
-                        .foregroundColor(LookTheme.Colors.primaryPink)
+                    VStack(alignment: .leading, spacing: LookSpacing.xxs) {
+                        Text(favorite.text)
+                            .font(LookTypography.sectionTitle)
+                            .foregroundColor(LookTheme.Colors.textPrimary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.72)
+
+                        Text("\(favorite.scene.title) · \(styleStore.style(withID: favorite.styleID).name)")
+                            .font(LookTypography.caption)
+                            .foregroundColor(LookTheme.Colors.textTertiary)
+                            .lineLimit(1)
+
+                        Text(Self.dateFormatter.string(from: favorite.createdAt))
+                            .font(LookTypography.caption.monospacedDigit())
+                            .foregroundColor(LookTheme.Colors.textDisabled)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        favoriteStore.removeFavorite(id: favorite.id)
+                    } label: {
+                        Image(systemName: isEditing ? "trash.fill" : "heart.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(isEditing ? LookTheme.Colors.danger : LookTheme.Colors.hotPink)
+                            .frame(width: 36, height: 36)
+                    }
+                    .buttonStyle(.plain)
                 }
-
-                VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                    Text(title)
-                        .font(LookTypography.sectionTitle)
-                        .foregroundColor(LookTheme.Colors.textPrimary)
-                    Text(subtitle)
-                        .font(LookTypography.caption)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
-                }
-
-                Spacer()
-
-                Image(systemName: "heart")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(LookTheme.Colors.hotPink)
             }
         }
+        .buttonStyle(.plain)
     }
+
+    private func preview(for favorite: FavoriteBanner) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: favorite.backgroundColorHex),
+                            LookTheme.Colors.cardPurple.opacity(0.86)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 62, height: 54)
+                .overlay(
+                    RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
+                        .stroke(Color(hex: favorite.textColorHex).opacity(0.62), lineWidth: 1)
+                )
+
+            Text(String(favorite.text.prefix(2)))
+                .font(favorite.fontStyle.font(size: 14))
+                .foregroundColor(Color(hex: favorite.textColorHex))
+                .lineLimit(1)
+                .shadow(color: Color(hex: favorite.textColorHex).opacity(0.84), radius: 7)
+        }
+    }
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd HH:mm"
+        return formatter
+    }()
 }
 
 #Preview {
     FavoritesView()
         .environmentObject(AppNavigationState())
+        .environmentObject(DisplayConfigStore())
+        .environmentObject(FavoriteStore())
+        .environmentObject(StyleStore())
 }
-

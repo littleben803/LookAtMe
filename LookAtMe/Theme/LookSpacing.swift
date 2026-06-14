@@ -13,5 +13,6 @@ public enum LookSpacing {
     public static let pageHorizontal: CGFloat = 20
     public static let cardPadding: CGFloat = 16
     public static let sectionSpacing: CGFloat = 24
+    public static let tabContentBottomPadding: CGFloat = 132
+    public static let homeContentBottomPadding: CGFloat = 214
 }
-

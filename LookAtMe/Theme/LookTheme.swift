@@ -1,19 +1,32 @@
 import SwiftUI
 
 public enum LookTheme {
+    public enum Hex {
+        public static let primaryPink = "#FF4DA6"
+        public static let hotPink = "#FF73C5"
+        public static let softPink = "#FFB3DE"
+        public static let neonPurple = "#8B5CF6"
+        public static let electricBlue = "#00F2FF"
+        public static let warmYellow = "#FFD166"
+        public static let backgroundBlack = "#0D0221"
+        public static let backgroundPurple = "#160428"
+        public static let cardPurple = "#1F0A36"
+        public static let elevatedPurple = "#2A0E4D"
+    }
+
     public enum Colors {
-        public static let primaryPink = Color(hex: "#FF4DA6")
-        public static let hotPink = Color(hex: "#FF73C5")
-        public static let softPink = Color(hex: "#FFB3DE")
+        public static let primaryPink = Color(hex: Hex.primaryPink)
+        public static let hotPink = Color(hex: Hex.hotPink)
+        public static let softPink = Color(hex: Hex.softPink)
 
-        public static let neonPurple = Color(hex: "#8B5CF6")
-        public static let electricBlue = Color(hex: "#00F2FF")
-        public static let warmYellow = Color(hex: "#FFD166")
+        public static let neonPurple = Color(hex: Hex.neonPurple)
+        public static let electricBlue = Color(hex: Hex.electricBlue)
+        public static let warmYellow = Color(hex: Hex.warmYellow)
 
-        public static let backgroundBlack = Color(hex: "#0D0221")
-        public static let backgroundPurple = Color(hex: "#160428")
-        public static let cardPurple = Color(hex: "#1F0A36")
-        public static let elevatedPurple = Color(hex: "#2A0E4D")
+        public static let backgroundBlack = Color(hex: Hex.backgroundBlack)
+        public static let backgroundPurple = Color(hex: Hex.backgroundPurple)
+        public static let cardPurple = Color(hex: Hex.cardPurple)
+        public static let elevatedPurple = Color(hex: Hex.elevatedPurple)
 
         public static let textPrimary = Color(hex: "#FFFFFF")
         public static let textSecondary = Color(hex: "#EDEDED")
@@ -54,4 +67,3 @@ public enum LookTheme {
         endPoint: .bottomTrailing
     )
 }
-
