@@ -46,6 +46,7 @@ struct HomeView: View {
     @State private var toastMessage: String?
     @State private var isShowingDisplayPreview = false
     @State private var measuredHeights: [HomeMeasuredRegion: CGFloat] = [:]
+    @State private var isHeroFireworksActive = false
 
     private let templateColumns = [
         GridItem(.flexible(), spacing: 10),
@@ -75,6 +76,12 @@ struct HomeView: View {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 startButtonBar
                     .measureHomeHeight(.startButtonBar)
+            }
+            .onAppear {
+                isHeroFireworksActive = true
+            }
+            .onDisappear {
+                isHeroFireworksActive = false
             }
         }
         .overlay(alignment: .top) {
@@ -172,6 +179,9 @@ struct HomeView: View {
     private func heroBanner(topSafeArea: CGFloat) -> some View {
         ZStack(alignment: .topTrailing) {
             HeroStageBackdrop()
+
+            HeroFireworksOverlay(isActive: isHeroFireworksActive, topSafeArea: topSafeArea)
+                .allowsHitTesting(false)
 
             VStack(spacing: 8) {
                 Spacer(minLength: 0)
@@ -330,7 +340,8 @@ struct HomeView: View {
                         previewColor: Color(hex: displayConfigStore.textColorHex),
                         fontStyle: displayConfigStore.fontStyle,
                         isCompact: true,
-                        compactPreviewHeight: layout.stylePreviewHeight
+                        compactPreviewHeight: layout.stylePreviewHeight,
+                        showsAccessTag: true
                     ) {
                         selectStyle(style)
                     }
@@ -494,12 +505,12 @@ struct HomeView: View {
         }
 
         return [
-            BannerTemplate(id: "home-target-zhou-shen", title: "周深我爱你!", scene: .concert, text: "周深我爱你!", isPro: false),
-            BannerTemplate(id: "home-target-an-yi", title: "安逸我爱你", scene: .concert, text: "安逸我爱你", isPro: false),
-            BannerTemplate(id: "home-target-birthday", title: "生日快乐", scene: .concert, text: "生日快乐", isPro: false),
-            BannerTemplate(id: "home-target-here", title: "这里这里!", scene: .concert, text: "这里这里!", isPro: false),
-            BannerTemplate(id: "home-target-star", title: "周星中❤️", scene: .concert, text: "周星中❤️", isPro: false),
-            BannerTemplate(id: "home-target-call", title: "加油打CALL", scene: .concert, text: "加油打CALL", isPro: false)
+            BannerTemplate(id: "home-target-zhou-shen", title: "周深我爱你!💗", scene: .concert, text: "周深我爱你!💗", isPro: false),
+            BannerTemplate(id: "home-target-an-yi", title: "宝贝我爱你💋", scene: .concert, text: "宝贝我爱你💋", isPro: false),
+            BannerTemplate(id: "home-target-birthday", title: "生日快乐🎂", scene: .concert, text: "生日快乐🎂", isPro: false),
+            BannerTemplate(id: "home-target-here", title: "这里这里!✋", scene: .concert, text: "这里这里!✋", isPro: false),
+            BannerTemplate(id: "home-target-star", title: "宝儿姐💘", scene: .concert, text: "宝儿姐💘", isPro: false),
+            BannerTemplate(id: "home-target-call", title: "加油打CALL🎉", scene: .concert, text: "加油打CALL🎉", isPro: false)
         ]
     }
 
@@ -526,10 +537,6 @@ struct HomeView: View {
     }
 
     private func selectStyle(_ style: BannerStyle) {
-        if style.isPro {
-            showToast("Pro 功能暂未接入")
-            return
-        }
         displayConfigStore.selectStyle(style)
     }
 
@@ -622,6 +629,203 @@ private struct HeroStageBackdrop: View {
             .resizable()
             .scaledToFill()
             .frame(width: width, height: height)
+    }
+}
+
+private struct HeroFireworksOverlay: View {
+    let isActive: Bool
+    let topSafeArea: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            if isActive {
+                TimelineView(.animation) { timeline in
+                    let seconds = timeline.date.timeIntervalSinceReferenceDate
+                    let animationTopOffset = min(max(topSafeArea * 0.35, 18), 28)
+                    let animationHeight = max(1, proxy.size.height - animationTopOffset)
+
+                    ZStack {
+                        ZStack {
+                            ForEach(0..<5, id: \.self) { index in
+                                firework(
+                                    index: index,
+                                    seconds: seconds,
+                                    width: proxy.size.width,
+                                    height: animationHeight
+                                )
+                            }
+
+                            driftingSparkles(seconds: seconds, width: proxy.size.width, height: animationHeight)
+                        }
+                        .frame(width: proxy.size.width, height: animationHeight)
+                        .clipped()
+                        .offset(y: animationTopOffset)
+                    }
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .clipped()
+                }
+            }
+        }
+    }
+
+    private func firework(index: Int, seconds: TimeInterval, width: CGFloat, height: CGFloat) -> some View {
+        let interval = 1.25 + Double(index % 3) * 0.18
+        let raw = seconds / interval + Double(index) * 0.31
+        let cycle = floor(raw)
+        let local = raw - cycle
+        let seed = Int(cycle) * 67 + index * 29
+        let center = CGPoint(
+            x: width * (0.18 + randomUnit(seed) * 0.66),
+            y: height * (0.14 + randomUnit(seed + 11) * 0.38)
+        )
+        let intensity = burstIntensity(local)
+
+        return ZStack {
+            burstHalo(local: local, intensity: intensity, color: fireworkColor(index: index, seed: seed))
+
+            ForEach(0..<22, id: \.self) { particleIndex in
+                particle(
+                    burstIndex: index,
+                    particleIndex: particleIndex,
+                    local: local,
+                    intensity: intensity,
+                    maxDistance: min(width, height) * (0.13 + randomUnit(seed + particleIndex) * 0.05),
+                    seed: seed
+                )
+            }
+
+            Circle()
+                .fill(LookTheme.Colors.textPrimary.opacity(0.42 * intensity))
+                .frame(width: 9 + CGFloat(intensity) * 10, height: 9 + CGFloat(intensity) * 10)
+                .blur(radius: 1.2)
+                .shadow(color: fireworkColor(index: index, seed: seed).opacity(0.85 * intensity), radius: 16)
+        }
+        .position(center)
+        .opacity(local < 0.84 ? 1 : 0)
+        .blendMode(.plusLighter)
+    }
+
+    private func particle(
+        burstIndex: Int,
+        particleIndex: Int,
+        local: Double,
+        intensity: Double,
+        maxDistance: CGFloat,
+        seed: Int
+    ) -> some View {
+        let angle = Double(particleIndex) / 22 * .pi * 2 + randomDouble(seed + particleIndex * 7) * 0.35
+        let eased = smoothStep(min(1, local / 0.72))
+        let distance = maxDistance * CGFloat(eased)
+        let x = cos(angle) * distance
+        let y = sin(angle) * distance + CGFloat(local * local) * 18
+        let color = particleColor(index: particleIndex + burstIndex, seed: seed)
+
+        return Capsule()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        LookTheme.Colors.textPrimary.opacity(0.92),
+                        color.opacity(0.96),
+                        .clear
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(width: 16 + CGFloat(particleIndex % 4) * 4, height: 3.2)
+            .rotationEffect(.radians(angle))
+            .offset(x: x, y: y)
+            .opacity(intensity)
+            .shadow(color: color.opacity(0.82 * intensity), radius: 10)
+    }
+
+    private func burstHalo(local: Double, intensity: Double, color: Color) -> some View {
+        let size = CGFloat(32 + smoothStep(local) * 132)
+        return ZStack {
+            Circle()
+                .stroke(color.opacity(0.48 * intensity), lineWidth: 1.2)
+                .frame(width: size, height: size)
+                .blur(radius: 0.8)
+
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            color.opacity(0.26 * intensity),
+                            LookTheme.Colors.textPrimary.opacity(0.1 * intensity),
+                            .clear
+                        ],
+                        center: .center,
+                        startRadius: 2,
+                        endRadius: max(42, size * 0.56)
+                    )
+                )
+                .frame(width: size * 0.8, height: size * 0.8)
+                .blur(radius: 7)
+        }
+    }
+
+    private func driftingSparkles(seconds: TimeInterval, width: CGFloat, height: CGFloat) -> some View {
+        ZStack {
+            ForEach(0..<18, id: \.self) { index in
+                let phase = normalized(seconds * (0.05 + Double(index % 4) * 0.012) + Double(index) * 0.09)
+                let twinkle = 0.5 + 0.5 * sin((seconds * 0.9 + Double(index) * 0.37) * .pi * 2)
+
+                Image(systemName: "sparkle")
+                    .font(.system(size: 5 + CGFloat(index % 3) * 2, weight: .bold))
+                    .foregroundStyle(particleColor(index: index, seed: index * 17))
+                    .position(
+                        x: width * CGFloat((index * 37 + 13) % 100) / 100,
+                        y: height * (0.1 + CGFloat(phase) * 0.56)
+                    )
+                    .opacity(0.12 + twinkle * 0.34)
+                    .shadow(color: particleColor(index: index, seed: index * 17).opacity(0.48), radius: 7)
+            }
+        }
+    }
+
+    private func burstIntensity(_ local: Double) -> Double {
+        let attack = smoothStep(min(1, local / 0.18))
+        let release = max(0, 1 - smoothStep(max(0, (local - 0.16) / 0.62)))
+        return attack * release
+    }
+
+    private func fireworkColor(index: Int, seed: Int) -> Color {
+        particleColor(index: index, seed: seed)
+    }
+
+    private func particleColor(index: Int, seed: Int) -> Color {
+        switch (index + seed) % 5 {
+        case 0:
+            LookTheme.Colors.primaryPink
+        case 1:
+            LookTheme.Colors.warmYellow
+        case 2:
+            LookTheme.Colors.electricBlue
+        case 3:
+            LookTheme.Colors.softPink
+        default:
+            LookTheme.Colors.neonPurple
+        }
+    }
+
+    private func smoothStep(_ value: Double) -> Double {
+        let clamped = min(1, max(0, value))
+        return clamped * clamped * (3 - 2 * clamped)
+    }
+
+    private func normalized(_ value: Double) -> Double {
+        let progress = value.truncatingRemainder(dividingBy: 1)
+        return progress >= 0 ? progress : progress + 1
+    }
+
+    private func randomUnit(_ seed: Int) -> CGFloat {
+        CGFloat(randomDouble(seed))
+    }
+
+    private func randomDouble(_ seed: Int) -> Double {
+        let value = sin(Double(seed) * 12.9898) * 43758.5453
+        return value - floor(value)
     }
 }
 

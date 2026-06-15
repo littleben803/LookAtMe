@@ -14,83 +14,84 @@ struct SettingsView: View {
             ZStack {
                 LookScreenBackground()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                        Text("设置")
-                            .font(LookTypography.pageTitle)
-                            .foregroundColor(LookTheme.Colors.textPrimary)
-                            .padding(.top, LookSpacing.xl)
+                VStack(alignment: .leading, spacing: 0) {
+                    fixedHeader
 
-                        settingsGroup("显示设置") {
-                            SettingsRow(
-                                title: "默认文字颜色",
-                                value: displayConfigStore.textColorHex,
-                                colorSwatch: Color(hex: displayConfigStore.textColorHex)
-                            ) {
-                                path.append(.textColor)
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: LookSpacing.lg) {
+                            settingsGroup("显示设置") {
+                                resetDisplaySettingsButton
+                            } content: {
+                                SettingsRow(
+                                    title: "默认文字颜色",
+                                    value: displayConfigStore.textColorHex,
+                                    colorSwatch: Color(hex: displayConfigStore.textColorHex)
+                                ) {
+                                    path.append(.textColor)
+                                }
+                                neonDivider
+                                SettingsRow(
+                                    title: "默认背景颜色",
+                                    value: displayConfigStore.backgroundColorHex,
+                                    colorSwatch: Color(hex: displayConfigStore.backgroundColorHex)
+                                ) {
+                                    path.append(.backgroundColor)
+                                }
+                                neonDivider
+                                SettingsRow(title: "默认文字大小", value: "\(Int(displayConfigStore.fontScale * 100))%") {
+                                    path.append(.displaySettings)
+                                }
+                                neonDivider
+                                SettingsRow(title: "默认滚动速度", value: speedText) {
+                                    path.append(.displaySettings)
+                                }
+                                neonDivider
+                                SettingsToggleRow(title: "自动横屏", isOn: $settingsStore.autoRotate)
+                                neonDivider
+                                SettingsToggleRow(title: "保持屏幕常亮", isOn: $settingsStore.keepAwake)
                             }
-                            neonDivider
-                            SettingsRow(
-                                title: "默认背景颜色",
-                                value: displayConfigStore.backgroundColorHex,
-                                colorSwatch: Color(hex: displayConfigStore.backgroundColorHex)
-                            ) {
-                                path.append(.backgroundColor)
-                            }
-                            neonDivider
-                            SettingsRow(title: "默认文字大小", value: "\(Int(displayConfigStore.fontScale * 100))%") {
-                                path.append(.displaySettings)
-                            }
-                            neonDivider
-                            SettingsRow(title: "默认滚动速度", value: speedText) {
-                                path.append(.displaySettings)
-                            }
-                            neonDivider
-                            SettingsToggleRow(title: "自动横屏", isOn: $settingsStore.autoRotate)
-                            neonDivider
-                            SettingsToggleRow(title: "保持屏幕常亮", isOn: $settingsStore.keepAwake)
-                        }
 
-                        settingsGroup("其他") {
-                            SettingsRow(title: "清除缓存", systemImage: "trash") {
-                                isShowingClearConfirm = true
+                            settingsGroup("其他") {
+                                SettingsRow(title: "清除缓存", systemImage: "trash") {
+                                    isShowingClearConfirm = true
+                                }
+                                neonDivider
+                                SettingsRow(title: "给我们评分", systemImage: "star") {
+                                    showToast("评分功能将在上架后开启")
+                                }
+                                neonDivider
+                                ShareLink(item: "想恋爱：把手机变成会发光的表白灯牌") {
+                                    shareRow
+                                }
+                                neonDivider
+                                SettingsRow(title: "使用帮助", systemImage: "questionmark.circle") {
+                                    path.append(.help)
+                                }
                             }
-                            neonDivider
-                            SettingsRow(title: "给我们评分", systemImage: "star") {
-                                showToast("评分功能将在上架后开启")
-                            }
-                            neonDivider
-                            ShareLink(item: "想恋爱：把手机变成会发光的表白灯牌") {
-                                shareRow
-                            }
-                            neonDivider
-                            SettingsRow(title: "使用帮助", systemImage: "questionmark.circle") {
-                                path.append(.help)
-                            }
-                        }
 
-                        settingsGroup("关于") {
-                            SettingsRow(title: "关于想恋爱") {
-                                path.append(.about)
+                            settingsGroup("关于") {
+                                SettingsRow(title: "关于想恋爱") {
+                                    path.append(.about)
+                                }
+                                neonDivider
+                                SettingsRow(title: "隐私政策") {
+                                    path.append(.legal(.privacy))
+                                }
+                                neonDivider
+                                SettingsRow(title: "用户协议") {
+                                    path.append(.legal(.terms))
+                                }
+                                neonDivider
+                                SettingsRow(title: "恢复购买") {
+                                    showToast("Pro 购买将在下一阶段接入")
+                                }
+                                neonDivider
+                                SettingsRow(title: "版本号", value: "2.0.0")
                             }
-                            neonDivider
-                            SettingsRow(title: "隐私政策") {
-                                path.append(.legal(.privacy))
-                            }
-                            neonDivider
-                            SettingsRow(title: "用户协议") {
-                                path.append(.legal(.terms))
-                            }
-                            neonDivider
-                            SettingsRow(title: "恢复购买") {
-                                showToast("Pro 购买将在下一阶段接入")
-                            }
-                            neonDivider
-                            SettingsRow(title: "版本号", value: "2.0.0")
                         }
+                        .padding(.horizontal, LookSpacing.pageHorizontal)
+                        .padding(.bottom, LookSpacing.tabContentBottomPadding)
                     }
-                    .padding(.horizontal, LookSpacing.pageHorizontal)
-                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -166,6 +167,37 @@ struct SettingsView: View {
         }
     }
 
+    private var fixedHeader: some View {
+        Text("设置")
+            .font(LookTypography.pageTitle)
+            .foregroundColor(LookTheme.Colors.textPrimary)
+            .padding(.horizontal, LookSpacing.pageHorizontal)
+            .padding(.top, LookSpacing.xl)
+            .padding(.bottom, LookSpacing.md)
+    }
+
+    private var resetDisplaySettingsButton: some View {
+        Button {
+            resetDisplaySettings()
+        } label: {
+            HStack(spacing: LookSpacing.xxs) {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                Text("重置")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+            }
+            .foregroundColor(LookTheme.Colors.hotPink)
+            .padding(.horizontal, LookSpacing.sm)
+            .padding(.vertical, LookSpacing.xs)
+            .background(
+                Capsule()
+                    .fill(LookTheme.Colors.cardPurple.opacity(0.86))
+                    .overlay(Capsule().stroke(LookTheme.Colors.primaryPink.opacity(0.34), lineWidth: 1))
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
     private var neonDivider: some View {
         Divider().overlay(LookTheme.Colors.textDisabled.opacity(0.24))
     }
@@ -194,11 +226,24 @@ struct SettingsView: View {
         _ title: String,
         @ViewBuilder content: () -> Content
     ) -> some View {
+        settingsGroup(title, trailing: { EmptyView() }, content: content)
+    }
+
+    private func settingsGroup<Content: View, Trailing: View>(
+        _ title: String,
+        @ViewBuilder trailing: () -> Trailing,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
         VStack(alignment: .leading, spacing: LookSpacing.sm) {
-            Text(title)
-                .font(LookTypography.sectionTitle)
-                .foregroundColor(LookTheme.Colors.hotPink)
-                .padding(.horizontal, LookSpacing.xs)
+            HStack(alignment: .center) {
+                Text(title)
+                    .font(LookTypography.sectionTitle)
+                    .foregroundColor(LookTheme.Colors.hotPink)
+
+                Spacer()
+                trailing()
+            }
+            .padding(.horizontal, LookSpacing.xs)
 
             NeonCard {
                 VStack(spacing: 0) {
@@ -206,6 +251,12 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private func resetDisplaySettings() {
+        displayConfigStore.resetDisplaySettings()
+        settingsStore.resetDisplaySettings()
+        showToast("已恢复默认显示设置")
     }
 
     private func showToast(_ message: String) {

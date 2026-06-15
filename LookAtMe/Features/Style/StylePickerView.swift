@@ -26,21 +26,10 @@ struct StylePickerView: View {
         ZStack {
             LookScreenBackground()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                    NeonPageHeader(
-                        title: "样式选择",
-                        subtitle: "免费样式可直接使用，Pro 样式先展示锁定态"
-                    )
+            VStack(alignment: .leading, spacing: 0) {
+                fixedHeader
 
-                    Picker("筛选", selection: $filter) {
-                        ForEach(StyleFilter.allCases) { item in
-                            Text(item.title).tag(item)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .tint(LookTheme.Colors.primaryPink)
-
+                ScrollView(showsIndicators: false) {
                     LazyVGrid(columns: columns, spacing: LookSpacing.sm) {
                         ForEach(filteredStyles) { style in
                             StyleCard(
@@ -53,10 +42,10 @@ struct StylePickerView: View {
                             }
                         }
                     }
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.top, LookSpacing.lg)
+                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
-                .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.lg)
-                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -77,11 +66,27 @@ struct StylePickerView: View {
         }
     }
 
-    private func select(_ style: BannerStyle) {
-        if style.isPro {
-            toastMessage = "Pro 功能暂未接入"
-            return
+    private var fixedHeader: some View {
+        VStack(alignment: .leading, spacing: LookSpacing.lg) {
+            NeonPageHeader(
+                title: "样式选择",
+                subtitle: "免费样式可直接使用，Pro 样式当前开放测试"
+            )
+
+            Picker("筛选", selection: $filter) {
+                ForEach(StyleFilter.allCases) { item in
+                    Text(item.title).tag(item)
+                }
+            }
+            .pickerStyle(.segmented)
+            .tint(LookTheme.Colors.primaryPink)
         }
+        .padding(.horizontal, LookSpacing.pageHorizontal)
+        .padding(.top, LookSpacing.lg)
+        .padding(.bottom, LookSpacing.md)
+    }
+
+    private func select(_ style: BannerStyle) {
         displayConfigStore.selectStyle(style)
     }
 }

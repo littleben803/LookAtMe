@@ -38,7 +38,7 @@ final class HomeViewModel: ObservableObject {
             selectedStyle: selectedStyle,
             textColorHex: LookTheme.Hex.primaryPink,
             backgroundColorHex: LookTheme.Hex.backgroundBlack,
-            fontScale: 1.0,
+            fontScale: 2.0,
             speed: 1.0,
             fontStyle: .roundedHeavy,
             scrollDirection: .rightToLeft,
@@ -56,10 +56,6 @@ final class HomeViewModel: ObservableObject {
     }
 
     func selectStyle(_ style: BannerStyle) {
-        if style.isPro {
-            showToast("Pro 功能暂未接入")
-            return
-        }
         selectedStyle = style
     }
 

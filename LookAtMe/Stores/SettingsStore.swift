@@ -21,6 +21,11 @@ final class SettingsStore: ObservableObject {
         self.keepAwake = state.keepAwake
     }
 
+    func resetDisplaySettings() {
+        autoRotate = SettingsState.default.autoRotate
+        keepAwake = SettingsState.default.keepAwake
+    }
+
     private func save() {
         let state = SettingsState(autoRotate: autoRotate, keepAwake: keepAwake)
         guard let data = try? JSONEncoder().encode(state) else {

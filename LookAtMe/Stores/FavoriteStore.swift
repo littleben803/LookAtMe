@@ -56,6 +56,13 @@ final class FavoriteStore: ObservableObject {
         save()
     }
 
+    func removeFavorite(matching draft: BannerDraft) {
+        guard let id = favoriteID(for: draft) else {
+            return
+        }
+        removeFavorite(id: id)
+    }
+
     func updateFavorite(_ favorite: FavoriteBanner) {
         guard let index = favorites.firstIndex(where: { $0.id == favorite.id }) else {
             return
@@ -67,7 +74,11 @@ final class FavoriteStore: ObservableObject {
     }
 
     func isFavorite(draft: BannerDraft) -> Bool {
-        favorites.contains { matches($0, draft: draft) }
+        favoriteID(for: draft) != nil
+    }
+
+    func favoriteID(for draft: BannerDraft) -> String? {
+        favorites.first { matches($0, draft: draft) }?.id
     }
 
     func clearAll() {
@@ -79,6 +90,14 @@ final class FavoriteStore: ObservableObject {
         favorite.text == draft.text.trimmingCharacters(in: .whitespacesAndNewlines)
             && favorite.scene == draft.selectedScene
             && favorite.styleID == draft.selectedStyle.id
+            && favorite.textColorHex == draft.textColorHex
+            && favorite.backgroundColorHex == draft.backgroundColorHex
+            && abs(favorite.fontScale - draft.fontScale) < 0.001
+            && abs(favorite.speed - draft.speed) < 0.001
+            && favorite.fontStyle == draft.fontStyle
+            && favorite.scrollDirection == draft.scrollDirection
+            && favorite.isMirrored == draft.isMirrored
+            && favorite.isBlinking == draft.isBlinking
     }
 
     private func save() {

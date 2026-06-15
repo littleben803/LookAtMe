@@ -198,7 +198,6 @@ struct DisplayConfig {
     var scrollDirection: BannerScrollDirection
     var isMirrored: Bool
     var isBlinking: Bool
-    var savesDisplayHistory: Bool
 
     var textColor: Color { Color(hex: textColorHex) }
     var backgroundColor: Color { Color(hex: backgroundColorHex) }

@@ -52,6 +52,12 @@ struct NeonPageHeader<Trailing: View>: View {
             Spacer()
             trailing
         }
+        .background {
+            if showsBackButton {
+                InteractiveSwipeBackEnabler()
+                    .frame(width: 0, height: 0)
+            }
+        }
     }
 }
 

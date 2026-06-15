@@ -7,13 +7,10 @@ struct LegalTextView: View {
         ZStack {
             LookScreenBackground()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                    NeonPageHeader(
-                        title: document.title,
-                        subtitle: "本阶段为本地占位内容，提审前替换为正式文本或 URL"
-                    )
+            VStack(alignment: .leading, spacing: 0) {
+                fixedHeader
 
+                ScrollView(showsIndicators: false) {
                     NeonCard {
                         VStack(alignment: .leading, spacing: LookSpacing.md) {
                             ForEach(paragraphs, id: \.self) { paragraph in
@@ -25,13 +22,23 @@ struct LegalTextView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.top, LookSpacing.lg)
+                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
-                .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.lg)
-                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
         .navigationBarBackButtonHidden(true)
+    }
+
+    private var fixedHeader: some View {
+        NeonPageHeader(
+            title: document.title,
+            subtitle: "本阶段为本地占位内容，提审前替换为正式文本或 URL"
+        )
+        .padding(.horizontal, LookSpacing.pageHorizontal)
+        .padding(.top, LookSpacing.lg)
+        .padding(.bottom, LookSpacing.md)
     }
 
     private var paragraphs: [String] {

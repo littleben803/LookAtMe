@@ -5,18 +5,18 @@ struct HelpView: View {
         ("如何制作灯牌", "在首页输入文字，选择场景、模板和样式，点击开始展示即可。"),
         ("如何在演唱会使用", "提前调好亮度和文字大小，展示时举起手机，保持画面简洁醒目。"),
         ("如何保持屏幕常亮", "在设置中打开保持屏幕常亮，正式展示前确认电量充足。"),
-        ("如何横屏展示", "在设置中打开自动横屏，后续完整横屏体验会在阶段 3 完善。"),
-        ("如何收藏常用文案", "首页点击爱心按钮，或在模板中心长按模板选择收藏。")
+        ("如何使用横屏", "在设置中打开自动横屏，进入播放页后旋转手机即可横屏展示；关闭后播放页会保持竖屏。"),
+        ("如何收藏常用文案", "可以在首页输入框右侧点爱心收藏，也可以在播放页右上角点爱心保存当前文字、样式、速度和大小。")
     ]
 
     var body: some View {
         ZStack {
             LookScreenBackground()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                    NeonPageHeader(title: "使用帮助", subtitle: "快速做出好看的表白灯牌")
+            VStack(alignment: .leading, spacing: 0) {
+                fixedHeader
 
+                ScrollView(showsIndicators: false) {
                     VStack(spacing: LookSpacing.sm) {
                         ForEach(items, id: \.0) { item in
                             NeonCard {
@@ -33,13 +33,20 @@ struct HelpView: View {
                             }
                         }
                     }
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.top, LookSpacing.lg)
+                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
-                .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.lg)
-                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
         .navigationBarBackButtonHidden(true)
+    }
+
+    private var fixedHeader: some View {
+        NeonPageHeader(title: "使用帮助", subtitle: "快速做出好看的表白灯牌")
+            .padding(.horizontal, LookSpacing.pageHorizontal)
+            .padding(.top, LookSpacing.lg)
+            .padding(.bottom, LookSpacing.md)
     }
 }
 

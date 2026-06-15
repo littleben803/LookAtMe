@@ -7,6 +7,7 @@ struct StyleCard: View {
     var fontStyle: BannerFontStyle = .roundedHeavy
     var isCompact: Bool = false
     var compactPreviewHeight: CGFloat = 62
+    var showsAccessTag: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -34,9 +35,11 @@ struct StyleCard: View {
                         )
                         .shadow(color: LookTheme.Colors.primaryPink.opacity(isSelected ? 0.34 : 0.12), radius: isSelected ? 12 : 7)
 
-                    StyleAccessTag(isPro: style.isPro)
-                        .padding(.top, -5)
-                        .padding(.trailing, -5)
+                    if showsAccessTag {
+                        StyleAccessTag(isPro: style.isPro)
+                            .padding(.top, -5)
+                            .padding(.trailing, -5)
+                    }
                 }
 
                 Text(style.name)
@@ -95,7 +98,7 @@ struct StyleCard: View {
                 )
                 .shadow(color: LookTheme.Colors.primaryPink.opacity(isSelected ? 0.34 : 0.14), radius: isSelected ? (isCompact ? 12 : 16) : 7)
 
-                if style.isPro {
+                if showsAccessTag, style.isPro {
                     ProBadge()
                         .scaleEffect(isCompact ? 0.72 : 1)
                         .padding(isCompact ? 2 : 8)

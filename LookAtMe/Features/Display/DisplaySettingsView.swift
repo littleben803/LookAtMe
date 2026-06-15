@@ -19,7 +19,7 @@ struct DisplaySettingsView: View {
                         sliderRow(
                             title: "文字大小",
                             value: $displayConfigStore.fontScale,
-                            range: 0.7...1.5,
+                            range: 0.7...3.0,
                             valueText: "\(Int(displayConfigStore.fontScale * 100))%"
                         )
                         neonDivider
@@ -51,8 +51,6 @@ struct DisplaySettingsView: View {
                         SettingsToggleRow(title: "镜像反转", isOn: $displayConfigStore.isMirrored)
                         neonDivider
                         SettingsToggleRow(title: "闪烁效果", isOn: $displayConfigStore.isBlinking)
-                        neonDivider
-                        SettingsToggleRow(title: "展示记录", isOn: $displayConfigStore.savesDisplayHistory)
                     }
 
                     Button(role: .destructive) {

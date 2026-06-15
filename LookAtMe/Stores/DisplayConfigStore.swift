@@ -53,10 +53,6 @@ final class DisplayConfigStore: ObservableObject {
         didSet { saveConfig() }
     }
 
-    @Published var savesDisplayHistory: Bool {
-        didSet { saveConfig() }
-    }
-
     private let userDefaults: UserDefaults
     private let configKey = "look.displayConfig.v1"
 
@@ -73,7 +69,6 @@ final class DisplayConfigStore: ObservableObject {
         self.scrollDirection = state.scrollDirection
         self.isMirrored = state.isMirrored
         self.isBlinking = state.isBlinking
-        self.savesDisplayHistory = state.savesDisplayHistory
     }
 
     var config: DisplayConfig {
@@ -85,8 +80,7 @@ final class DisplayConfigStore: ObservableObject {
             fontStyle: fontStyle,
             scrollDirection: scrollDirection,
             isMirrored: isMirrored,
-            isBlinking: isBlinking,
-            savesDisplayHistory: savesDisplayHistory
+            isBlinking: isBlinking
         )
     }
 
@@ -140,15 +134,18 @@ final class DisplayConfigStore: ObservableObject {
     func resetAllSettings() {
         selectedScene = .concert
         selectedStyleID = "style-marquee"
+        resetDisplaySettings()
+    }
+
+    func resetDisplaySettings() {
         textColorHex = LookTheme.Hex.primaryPink
         backgroundColorHex = LookTheme.Hex.backgroundBlack
-        fontScale = 1.0
+        fontScale = 2.0
         speed = 1.0
         fontStyle = .roundedHeavy
         scrollDirection = .rightToLeft
         isMirrored = false
         isBlinking = false
-        savesDisplayHistory = true
     }
 
     func clearTransientState() {
@@ -166,8 +163,7 @@ final class DisplayConfigStore: ObservableObject {
             fontStyle: fontStyle,
             scrollDirection: scrollDirection,
             isMirrored: isMirrored,
-            isBlinking: isBlinking,
-            savesDisplayHistory: savesDisplayHistory
+            isBlinking: isBlinking
         )
         guard let data = try? JSONEncoder().encode(state) else {
             return
@@ -197,19 +193,17 @@ private struct DisplayConfigState: Codable {
     var scrollDirection: BannerScrollDirection
     var isMirrored: Bool
     var isBlinking: Bool
-    var savesDisplayHistory: Bool
 
     static let `default` = DisplayConfigState(
         selectedScene: .concert,
         selectedStyleID: "style-marquee",
         textColorHex: LookTheme.Hex.primaryPink,
         backgroundColorHex: LookTheme.Hex.backgroundBlack,
-        fontScale: 1.0,
+        fontScale: 2.0,
         speed: 1.0,
         fontStyle: .roundedHeavy,
         scrollDirection: .rightToLeft,
         isMirrored: false,
-        isBlinking: false,
-        savesDisplayHistory: true
+        isBlinking: false
     )
 }

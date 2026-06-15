@@ -14,24 +14,19 @@ struct TemplateCenterView: View {
         ZStack {
             LookScreenBackground()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                    NeonPageHeader(
-                        title: "模板中心",
-                        subtitle: "长按模板可快速使用或收藏"
-                    )
+            VStack(alignment: .leading, spacing: 0) {
+                fixedHeader
 
-                    sceneTabs
-
+                ScrollView(showsIndicators: false) {
                     VStack(spacing: LookSpacing.sm) {
                         ForEach(templateStore.templates(for: selectedScene)) { template in
                             templateRow(template)
                         }
                     }
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.top, LookSpacing.lg)
+                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
-                .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.lg)
-                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -50,6 +45,20 @@ struct TemplateCenterView: View {
                 toastMessage = nil
             }
         }
+    }
+
+    private var fixedHeader: some View {
+        VStack(alignment: .leading, spacing: LookSpacing.lg) {
+            NeonPageHeader(
+                title: "模板中心",
+                subtitle: "长按模板可快速使用或收藏"
+            )
+
+            sceneTabs
+        }
+        .padding(.horizontal, LookSpacing.pageHorizontal)
+        .padding(.top, LookSpacing.lg)
+        .padding(.bottom, LookSpacing.md)
     }
 
     private var sceneTabs: some View {

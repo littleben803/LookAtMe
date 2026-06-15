@@ -12,30 +12,34 @@ struct FavoritesView: View {
         ZStack {
             LookScreenBackground()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                    header
+            VStack(alignment: .leading, spacing: 0) {
+                header
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.top, LookSpacing.xl)
+                    .padding(.bottom, LookSpacing.md)
 
-                    if favoriteStore.favorites.isEmpty {
-                        EmptyStateView(
-                            systemImage: "heart",
-                            title: "还没有收藏哦~",
-                            message: "快去首页做一条属于你的灯牌吧",
-                            actionTitle: "去首页"
-                        ) {
-                            navigationState.selectedTab = .home
-                        }
-                    } else {
-                        VStack(spacing: LookSpacing.sm) {
-                            ForEach(favoriteStore.favorites) { favorite in
-                                favoriteCard(favorite)
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: LookSpacing.lg) {
+                        if favoriteStore.favorites.isEmpty {
+                            EmptyStateView(
+                                systemImage: "heart",
+                                title: "还没有收藏哦~",
+                                message: "快去首页做一条属于你的灯牌吧",
+                                actionTitle: "去首页"
+                            ) {
+                                navigationState.selectedTab = .home
+                            }
+                        } else {
+                            VStack(spacing: LookSpacing.sm) {
+                                ForEach(favoriteStore.favorites) { favorite in
+                                    favoriteCard(favorite)
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, LookSpacing.pageHorizontal)
+                    .padding(.bottom, LookSpacing.tabContentBottomPadding)
                 }
-                .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.xl)
-                .padding(.bottom, LookSpacing.tabContentBottomPadding)
             }
         }
     }
@@ -85,6 +89,11 @@ struct FavoritesView: View {
                             .foregroundColor(LookTheme.Colors.textTertiary)
                             .lineLimit(1)
 
+                        Text("速度 \(Int(favorite.speed * 100))% · 大小 \(Int(favorite.fontScale * 100))%")
+                            .font(LookTypography.caption.monospacedDigit())
+                            .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
+                            .lineLimit(1)
+
                         Text(Self.dateFormatter.string(from: favorite.createdAt))
                             .font(LookTypography.caption.monospacedDigit())
                             .foregroundColor(LookTheme.Colors.textDisabled)
@@ -108,30 +117,17 @@ struct FavoritesView: View {
     }
 
     private func preview(for favorite: FavoriteBanner) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: favorite.backgroundColorHex),
-                            LookTheme.Colors.cardPurple.opacity(0.86)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 62, height: 54)
-                .overlay(
-                    RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
-                        .stroke(Color(hex: favorite.textColorHex).opacity(0.62), lineWidth: 1)
-                )
-
-            Text(String(favorite.text.prefix(2)))
-                .font(favorite.fontStyle.font(size: 14))
-                .foregroundColor(Color(hex: favorite.textColorHex))
-                .lineLimit(1)
-                .shadow(color: Color(hex: favorite.textColorHex).opacity(0.84), radius: 7)
-        }
+        StyleCard(
+            style: styleStore.style(withID: favorite.styleID),
+            isSelected: false,
+            previewColor: Color(hex: favorite.textColorHex),
+            fontStyle: favorite.fontStyle,
+            isCompact: true,
+            compactPreviewHeight: 64
+        ) {}
+        .frame(width: 78, height: 64, alignment: .top)
+        .clipped()
+        .allowsHitTesting(false)
     }
 
     private static let dateFormatter: DateFormatter = {

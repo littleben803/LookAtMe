@@ -51,7 +51,7 @@ struct FontPickerView: View {
                             .font(LookTypography.caption)
                             .foregroundColor(LookTheme.Colors.textTertiary)
 
-                        Text("周深我爱你！")
+                        Text("周深我爱你！💗")
                             .font(fontStyle.font(size: 28))
                             .foregroundColor(Color(hex: displayConfigStore.textColorHex))
                             .lineLimit(1)
