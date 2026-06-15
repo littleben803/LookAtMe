@@ -386,26 +386,14 @@ struct HomeView: View {
         let styleGridVerticalPadding: CGFloat = 4
         let styleTitleAndSpacing: CGFloat = 24
         let minimumItemHeight: CGFloat = 88
-        let minimumSecondRowVisibleRatio: CGFloat = 1.0 / 3.0
-        let secondRowVisibilityTolerance: CGFloat = 6
+        let singleRowMaximumWidth: CGFloat = 375
 
         let sceneHeight = measuredHeight(.sceneShortcuts, fallback: 78)
         let templatesHeight = measuredHeight(.templatesSection, fallback: 116)
         let stylesHeaderHeight = measuredHeight(.stylesHeader, fallback: 26)
-        let startButtonBarHeight = measuredHeight(.startButtonBar, fallback: 72)
 
         let contentWidth = max(0, availableWidth - horizontalPadding * 2)
         let styleItemWidth = max(62, (contentWidth - styleColumnSpacing * 3) / 4)
-        let styleGridTop =
-            topPadding +
-            sectionSpacing * 2 +
-            sceneHeight +
-            templatesHeight +
-            styleSectionTopPadding +
-            stylesHeaderHeight +
-            styleSectionSpacing +
-            styleGridVerticalPadding / 2
-
         let fixedBodyHeight =
             topPadding +
             bottomPadding +
@@ -417,22 +405,16 @@ struct HomeView: View {
             stylesHeaderHeight +
             styleGridVerticalPadding
 
-        let twoRowTargetGridHeight = max(minimumItemHeight * 2 + styleRowSpacing, availableHeight - fixedBodyHeight)
-        let twoRowItemHeight = max(minimumItemHeight, (twoRowTargetGridHeight - styleRowSpacing) / 2)
-        let secondRowTop = styleGridTop + twoRowItemHeight + styleRowSpacing
-        let buttonOverlayTop = max(0, availableHeight - startButtonBarHeight)
-        let secondRowVisibleHeight = max(0, min(twoRowItemHeight, buttonOverlayTop - secondRowTop))
-        let shouldCollapseToSingleRow = secondRowVisibleHeight < twoRowItemHeight * minimumSecondRowVisibleRatio + secondRowVisibilityTolerance
-
+        let shouldCollapseToSingleRow = availableWidth <= singleRowMaximumWidth
         let styleRowCount = shouldCollapseToSingleRow ? 1 : 2
-        let effectiveHeight = shouldCollapseToSingleRow ? max(0, availableHeight - startButtonBarHeight) : availableHeight
         let targetGridHeight = max(
             minimumItemHeight * CGFloat(styleRowCount) + styleRowSpacing * CGFloat(max(0, styleRowCount - 1)),
-            effectiveHeight - fixedBodyHeight
+            availableHeight - fixedBodyHeight
         )
-        let styleItemHeight = styleRowCount == 1
-            ? targetGridHeight
-            : max(minimumItemHeight, (targetGridHeight - styleRowSpacing) / 2)
+        let styleItemHeight = max(
+            minimumItemHeight,
+            (targetGridHeight - styleRowSpacing * CGFloat(max(0, styleRowCount - 1))) / CGFloat(styleRowCount)
+        )
         let stylePreviewHeight = max(62, styleItemHeight - styleTitleAndSpacing)
 
         return HomeBodyLayout(
