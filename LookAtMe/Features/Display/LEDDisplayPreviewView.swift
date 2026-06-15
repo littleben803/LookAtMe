@@ -53,15 +53,13 @@ struct LEDDisplayPreviewView: View {
                 .frame(width: 0, height: 0)
                 .allowsHitTesting(false)
 
-                if let toastMessage {
-                    VStack {
-                        ToastView(message: toastMessage)
-                            .padding(.top, operationLayerTopPadding(size: proxy.size, safeAreaInsets: proxy.safeAreaInsets))
-                        Spacer()
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
             }
+            .lookToast(
+                $toastMessage,
+                duration: .seconds(1.4),
+                topPadding: operationLayerTopPadding(size: proxy.size, safeAreaInsets: proxy.safeAreaInsets),
+                includesSafeAreaTop: false
+            )
             .onAppear {
                 applyOrientationPreference()
                 applyIdleTimerPreference()
@@ -96,14 +94,6 @@ struct LEDDisplayPreviewView: View {
         }
         .ignoresSafeArea()
         .statusBarHidden()
-        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: toastMessage)
-        .onChange(of: toastMessage) { _, message in
-            guard message != nil else { return }
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(1.4))
-                toastMessage = nil
-            }
-        }
         .fullScreenCover(item: $paywallContext) { context in
             ProPaywallView(context: context)
         }

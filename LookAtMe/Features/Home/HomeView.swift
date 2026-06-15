@@ -88,21 +88,7 @@ struct HomeView: View {
                 isHeroFireworksActive = false
             }
         }
-        .overlay(alignment: .top) {
-            if let toastMessage {
-                ToastView(message: toastMessage)
-                    .padding(.top, LookSpacing.lg)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: toastMessage)
-        .onChange(of: toastMessage) { _, message in
-            guard message != nil else { return }
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(1.7))
-                toastMessage = nil
-            }
-        }
+        .lookToast($toastMessage)
         .fullScreenCover(isPresented: $isShowingDisplayPreview) {
             LEDDisplayPreviewView(draft: displayConfigStore.draft(styleStore: styleStore))
         }

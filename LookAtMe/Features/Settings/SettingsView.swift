@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
@@ -59,7 +60,7 @@ struct SettingsView: View {
                                 }
                                 neonDivider
                                 SettingsRow(title: "给我们评分", systemImage: "star") {
-                                    showToast("评分功能将在上架后开启")
+                                    openReviewPage()
                                 }
                                 neonDivider
                                 ShareLink(item: "想恋爱：把手机变成会发光的表白灯牌") {
@@ -103,22 +104,8 @@ struct SettingsView: View {
                 destination(for: route)
             }
         }
-        .overlay(alignment: .top) {
-            if let toastMessage {
-                ToastView(message: toastMessage)
-                    .padding(.top, LookSpacing.lg)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: toastMessage)
-        .onChange(of: toastMessage) { _, message in
-            guard message != nil else { return }
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(1.7))
-                toastMessage = nil
-            }
-        }
-        .confirmationDialog("清除缓存", isPresented: $isShowingClearConfirm, titleVisibility: .visible) {
+        .lookToast($toastMessage)
+        .alert("清除缓存", isPresented: $isShowingClearConfirm) {
             Button("仅清理临时状态") {
                 displayConfigStore.clearTransientState()
                 showToast("已清理临时状态")
@@ -130,7 +117,7 @@ struct SettingsView: View {
             }
             Button("取消", role: .cancel) {}
         } message: {
-            Text("默认不会删除收藏；选择“同时删除收藏”才会清空收藏数据。")
+            Text("默认不会删除收藏；只有选择“同时删除收藏”才会清空收藏数据。")
         }
         .fullScreenCover(item: $paywallContext) { context in
             ProPaywallView(context: context)
@@ -209,6 +196,8 @@ struct SettingsView: View {
         Divider().overlay(LookTheme.Colors.textDisabled.opacity(0.24))
     }
 
+    private static let appReviewURL = URL(string: "https://apps.apple.com/app/id966060914?action=write-review")!
+
     private var shareRow: some View {
         HStack(spacing: LookSpacing.sm) {
             Image(systemName: "square.and.arrow.up")
@@ -264,6 +253,18 @@ struct SettingsView: View {
         displayConfigStore.resetDisplaySettings()
         settingsStore.resetDisplaySettings()
         showToast("已恢复默认显示设置")
+    }
+
+    private func openReviewPage() {
+        UIApplication.shared.open(Self.appReviewURL, options: [:]) { success in
+            guard !success else {
+                return
+            }
+
+            Task { @MainActor in
+                showToast("暂时无法打开 App Store")
+            }
+        }
     }
 
     private func showToast(_ message: String) {

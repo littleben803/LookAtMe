@@ -8,6 +8,7 @@ struct FavoritesView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
 
     @State private var isEditing = false
+    @State private var isShowingDeleteAllConfirm = false
     @State private var toastMessage: String?
     @State private var paywallContext: ProPaywallContext?
 
@@ -37,6 +38,8 @@ struct FavoritesView: View {
                                 ForEach(favoriteStore.favorites) { favorite in
                                     favoriteCard(favorite)
                                 }
+
+                                deleteAllFavoritesButton
                             }
                         }
                     }
@@ -45,20 +48,14 @@ struct FavoritesView: View {
                 }
             }
         }
-        .overlay(alignment: .top) {
-            if let toastMessage {
-                ToastView(message: toastMessage)
-                    .padding(.top, LookSpacing.lg)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+        .lookToast($toastMessage)
+        .alert("删除全部收藏？", isPresented: $isShowingDeleteAllConfirm) {
+            Button("取消", role: .cancel) {}
+            Button("全部删除", role: .destructive) {
+                clearAllFavorites()
             }
-        }
-        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: toastMessage)
-        .onChange(of: toastMessage) { _, message in
-            guard message != nil else { return }
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(1.7))
-                toastMessage = nil
-            }
+        } message: {
+            Text("会删除本机保存的所有收藏灯牌，删除后无法恢复。")
         }
         .fullScreenCover(item: $paywallContext) { context in
             ProPaywallView(context: context)
@@ -149,6 +146,29 @@ struct FavoritesView: View {
         .buttonStyle(.plain)
     }
 
+    private var deleteAllFavoritesButton: some View {
+        Button(role: .destructive) {
+            isShowingDeleteAllConfirm = true
+        } label: {
+            HStack(spacing: LookSpacing.xs) {
+                Image(systemName: "trash")
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+
+                Text("全部删除")
+                    .font(LookTypography.button)
+            }
+            .foregroundColor(LookTheme.Colors.danger)
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .background(
+                Capsule()
+                    .fill(LookTheme.Colors.cardPurple.opacity(0.88))
+                    .overlay(Capsule().stroke(LookTheme.Colors.danger.opacity(0.42), lineWidth: 1))
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.top, LookSpacing.sm)
+    }
+
     private func preview(for favorite: FavoriteBanner) -> some View {
         let style = styleStore.style(withID: favorite.styleID)
         return StyleCard(
@@ -178,6 +198,12 @@ struct FavoritesView: View {
     private func applyFavorite(_ favorite: FavoriteBanner) {
         displayConfigStore.applyFavorite(favorite)
         navigationState.selectedTab = .home
+    }
+
+    private func clearAllFavorites() {
+        favoriteStore.clearAll()
+        isEditing = false
+        showToast("已删除全部收藏")
     }
 
     private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
