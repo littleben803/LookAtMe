@@ -1,8 +1,17 @@
 import Combine
 import Foundation
 
+enum FavoriteAddResult: Equatable {
+    case added
+    case updatedExisting
+    case ignoredEmptyText
+    case freeLimitReached(limit: Int)
+}
+
 @MainActor
 final class FavoriteStore: ObservableObject {
+    static let freeFavoriteLimit = 5
+
     @Published private(set) var favorites: [FavoriteBanner] = []
 
     private let userDefaults: UserDefaults
@@ -13,16 +22,21 @@ final class FavoriteStore: ObservableObject {
         self.favorites = Self.loadFavorites(from: userDefaults, key: favoritesKey)
     }
 
-    func addFavorite(from draft: BannerDraft) {
+    @discardableResult
+    func addFavorite(from draft: BannerDraft, isProUnlocked: Bool = false) -> FavoriteAddResult {
         let trimmedText = draft.text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedText.isEmpty else {
-            return
+            return .ignoredEmptyText
         }
 
         if let existingIndex = favorites.firstIndex(where: { matches($0, draft: draft) }) {
             favorites[existingIndex].updatedAt = Date()
             save()
-            return
+            return .updatedExisting
+        }
+
+        guard isProUnlocked || favorites.count < Self.freeFavoriteLimit else {
+            return .freeLimitReached(limit: Self.freeFavoriteLimit)
         }
 
         let now = Date()
@@ -44,11 +58,18 @@ final class FavoriteStore: ObservableObject {
         )
         favorites.insert(favorite, at: 0)
         save()
+        return .added
     }
 
-    func addTemplate(_ template: BannerTemplate, displayConfigStore: DisplayConfigStore, styleStore: StyleStore) {
+    @discardableResult
+    func addTemplate(
+        _ template: BannerTemplate,
+        displayConfigStore: DisplayConfigStore,
+        styleStore: StyleStore,
+        isProUnlocked: Bool = false
+    ) -> FavoriteAddResult {
         let draft = displayConfigStore.draft(styleStore: styleStore, text: template.text)
-        addFavorite(from: draft)
+        return addFavorite(from: draft, isProUnlocked: isProUnlocked)
     }
 
     func removeFavorite(id: String) {

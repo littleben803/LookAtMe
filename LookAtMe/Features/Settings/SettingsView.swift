@@ -4,10 +4,12 @@ struct SettingsView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
     @EnvironmentObject private var settingsStore: SettingsStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
 
     @State private var path: [FeatureRoute] = []
     @State private var isShowingClearConfirm = false
     @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -83,7 +85,9 @@ struct SettingsView: View {
                                 }
                                 neonDivider
                                 SettingsRow(title: "恢复购买") {
-                                    showToast("Pro 购买将在下一阶段接入")
+                                    showPaywall(.settingsRestore) {
+                                        showToast("高级功能已解锁")
+                                    }
                                 }
                                 neonDivider
                                 SettingsRow(title: "版本号", value: "2.0.0")
@@ -127,6 +131,9 @@ struct SettingsView: View {
             Button("取消", role: .cancel) {}
         } message: {
             Text("默认不会删除收藏；选择“同时删除收藏”才会清空收藏数据。")
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
         }
     }
 
@@ -262,6 +269,11 @@ struct SettingsView: View {
     private func showToast(_ message: String) {
         toastMessage = message
     }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
+    }
 }
 
 #Preview {
@@ -271,4 +283,5 @@ struct SettingsView: View {
         .environmentObject(SettingsStore())
         .environmentObject(TemplateStore())
         .environmentObject(StyleStore())
+        .environmentObject(PurchaseManager(autoStart: false))
 }

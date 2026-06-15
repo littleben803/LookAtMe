@@ -2,6 +2,8 @@ import SwiftUI
 
 struct FontPickerView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
+    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         ZStack {
@@ -26,11 +28,17 @@ struct FontPickerView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            ensureSelectedFontIsAvailable()
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
+        }
     }
 
     private func fontRow(_ fontStyle: BannerFontStyle) -> some View {
         Button {
-            displayConfigStore.fontStyle = fontStyle
+            select(fontStyle)
         } label: {
             NeonCard {
                 HStack(spacing: LookSpacing.md) {
@@ -44,6 +52,14 @@ struct FontPickerView: View {
                                 Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 19, weight: .bold))
                                     .foregroundColor(LookTheme.Colors.primaryPink)
+                            }
+                            if isFontLocked(fontStyle) {
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(LookTheme.Colors.warmYellow)
+                            }
+                            if isFontLocked(fontStyle) {
+                                ProBadge()
                             }
                         }
 
@@ -68,11 +84,38 @@ struct FontPickerView: View {
         }
         .buttonStyle(.plain)
     }
+
+    private func select(_ fontStyle: BannerFontStyle) {
+        guard purchaseManager.canUse(fontStyle) else {
+            showPaywall(.premiumFont(name: fontStyle.title)) {
+                select(fontStyle)
+            }
+            return
+        }
+        displayConfigStore.fontStyle = fontStyle
+    }
+
+    private func isFontLocked(_ fontStyle: BannerFontStyle) -> Bool {
+        fontStyle.isPro && !purchaseManager.isProUnlocked
+    }
+
+    private func ensureSelectedFontIsAvailable() {
+        guard !purchaseManager.canUse(displayConfigStore.fontStyle) else {
+            return
+        }
+        displayConfigStore.fontStyle = .roundedHeavy
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
+    }
 }
 
 #Preview {
     NavigationStack {
         FontPickerView()
             .environmentObject(DisplayConfigStore())
+            .environmentObject(PurchaseManager(autoStart: false))
     }
 }

@@ -68,7 +68,7 @@ final class HomeViewModel: ObservableObject {
     }
 
     func showProEntryPlaceholder() {
-        showToast("Pro 功能暂未接入")
+        showToast("高级功能已准备")
     }
 
     func showMorePlaceholder() {

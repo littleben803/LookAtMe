@@ -7,8 +7,10 @@ struct TemplateCenterView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var selectedScene: BannerScene = .concert
     @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         ZStack {
@@ -44,6 +46,9 @@ struct TemplateCenterView: View {
                 try? await Task.sleep(for: .seconds(1.7))
                 toastMessage = nil
             }
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
         }
     }
 
@@ -94,7 +99,7 @@ struct TemplateCenterView: View {
 
     private func templateRow(_ template: BannerTemplate) -> some View {
         Button {
-            onUseTemplate(template)
+            useTemplate(template)
         } label: {
             NeonCard(padding: LookSpacing.md) {
                 HStack(spacing: LookSpacing.md) {
@@ -125,27 +130,89 @@ struct TemplateCenterView: View {
 
                     Spacer()
 
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(LookTheme.Colors.primaryPink)
+                    if isTemplateLocked(template) {
+                        ProBadge()
+                    }
+
+                    Image(systemName: isTemplateLocked(template) ? "lock.fill" : "plus.circle.fill")
+                        .font(.system(size: isTemplateLocked(template) ? 18 : 22, weight: .bold))
+                        .foregroundColor(isTemplateLocked(template) ? LookTheme.Colors.warmYellow : LookTheme.Colors.primaryPink)
                 }
             }
         }
         .buttonStyle(.plain)
         .contextMenu {
             Button {
-                onUseTemplate(template)
+                useTemplate(template)
             } label: {
                 Label("使用", systemImage: "arrow.turn.down.left")
             }
 
             Button {
-                favoriteStore.addTemplate(template, displayConfigStore: displayConfigStore, styleStore: styleStore)
-                toastMessage = "已收藏模板"
+                favoriteTemplate(template)
             } label: {
                 Label("收藏", systemImage: "heart.fill")
             }
         }
+    }
+
+    private func useTemplate(_ template: BannerTemplate) {
+        guard purchaseManager.canUse(template) else {
+            showPaywall(.template(name: template.title)) {
+                useTemplate(template)
+            }
+            return
+        }
+        onUseTemplate(template)
+    }
+
+    private func favoriteTemplate(_ template: BannerTemplate) {
+        guard purchaseManager.canUse(template) else {
+            showPaywall(.template(name: template.title)) {
+                favoriteTemplate(template)
+            }
+            return
+        }
+        let result = favoriteStore.addTemplate(
+            template,
+            displayConfigStore: displayConfigStore,
+            styleStore: styleStore,
+            isProUnlocked: purchaseManager.isProUnlocked
+        )
+        handleFavoriteResult(result) {
+            favoriteTemplate(template)
+        }
+    }
+
+    private func isTemplateLocked(_ template: BannerTemplate) -> Bool {
+        template.isPro && !purchaseManager.isProUnlocked
+    }
+
+    private func message(for result: FavoriteAddResult) -> String {
+        switch result {
+        case .added:
+            "已收藏模板"
+        case .updatedExisting:
+            "已更新收藏"
+        case .ignoredEmptyText:
+            "模板内容为空"
+        case .freeLimitReached(let limit):
+            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+        }
+    }
+
+    private func handleFavoriteResult(_ result: FavoriteAddResult, retryAfterUnlock: @escaping @MainActor () -> Void) {
+        switch result {
+        case .freeLimitReached:
+            showPaywall(.favoriteLimit, onUnlocked: retryAfterUnlock)
+        case .added, .updatedExisting, .ignoredEmptyText:
+            toastMessage = message(for: result)
+        }
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
     }
 }
 
@@ -156,5 +223,6 @@ struct TemplateCenterView: View {
             .environmentObject(DisplayConfigStore())
             .environmentObject(StyleStore())
             .environmentObject(FavoriteStore())
+            .environmentObject(PurchaseManager(autoStart: false))
     }
 }

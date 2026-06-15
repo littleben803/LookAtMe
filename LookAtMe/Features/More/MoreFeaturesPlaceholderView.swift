@@ -19,7 +19,7 @@ struct MoreFeaturesPlaceholderView: View {
                     .font(LookTypography.pageTitle)
                     .foregroundColor(LookTheme.Colors.textPrimary)
 
-                Text("阶段 1 先保留霓虹风入口，完整功能将在后续阶段接入。")
+                Text("快速进入样式、模板、颜色、字体和展示设置。")
                     .font(LookTypography.body)
                     .foregroundColor(LookTheme.Colors.textTertiary)
 
@@ -52,4 +52,3 @@ struct MoreFeaturesPlaceholderView: View {
         }
     }
 }
-

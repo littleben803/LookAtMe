@@ -4,9 +4,9 @@ struct FavoritesPlaceholderView: View {
     var body: some View {
         PlaceholderScreen(
             title: "收藏",
-            subtitle: "收藏页占位",
+            subtitle: "收藏",
             systemImage: "heart",
-            message: "阶段 0 不实现收藏列表、编辑和删除逻辑，只保留主题化页面壳。"
+            message: "保存常用灯牌，现场快速打开。"
         )
     }
 }
@@ -14,4 +14,3 @@ struct FavoritesPlaceholderView: View {
 #Preview {
     FavoritesPlaceholderView()
 }
-

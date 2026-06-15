@@ -3,8 +3,10 @@ import SwiftUI
 struct StylePickerView: View {
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var filter: StyleFilter = .all
     @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     private let columns = [
         GridItem(.flexible(), spacing: LookSpacing.sm),
@@ -36,7 +38,8 @@ struct StylePickerView: View {
                                 style: style,
                                 isSelected: displayConfigStore.selectedStyleID == style.id,
                                 previewColor: Color(hex: displayConfigStore.textColorHex),
-                                fontStyle: displayConfigStore.fontStyle
+                                fontStyle: displayConfigStore.fontStyle,
+                                isLocked: isStyleLocked(style)
                             ) {
                                 select(style)
                             }
@@ -64,18 +67,21 @@ struct StylePickerView: View {
                 toastMessage = nil
             }
         }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
+        }
     }
 
     private var fixedHeader: some View {
         VStack(alignment: .leading, spacing: LookSpacing.lg) {
             NeonPageHeader(
                 title: "样式选择",
-                subtitle: "免费样式可直接使用，Pro 样式当前开放测试"
+                subtitle: purchaseManager.isProUnlocked ? "全部样式均可直接使用" : "免费样式可直接使用，Pro 样式解锁后使用"
             )
 
             Picker("筛选", selection: $filter) {
                 ForEach(StyleFilter.allCases) { item in
-                    Text(item.title).tag(item)
+                    Text(item.title(isProUnlocked: purchaseManager.isProUnlocked)).tag(item)
                 }
             }
             .pickerStyle(.segmented)
@@ -87,7 +93,22 @@ struct StylePickerView: View {
     }
 
     private func select(_ style: BannerStyle) {
+        guard purchaseManager.canUse(style) else {
+            showPaywall(.style(name: style.name)) {
+                select(style)
+            }
+            return
+        }
         displayConfigStore.selectStyle(style)
+    }
+
+    private func isStyleLocked(_ style: BannerStyle) -> Bool {
+        style.isPro && !purchaseManager.isProUnlocked
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
     }
 }
 
@@ -98,22 +119,23 @@ private enum StyleFilter: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    func title(isProUnlocked: Bool) -> String {
         switch self {
         case .all:
             "全部"
         case .free:
             "免费"
         case .pro:
-            "Pro"
+            isProUnlocked ? "高级" : "Pro"
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        StylePickerView()
-            .environmentObject(StyleStore())
-            .environmentObject(DisplayConfigStore())
+            StylePickerView()
+                .environmentObject(StyleStore())
+                .environmentObject(DisplayConfigStore())
+                .environmentObject(PurchaseManager(autoStart: false))
     }
 }

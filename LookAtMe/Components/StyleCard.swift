@@ -8,6 +8,7 @@ struct StyleCard: View {
     var isCompact: Bool = false
     var compactPreviewHeight: CGFloat = 62
     var showsAccessTag: Bool = false
+    var isLocked: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -22,7 +23,14 @@ struct StyleCard: View {
         Button(action: action) {
             VStack(spacing: 6) {
                 ZStack(alignment: .topTrailing) {
-                    stylePreview
+                    ZStack {
+                        stylePreview
+                            .opacity(isLocked ? 0.45 : 1)
+
+                        if isLocked {
+                            StyleLockOverlay()
+                        }
+                    }
                         .frame(height: compactPreviewHeight)
                         .frame(maxWidth: .infinity)
                         .background(
@@ -60,7 +68,14 @@ struct StyleCard: View {
         Button(action: action) {
             ZStack(alignment: .topTrailing) {
                 VStack(alignment: isCompact ? .center : .leading, spacing: isCompact ? 5 : LookSpacing.xs) {
-                    stylePreview
+                    ZStack {
+                        stylePreview
+                            .opacity(isLocked ? 0.45 : 1)
+
+                        if isLocked {
+                            StyleLockOverlay()
+                        }
+                    }
                         .frame(height: isCompact ? 50 : 64)
                         .frame(maxWidth: .infinity)
                         .background(
@@ -390,6 +405,18 @@ struct StyleCard: View {
                     .foregroundColor(.white)
             }
         }
+    }
+}
+
+private struct StyleLockOverlay: View {
+    var body: some View {
+        Image(systemName: "lock.fill")
+            .font(.system(size: 12, weight: .bold))
+            .foregroundColor(LookTheme.Colors.warmYellow)
+            .frame(width: 28, height: 28)
+            .background(Circle().fill(Color.black.opacity(0.68)))
+            .overlay(Circle().stroke(LookTheme.Colors.warmYellow.opacity(0.58), lineWidth: 1))
+            .shadow(color: LookTheme.Colors.warmYellow.opacity(0.38), radius: 8)
     }
 }
 

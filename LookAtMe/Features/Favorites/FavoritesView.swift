@@ -5,8 +5,11 @@ struct FavoritesView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
     @EnvironmentObject private var styleStore: StyleStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
 
     @State private var isEditing = false
+    @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         ZStack {
@@ -42,6 +45,24 @@ struct FavoritesView: View {
                 }
             }
         }
+        .overlay(alignment: .top) {
+            if let toastMessage {
+                ToastView(message: toastMessage)
+                    .padding(.top, LookSpacing.lg)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: toastMessage)
+        .onChange(of: toastMessage) { _, message in
+            guard message != nil else { return }
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(1.7))
+                toastMessage = nil
+            }
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
+        }
     }
 
     private var header: some View {
@@ -69,8 +90,20 @@ struct FavoritesView: View {
             if isEditing {
                 favoriteStore.removeFavorite(id: favorite.id)
             } else {
-                displayConfigStore.applyFavorite(favorite)
-                navigationState.selectedTab = .home
+                let style = styleStore.style(withID: favorite.styleID)
+                guard purchaseManager.canUse(style) else {
+                    showPaywall(.favoriteProStyle) {
+                        applyFavorite(favorite)
+                    }
+                    return
+                }
+                guard purchaseManager.canUse(favorite.fontStyle) else {
+                    showPaywall(.premiumFont(name: favorite.fontStyle.title)) {
+                        applyFavorite(favorite)
+                    }
+                    return
+                }
+                applyFavorite(favorite)
             }
         } label: {
             NeonCard {
@@ -117,13 +150,15 @@ struct FavoritesView: View {
     }
 
     private func preview(for favorite: FavoriteBanner) -> some View {
-        StyleCard(
-            style: styleStore.style(withID: favorite.styleID),
+        let style = styleStore.style(withID: favorite.styleID)
+        return StyleCard(
+            style: style,
             isSelected: false,
             previewColor: Color(hex: favorite.textColorHex),
             fontStyle: favorite.fontStyle,
             isCompact: true,
-            compactPreviewHeight: 64
+            compactPreviewHeight: 64,
+            isLocked: style.isPro && !purchaseManager.isProUnlocked
         ) {}
         .frame(width: 78, height: 64, alignment: .top)
         .clipped()
@@ -135,6 +170,20 @@ struct FavoritesView: View {
         formatter.dateFormat = "yyyy.MM.dd HH:mm"
         return formatter
     }()
+
+    private func showToast(_ message: String) {
+        toastMessage = message
+    }
+
+    private func applyFavorite(_ favorite: FavoriteBanner) {
+        displayConfigStore.applyFavorite(favorite)
+        navigationState.selectedTab = .home
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
+    }
 }
 
 #Preview {
@@ -143,4 +192,5 @@ struct FavoritesView: View {
         .environmentObject(DisplayConfigStore())
         .environmentObject(FavoriteStore())
         .environmentObject(StyleStore())
+        .environmentObject(PurchaseManager(autoStart: false))
 }

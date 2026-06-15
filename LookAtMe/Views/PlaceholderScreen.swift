@@ -45,9 +45,8 @@ struct PlaceholderScreen: View {
 #Preview {
     PlaceholderScreen(
         title: "想恋爱",
-        subtitle: "阶段 0 占位",
+        subtitle: "灯牌工具",
         systemImage: "sparkles",
-        message: "主题系统已接入，正式业务 UI 将在后续阶段实现。"
+        message: "把手机变成会发光的表白灯牌。"
     )
 }
-

@@ -32,6 +32,7 @@ struct LookAppApp: App {
     @StateObject private var displayConfigStore = DisplayConfigStore()
     @StateObject private var favoriteStore = FavoriteStore()
     @StateObject private var settingsStore = SettingsStore()
+    @StateObject private var purchaseManager = PurchaseManager()
 
     var body: some Scene {
         WindowGroup {
@@ -41,6 +42,42 @@ struct LookAppApp: App {
                 .environmentObject(displayConfigStore)
                 .environmentObject(favoriteStore)
                 .environmentObject(settingsStore)
+                .environmentObject(purchaseManager)
+#if DEBUG
+                .debugLaunchPaywallIfNeeded(purchaseManager: purchaseManager)
+#endif
         }
     }
 }
+
+#if DEBUG
+private struct DebugLaunchPaywallModifier: ViewModifier {
+    let purchaseManager: PurchaseManager
+
+    @State private var paywallContext: ProPaywallContext?
+
+    private var shouldShowPaywall: Bool {
+        ProcessInfo.processInfo.environment["LOOKATME_DEBUG_PAYWALL"] == "1"
+            || ProcessInfo.processInfo.arguments.contains("-LookAtMeDebugPaywall")
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .fullScreenCover(item: $paywallContext) { context in
+                ProPaywallView(context: context)
+                    .environmentObject(purchaseManager)
+            }
+            .task {
+                guard shouldShowPaywall, paywallContext == nil else { return }
+                try? await Task.sleep(for: .milliseconds(600))
+                paywallContext = ProPaywallContext(source: .homePro)
+            }
+    }
+}
+
+private extension View {
+    func debugLaunchPaywallIfNeeded(purchaseManager: PurchaseManager) -> some View {
+        modifier(DebugLaunchPaywallModifier(purchaseManager: purchaseManager))
+    }
+}
+#endif

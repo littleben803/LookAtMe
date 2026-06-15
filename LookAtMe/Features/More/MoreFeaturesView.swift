@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct MoreFeaturesView: View {
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     private let columns = [
         GridItem(.flexible(), spacing: LookSpacing.sm),
@@ -29,7 +31,10 @@ struct MoreFeaturesView: View {
                         featureLink("展示设置", subtitle: "速度、大小、方向", icon: "slider.horizontal.3", route: .displaySettings)
                     }
 
-                    SectionHeader("Pro 功能区", subtitle: "下一阶段接入购买，本阶段先展示锁定态")
+                    SectionHeader(
+                        purchaseManager.isProUnlocked ? "高级功能区" : "Pro 功能区",
+                        subtitle: purchaseManager.isProUnlocked ? "全部高级灯牌能力已可使用" : "解锁后使用高级灯牌能力"
+                    )
                     LazyVGrid(columns: columns, spacing: LookSpacing.sm) {
                         proFeature("随机灯牌", subtitle: "一键生成惊喜", icon: "shuffle")
                         proFeature("快速截图", subtitle: "保存灯牌画面", icon: "camera.fill")
@@ -58,6 +63,9 @@ struct MoreFeaturesView: View {
                 toastMessage = nil
             }
         }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
+        }
     }
 
     private func featureLink(_ title: String, subtitle: String, icon: String, route: FeatureRoute) -> some View {
@@ -68,14 +76,36 @@ struct MoreFeaturesView: View {
     }
 
     private func proFeature(_ title: String, subtitle: String, icon: String) -> some View {
-        FeatureGridCard(title: title, subtitle: subtitle, systemImage: icon, isPro: true, isLocked: true) {
-            toastMessage = "Pro 功能将在下一阶段接入"
+        FeatureGridCard(
+            title: title,
+            subtitle: subtitle,
+            systemImage: icon,
+            isPro: !purchaseManager.isProUnlocked,
+            isLocked: !purchaseManager.isProUnlocked
+        ) {
+            guard purchaseManager.isProUnlocked else {
+                showPaywall(.moreFeature(name: title)) {
+                    showToast("高级功能已解锁")
+                }
+                return
+            }
+            showToast("高级功能已解锁")
         }
+    }
+
+    private func showToast(_ message: String) {
+        toastMessage = message
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
     }
 }
 
 #Preview {
     NavigationStack {
         MoreFeaturesView()
+            .environmentObject(PurchaseManager(autoStart: false))
     }
 }

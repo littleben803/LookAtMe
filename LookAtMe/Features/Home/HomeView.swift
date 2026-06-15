@@ -41,12 +41,14 @@ struct HomeView: View {
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
 
     @State private var path: [FeatureRoute] = []
     @State private var toastMessage: String?
     @State private var isShowingDisplayPreview = false
     @State private var measuredHeights: [HomeMeasuredRegion: CGFloat] = [:]
     @State private var isHeroFireworksActive = false
+    @State private var paywallContext: ProPaywallContext?
 
     private let templateColumns = [
         GridItem(.flexible(), spacing: 10),
@@ -79,6 +81,8 @@ struct HomeView: View {
             }
             .onAppear {
                 isHeroFireworksActive = true
+                ensureSelectedStyleIsAvailable()
+                ensureSelectedFontIsAvailable()
             }
             .onDisappear {
                 isHeroFireworksActive = false
@@ -101,6 +105,9 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $isShowingDisplayPreview) {
             LEDDisplayPreviewView(draft: displayConfigStore.draft(styleStore: styleStore))
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
         }
     }
 
@@ -228,27 +235,29 @@ struct HomeView: View {
             .padding(.bottom, 18)
             .offset(y: max(20, topSafeArea * 0.44))
 
-            Button {
-                showToast("Pro 功能将在下一阶段接入")
-            } label: {
-                HStack(spacing: 3) {
-                    Image(systemName: "crown.fill")
-                    Text("Pro")
+            if !purchaseManager.isProUnlocked {
+                Button {
+                    showPaywall(.homePro)
+                } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "crown.fill")
+                        Text("Pro")
+                    }
+                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                    .foregroundColor(LookTheme.Colors.warmYellow)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        Capsule()
+                            .fill(Color.black.opacity(0.58))
+                            .overlay(Capsule().stroke(LookTheme.Colors.warmYellow.opacity(0.45), lineWidth: 0.8))
+                    )
+                    .shadow(color: LookTheme.Colors.warmYellow.opacity(0.32), radius: 8)
                 }
-                .font(.system(size: 11, weight: .heavy, design: .rounded))
-                .foregroundColor(LookTheme.Colors.warmYellow)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(
-                    Capsule()
-                        .fill(Color.black.opacity(0.58))
-                        .overlay(Capsule().stroke(LookTheme.Colors.warmYellow.opacity(0.45), lineWidth: 0.8))
-                )
-                .shadow(color: LookTheme.Colors.warmYellow.opacity(0.32), radius: 8)
+                .buttonStyle(.plain)
+                .padding(.top, max(30, topSafeArea + 6))
+                .padding(.trailing, 12)
             }
-            .buttonStyle(.plain)
-            .padding(.top, max(30, topSafeArea + 6))
-            .padding(.trailing, 12)
         }
         .aspectRatio(1320.0 / 598.0, contentMode: .fit)
         .frame(maxWidth: .infinity)
@@ -314,7 +323,7 @@ struct HomeView: View {
             LazyVGrid(columns: templateColumns, spacing: 10) {
                 ForEach(homeTemplates) { template in
                     TemplateChip(title: template.title) {
-                        displayConfigStore.applyTemplate(template)
+                        applyTemplate(template)
                     }
                 }
             }
@@ -341,7 +350,8 @@ struct HomeView: View {
                         fontStyle: displayConfigStore.fontStyle,
                         isCompact: true,
                         compactPreviewHeight: layout.stylePreviewHeight,
-                        showsAccessTag: true
+                        showsAccessTag: !purchaseManager.isProUnlocked,
+                        isLocked: isStyleLocked(style)
                     ) {
                         selectStyle(style)
                     }
@@ -537,6 +547,12 @@ struct HomeView: View {
     }
 
     private func selectStyle(_ style: BannerStyle) {
+        guard purchaseManager.canUse(style) else {
+            showPaywall(.style(name: style.name)) {
+                selectStyle(style)
+            }
+            return
+        }
         displayConfigStore.selectStyle(style)
     }
 
@@ -545,8 +561,13 @@ struct HomeView: View {
             showToast("先输入一句想收藏的话")
             return
         }
-        favoriteStore.addFavorite(from: displayConfigStore.draft(styleStore: styleStore))
-        showToast("已收藏")
+        let result = favoriteStore.addFavorite(
+            from: displayConfigStore.draft(styleStore: styleStore),
+            isProUnlocked: purchaseManager.isProUnlocked
+        )
+        handleFavoriteResult(result) {
+            favoriteCurrentDraft()
+        }
     }
 
     private func startDisplay() {
@@ -554,11 +575,80 @@ struct HomeView: View {
             showToast("先输入一句想说的话")
             return
         }
+        let selectedStyle = styleStore.style(withID: displayConfigStore.selectedStyleID)
+        guard purchaseManager.canUse(selectedStyle) else {
+            showPaywall(.style(name: selectedStyle.name)) {
+                startDisplay()
+            }
+            return
+        }
+        guard purchaseManager.canUse(displayConfigStore.fontStyle) else {
+            showPaywall(.premiumFont(name: displayConfigStore.fontStyle.title)) {
+                startDisplay()
+            }
+            return
+        }
         isShowingDisplayPreview = true
+    }
+
+    private func applyTemplate(_ template: BannerTemplate) {
+        guard purchaseManager.canUse(template) else {
+            showPaywall(.template(name: template.title)) {
+                applyTemplate(template)
+            }
+            return
+        }
+        displayConfigStore.applyTemplate(template)
+    }
+
+    private func ensureSelectedStyleIsAvailable() {
+        let selectedStyle = styleStore.style(withID: displayConfigStore.selectedStyleID)
+        guard isStyleLocked(selectedStyle), let freeStyle = styleStore.freeStyles.first else {
+            return
+        }
+        displayConfigStore.selectStyle(freeStyle)
+    }
+
+    private func ensureSelectedFontIsAvailable() {
+        guard !purchaseManager.canUse(displayConfigStore.fontStyle) else {
+            return
+        }
+        displayConfigStore.fontStyle = .roundedHeavy
+    }
+
+    private func isStyleLocked(_ style: BannerStyle) -> Bool {
+        style.isPro && !purchaseManager.isProUnlocked
+    }
+
+    private func handleFavoriteResult(_ result: FavoriteAddResult, retryAfterUnlock: @escaping @MainActor () -> Void) {
+        switch result {
+        case .freeLimitReached:
+            showPaywall(.favoriteLimit, onUnlocked: retryAfterUnlock)
+        case .added, .updatedExisting, .ignoredEmptyText:
+            showToast(message(for: result))
+        }
+    }
+
+    private func message(for result: FavoriteAddResult) -> String {
+        switch result {
+        case .added:
+            "已收藏"
+        case .updatedExisting:
+            "已更新收藏"
+        case .ignoredEmptyText:
+            "先输入一句想收藏的话"
+        case .freeLimitReached(let limit):
+            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+        }
     }
 
     private func showToast(_ message: String) {
         toastMessage = message
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
     }
 }
 
@@ -848,4 +938,5 @@ private extension View {
         .environmentObject(StyleStore())
         .environmentObject(DisplayConfigStore())
         .environmentObject(FavoriteStore())
+        .environmentObject(PurchaseManager(autoStart: false))
 }

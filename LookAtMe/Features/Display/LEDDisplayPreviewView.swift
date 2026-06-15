@@ -7,6 +7,7 @@ struct LEDDisplayPreviewView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var favoriteStore: FavoriteStore
     @EnvironmentObject private var settingsStore: SettingsStore
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var isPlaying = true
     @State private var speed: Double
     @State private var fontScale: Double
@@ -16,6 +17,7 @@ struct LEDDisplayPreviewView: View {
     @State private var viewportSize: CGSize = .zero
     @State private var layoutRefreshID = 0
     @State private var toastMessage: String?
+    @State private var paywallContext: ProPaywallContext?
 
     init(draft: BannerDraft) {
         self.draft = draft
@@ -101,6 +103,9 @@ struct LEDDisplayPreviewView: View {
                 try? await Task.sleep(for: .seconds(1.4))
                 toastMessage = nil
             }
+        }
+        .fullScreenCover(item: $paywallContext) { context in
+            ProPaywallView(context: context)
         }
     }
 
@@ -291,14 +296,43 @@ struct LEDDisplayPreviewView: View {
             favoriteStore.removeFavorite(matching: targetDraft)
             showToast("已取消收藏")
         } else {
-            favoriteStore.addFavorite(from: targetDraft)
-            showToast("已收藏当前灯牌")
+            let result = favoriteStore.addFavorite(from: targetDraft, isProUnlocked: purchaseManager.isProUnlocked)
+            handleFavoriteResult(result) {
+                toggleCurrentFavorite()
+            }
         }
         scheduleOperationLayerAutoHide()
     }
 
+    private func message(for result: FavoriteAddResult) -> String {
+        switch result {
+        case .added:
+            "已收藏当前灯牌"
+        case .updatedExisting:
+            "已更新收藏"
+        case .ignoredEmptyText:
+            "先输入一句想收藏的话"
+        case .freeLimitReached(let limit):
+            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+        }
+    }
+
     private func showToast(_ message: String) {
         toastMessage = message
+    }
+
+    private func handleFavoriteResult(_ result: FavoriteAddResult, retryAfterUnlock: @escaping @MainActor () -> Void) {
+        switch result {
+        case .freeLimitReached:
+            showPaywall(.favoriteLimit, onUnlocked: retryAfterUnlock)
+        case .added, .updatedExisting, .ignoredEmptyText:
+            showToast(message(for: result))
+        }
+    }
+
+    private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
+        purchaseManager.clearTransientState()
+        paywallContext = ProPaywallContext(source: source, onUnlocked: onUnlocked)
     }
 
     private func scheduleOperationLayerAutoHide() {
@@ -437,4 +471,5 @@ private struct InterfaceOrientationSyncView: UIViewControllerRepresentable {
     )
     .environmentObject(FavoriteStore())
     .environmentObject(SettingsStore())
+    .environmentObject(PurchaseManager(autoStart: false))
 }
