@@ -18,12 +18,12 @@ public struct SectionHeader<Trailing: View>: View {
     public var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: LookSpacing.md) {
             VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
                     .foregroundColor(LookTheme.Colors.textPrimary)
 
                 if let subtitle {
-                    Text(subtitle)
+                    Text(L10n.key(subtitle))
                         .font(LookTypography.caption)
                         .foregroundColor(LookTheme.Colors.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -43,4 +43,3 @@ public extension SectionHeader where Trailing == EmptyView {
         }
     }
 }
-

@@ -39,13 +39,13 @@ public struct EmptyStateView: View {
             }
 
             VStack(spacing: LookSpacing.xs) {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
                     .foregroundColor(LookTheme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
 
                 if let message {
-                    Text(message)
+                    Text(L10n.key(message))
                         .font(LookTypography.body)
                         .foregroundColor(LookTheme.Colors.textTertiary)
                         .multilineTextAlignment(.center)
@@ -64,4 +64,3 @@ public struct EmptyStateView: View {
         .padding(.horizontal, LookSpacing.lg)
     }
 }
-

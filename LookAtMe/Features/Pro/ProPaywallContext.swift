@@ -13,53 +13,53 @@ struct ProPaywallContext: Identifiable {
 
 enum ProPaywallSource {
     case homePro
-    case style(name: String)
-    case template(name: String)
-    case premiumFont(name: String)
+    case style(nameKey: String)
+    case template(titleKey: String)
+    case premiumFont(titleKey: String)
     case favoriteLimit
     case favoriteProStyle
-    case moreFeature(name: String)
+    case moreFeature(titleKey: String)
     case settingsRestore
 
-    var promptTitle: String {
+    func promptTitle(locale: Locale) -> String {
         switch self {
         case .homePro:
-            "解锁全部高级灯牌"
-        case .style(let name):
-            "解锁「\(name)」"
-        case .template(let name):
-            "解锁「\(name)」模板"
-        case .premiumFont(let name):
-            "解锁「\(name)」字体"
+            L10n.string(L10n.Pro.Context.homeTitle, locale: locale)
+        case .style(let nameKey):
+            L10n.format(L10n.Pro.Context.styleTitleFormat, locale: locale, L10n.string(nameKey, locale: locale))
+        case .template(let titleKey):
+            L10n.format(L10n.Pro.Context.templateTitleFormat, locale: locale, L10n.string(titleKey, locale: locale))
+        case .premiumFont(let titleKey):
+            L10n.format(L10n.Pro.Context.fontTitleFormat, locale: locale, L10n.string(titleKey, locale: locale))
         case .favoriteLimit:
-            "解锁无限收藏"
+            L10n.string(L10n.Pro.Context.favoriteLimitTitle, locale: locale)
         case .favoriteProStyle:
-            "解锁收藏里的 Pro 样式"
-        case .moreFeature(let name):
-            "解锁「\(name)」"
+            L10n.string(L10n.Pro.Context.favoriteProStyleTitle, locale: locale)
+        case .moreFeature(let titleKey):
+            L10n.format(L10n.Pro.Context.moreFeatureTitleFormat, locale: locale, L10n.string(titleKey, locale: locale))
         case .settingsRestore:
-            "恢复想恋爱 Pro"
+            L10n.string(L10n.Pro.Context.settingsRestoreTitle, locale: locale)
         }
     }
 
-    var promptSubtitle: String {
+    func promptSubtitle(locale: Locale) -> String {
         switch self {
         case .homePro:
-            "高级样式、模板、字体和无限收藏一次解锁。"
+            L10n.string(L10n.Pro.Context.homeSubtitle, locale: locale)
         case .style:
-            "购买后会自动回到刚才选择的高级样式。"
+            L10n.string(L10n.Pro.Context.styleSubtitle, locale: locale)
         case .template:
-            "购买后会自动使用刚才选择的高级模板。"
+            L10n.string(L10n.Pro.Context.templateSubtitle, locale: locale)
         case .premiumFont:
-            "购买后会自动应用刚才选择的高级字体。"
+            L10n.string(L10n.Pro.Context.fontSubtitle, locale: locale)
         case .favoriteLimit:
-            "免费版最多保存 5 条收藏，Pro 可无限保存。"
+            L10n.string(L10n.Pro.Context.favoriteLimitSubtitle, locale: locale)
         case .favoriteProStyle:
-            "购买后会自动应用这条收藏。"
+            L10n.string(L10n.Pro.Context.favoriteProStyleSubtitle, locale: locale)
         case .moreFeature:
-            "购买后即可使用全部 Pro 增强能力。"
+            L10n.string(L10n.Pro.Context.moreFeatureSubtitle, locale: locale)
         case .settingsRestore:
-            "如果你已经购买过，可以直接恢复购买。"
+            L10n.string(L10n.Pro.Context.settingsRestoreSubtitle, locale: locale)
         }
     }
 }

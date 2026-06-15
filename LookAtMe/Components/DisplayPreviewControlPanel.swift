@@ -21,8 +21,8 @@ struct DisplayPreviewControlPanel: View {
                 .buttonStyle(.plain)
 
                 VStack(spacing: LookSpacing.sm) {
-                    controlSlider(title: "速度", value: $speed, range: 0.6...2.0, valueText: "\(Int(speed * 100))%")
-                    controlSlider(title: "大小", value: $fontScale, range: 0.7...3.0, valueText: "\(Int(fontScale * 100))%")
+                    controlSlider(title: L10n.Common.speed, value: $speed, range: 0.6...2.0, valueText: "\(Int(speed * 100))%")
+                    controlSlider(title: L10n.Common.size, value: $fontScale, range: 0.7...3.0, valueText: "\(Int(fontScale * 100))%")
                 }
             }
         }
@@ -39,7 +39,7 @@ struct DisplayPreviewControlPanel: View {
     private func controlSlider(title: String, value: Binding<Double>, range: ClosedRange<Double>, valueText: String) -> some View {
         VStack(spacing: LookSpacing.xs) {
             HStack {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.caption)
                     .foregroundColor(LookTheme.Colors.textSecondary)
                 Spacer()

@@ -18,17 +18,17 @@ struct PlaceholderScreen: View {
                     .lookShadow(LookShadow.neon)
 
                 VStack(spacing: LookSpacing.xs) {
-                    Text(title)
+                    Text(L10n.key(title))
                         .font(LookTypography.largeTitle)
                         .foregroundColor(LookTheme.Colors.textPrimary)
 
-                    Text(subtitle)
+                    Text(L10n.key(subtitle))
                         .font(LookTypography.sectionTitle)
                         .foregroundColor(LookTheme.Colors.hotPink)
                 }
 
                 NeonCard {
-                    Text(message)
+                    Text(L10n.key(message))
                         .font(LookTypography.body)
                         .foregroundColor(LookTheme.Colors.textSecondary)
                         .multilineTextAlignment(.center)

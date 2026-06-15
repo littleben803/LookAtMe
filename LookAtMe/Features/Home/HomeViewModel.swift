@@ -51,8 +51,8 @@ final class HomeViewModel: ObservableObject {
         selectedScene = scene
     }
 
-    func applyTemplate(_ template: BannerTemplate) {
-        text = String(template.text.prefix(Self.textLimit))
+    func applyTemplate(_ template: BannerTemplate, locale: Locale = .current) {
+        text = String(template.localizedText(locale: locale).prefix(Self.textLimit))
     }
 
     func selectStyle(_ style: BannerStyle) {
@@ -61,14 +61,14 @@ final class HomeViewModel: ObservableObject {
 
     func startDisplay() {
         guard !trimmedText.isEmpty else {
-            showToast("先输入一句想说的话")
+            showToast(L10n.string(L10n.Home.Toast.inputDisplayFirst, locale: .current))
             return
         }
         isShowingDisplayPreview = true
     }
 
     func showProEntryPlaceholder() {
-        showToast("高级功能已准备")
+        showToast(L10n.string(L10n.Pro.subtitle, locale: .current))
     }
 
     func showMorePlaceholder() {

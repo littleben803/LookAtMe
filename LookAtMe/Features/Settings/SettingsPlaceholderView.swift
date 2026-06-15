@@ -3,10 +3,10 @@ import SwiftUI
 struct SettingsPlaceholderView: View {
     var body: some View {
         PlaceholderScreen(
-            title: "设置",
-            subtitle: "设置",
+            title: L10n.Settings.title,
+            subtitle: L10n.Settings.title,
             systemImage: "gearshape",
-            message: "调整显示偏好和查看应用信息。"
+            message: L10n.Settings.placeholderMessage
         )
     }
 }

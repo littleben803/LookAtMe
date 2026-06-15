@@ -12,8 +12,8 @@ struct FontPickerView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: LookSpacing.lg) {
                     NeonPageHeader(
-                        title: "字体选择",
-                        subtitle: "不引入第三方字体，先使用系统字体组合"
+                        title: L10n.Appearance.fontTitle,
+                        subtitle: L10n.Appearance.fontSubtitle
                     )
 
                     VStack(spacing: LookSpacing.sm) {
@@ -44,7 +44,7 @@ struct FontPickerView: View {
                 HStack(spacing: LookSpacing.md) {
                     VStack(alignment: .leading, spacing: LookSpacing.xs) {
                         HStack {
-                            Text(fontStyle.title)
+                            Text(L10n.key(fontStyle.titleKey))
                                 .font(LookTypography.body.weight(.semibold))
                                 .foregroundColor(LookTheme.Colors.textPrimary)
                             Spacer()
@@ -67,7 +67,7 @@ struct FontPickerView: View {
                             .font(LookTypography.caption)
                             .foregroundColor(LookTheme.Colors.textTertiary)
 
-                        Text("周深我爱你！💗")
+                        Text(L10n.key(L10n.Appearance.previewMessage))
                             .font(fontStyle.font(size: 28))
                             .foregroundColor(Color(hex: displayConfigStore.textColorHex))
                             .lineLimit(1)
@@ -87,7 +87,7 @@ struct FontPickerView: View {
 
     private func select(_ fontStyle: BannerFontStyle) {
         guard purchaseManager.canUse(fontStyle) else {
-            showPaywall(.premiumFont(name: fontStyle.title)) {
+            showPaywall(.premiumFont(titleKey: fontStyle.titleKey)) {
                 select(fontStyle)
             }
             return

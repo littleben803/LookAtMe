@@ -42,7 +42,7 @@ struct NeonTextInput: View {
 
             if text.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(placeholder)
+                    Text(L10n.key(placeholder))
                         .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
                         .padding(.top, 16)
@@ -52,7 +52,7 @@ struct NeonTextInput: View {
 
                     HStack(alignment: .center) {
                         Spacer()
-                        Text(example)
+                        Text(L10n.key(example))
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundColor(LookTheme.Colors.softPink.opacity(0.78))
                         Spacer(minLength: 36)

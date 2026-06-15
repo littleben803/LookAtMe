@@ -38,12 +38,12 @@ struct NeonPageHeader<Trailing: View>: View {
             }
 
             VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.pageTitle)
                     .foregroundColor(LookTheme.Colors.textPrimary)
 
                 if let subtitle {
-                    Text(subtitle)
+                    Text(L10n.key(subtitle))
                         .font(LookTypography.caption)
                         .foregroundColor(LookTheme.Colors.textTertiary)
                 }

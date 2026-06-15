@@ -61,11 +61,15 @@ private struct LookToastModifier: ViewModifier {
                 }
             }
             .animation(.spring(response: 0.28, dampingFraction: 0.86), value: message)
+            .onAppear {
+                scheduleDismiss(for: message)
+            }
             .onChange(of: message) { _, newValue in
                 scheduleDismiss(for: newValue)
             }
             .onDisappear {
                 dismissTask?.cancel()
+                message = nil
             }
     }
 

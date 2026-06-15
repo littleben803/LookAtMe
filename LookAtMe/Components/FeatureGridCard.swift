@@ -47,14 +47,14 @@ struct FeatureGridCardLabel: View {
                     .background(Circle().fill(LookTheme.Colors.backgroundBlack.opacity(0.58)))
 
                 VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                    Text(title)
+                    Text(L10n.key(title))
                         .font(LookTypography.body.weight(.semibold))
                         .foregroundColor(LookTheme.Colors.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
 
                     if let subtitle {
-                        Text(subtitle)
+                        Text(L10n.key(subtitle))
                             .font(LookTypography.caption)
                             .foregroundColor(LookTheme.Colors.textTertiary)
                             .lineLimit(2)

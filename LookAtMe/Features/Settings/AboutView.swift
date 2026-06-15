@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AboutView: View {
+    @EnvironmentObject private var settingsStore: SettingsStore
+
     var body: some View {
         ZStack {
             LookScreenBackground()
@@ -24,7 +26,7 @@ struct AboutView: View {
                                 }
 
                                 VStack(spacing: LookSpacing.xs) {
-                                    Text("想恋爱")
+                                    Text(L10n.key(L10n.About.appName))
                                         .font(LookTypography.largeTitle)
                                         .foregroundStyle(
                                             LinearGradient(
@@ -39,12 +41,12 @@ struct AboutView: View {
                                         )
                                         .shadow(color: LookTheme.Colors.primaryPink.opacity(0.72), radius: 12)
 
-                                    Text("版本 2.0.0")
+                                    Text(L10n.format(L10n.About.versionFormat, locale: settingsStore.appLanguage.locale, "2.0.0"))
                                         .font(LookTypography.caption)
                                         .foregroundColor(LookTheme.Colors.textTertiary)
                                 }
 
-                                Text("把手机变成会发光的表白灯牌。经典 iOS 应用全新回归，为演唱会、表白、生日和接机场景提供更漂亮、更好用的灯牌体验。")
+                                Text(L10n.key(L10n.About.description))
                                     .font(LookTypography.body)
                                     .foregroundColor(LookTheme.Colors.textSecondary)
                                     .multilineTextAlignment(.center)
@@ -55,12 +57,12 @@ struct AboutView: View {
 
                         VStack(spacing: LookSpacing.sm) {
                             NavigationLink(value: FeatureRoute.legal(.privacy)) {
-                                legalRow("隐私政策", icon: "hand.raised.fill")
+                                legalRow(L10n.Legal.privacyTitle, icon: "hand.raised.fill")
                             }
                             .buttonStyle(.plain)
 
                             NavigationLink(value: FeatureRoute.legal(.terms)) {
-                                legalRow("用户协议", icon: "doc.text.fill")
+                                legalRow(L10n.Legal.termsTitle, icon: "doc.text.fill")
                             }
                             .buttonStyle(.plain)
                         }
@@ -75,7 +77,7 @@ struct AboutView: View {
     }
 
     private var fixedHeader: some View {
-        NeonPageHeader(title: "关于想恋爱")
+        NeonPageHeader(title: L10n.About.title)
             .padding(.horizontal, LookSpacing.pageHorizontal)
             .padding(.top, LookSpacing.lg)
             .padding(.bottom, LookSpacing.md)
@@ -88,7 +90,7 @@ struct AboutView: View {
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(LookTheme.Colors.primaryPink)
                     .frame(width: 24)
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.body)
                     .foregroundColor(LookTheme.Colors.textPrimary)
                 Spacer()
@@ -103,5 +105,6 @@ struct AboutView: View {
 #Preview {
     NavigationStack {
         AboutView()
+            .environmentObject(SettingsStore())
     }
 }

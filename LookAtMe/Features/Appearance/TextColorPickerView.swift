@@ -21,10 +21,10 @@ struct TextColorPickerView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: LookSpacing.lg) {
                     NeonPageHeader(
-                        title: "文字颜色",
-                        subtitle: "选择后会影响首页预览和 LED 展示页"
+                        title: L10n.Appearance.textColorTitle,
+                        subtitle: L10n.Appearance.textColorSubtitle
                     ) {
-                        Button("恢复默认") {
+                        Button(L10n.key(L10n.Common.resetDefault)) {
                             displayConfigStore.textColorHex = LookTheme.Hex.primaryPink
                         }
                         .font(LookTypography.caption.weight(.semibold))
@@ -57,11 +57,11 @@ struct TextColorPickerView: View {
     private var previewCard: some View {
         NeonCard {
             VStack(alignment: .leading, spacing: LookSpacing.sm) {
-                Text("灯牌预览")
+                Text(L10n.key(L10n.Appearance.preview))
                     .font(LookTypography.caption)
                     .foregroundColor(LookTheme.Colors.textTertiary)
 
-                Text("周深我爱你！💗")
+                Text(L10n.key(L10n.Appearance.previewMessage))
                     .font(displayConfigStore.fontStyle.font(size: 34 * displayConfigStore.fontScale))
                     .foregroundColor(Color(hex: displayConfigStore.textColorHex))
                     .lineLimit(1)

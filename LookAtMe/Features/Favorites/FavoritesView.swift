@@ -5,6 +5,7 @@ struct FavoritesView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
     @EnvironmentObject private var styleStore: StyleStore
+    @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
 
     @State private var isEditing = false
@@ -27,9 +28,9 @@ struct FavoritesView: View {
                         if favoriteStore.favorites.isEmpty {
                             EmptyStateView(
                                 systemImage: "heart",
-                                title: "还没有收藏哦~",
-                                message: "快去首页做一条属于你的灯牌吧",
-                                actionTitle: "去首页"
+                                title: L10n.Favorites.emptyTitle,
+                                message: L10n.Favorites.emptyMessage,
+                                actionTitle: L10n.Favorites.goHome
                             ) {
                                 navigationState.selectedTab = .home
                             }
@@ -49,13 +50,13 @@ struct FavoritesView: View {
             }
         }
         .lookToast($toastMessage)
-        .alert("删除全部收藏？", isPresented: $isShowingDeleteAllConfirm) {
-            Button("取消", role: .cancel) {}
-            Button("全部删除", role: .destructive) {
+        .alert(localized(L10n.Favorites.Alert.deleteAllTitle), isPresented: $isShowingDeleteAllConfirm) {
+            Button(localized(L10n.Common.cancel), role: .cancel) {}
+            Button(localized(L10n.Favorites.deleteAll), role: .destructive) {
                 clearAllFavorites()
             }
         } message: {
-            Text("会删除本机保存的所有收藏灯牌，删除后无法恢复。")
+            Text(L10n.key(L10n.Favorites.Alert.deleteAllMessage))
         }
         .fullScreenCover(item: $paywallContext) { context in
             ProPaywallView(context: context)
@@ -64,13 +65,13 @@ struct FavoritesView: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text("我的收藏")
+            Text(L10n.key(L10n.Favorites.title))
                 .font(LookTypography.pageTitle)
                 .foregroundColor(LookTheme.Colors.textPrimary)
 
             Spacer()
 
-            Button(isEditing ? "完成" : "编辑") {
+            Button(localized(isEditing ? L10n.Favorites.done : L10n.Favorites.edit)) {
                 withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
                     isEditing.toggle()
                 }
@@ -95,7 +96,7 @@ struct FavoritesView: View {
                     return
                 }
                 guard purchaseManager.canUse(favorite.fontStyle) else {
-                    showPaywall(.premiumFont(name: favorite.fontStyle.title)) {
+                    showPaywall(.premiumFont(titleKey: favorite.fontStyle.titleKey)) {
                         applyFavorite(favorite)
                     }
                     return
@@ -114,12 +115,17 @@ struct FavoritesView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.72)
 
-                        Text("\(favorite.scene.title) · \(styleStore.style(withID: favorite.styleID).name)")
+                        Text("\(localized(favorite.scene.titleKey)) · \(localized(styleStore.style(withID: favorite.styleID).nameKey))")
                             .font(LookTypography.caption)
                             .foregroundColor(LookTheme.Colors.textTertiary)
                             .lineLimit(1)
 
-                        Text("速度 \(Int(favorite.speed * 100))% · 大小 \(Int(favorite.fontScale * 100))%")
+                        Text(L10n.format(
+                            L10n.Favorites.speedSizeFormat,
+                            locale: settingsStore.appLanguage.locale,
+                            Int(favorite.speed * 100),
+                            Int(favorite.fontScale * 100)
+                        ))
                             .font(LookTypography.caption.monospacedDigit())
                             .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
                             .lineLimit(1)
@@ -154,7 +160,7 @@ struct FavoritesView: View {
                 Image(systemName: "trash")
                     .font(.system(size: 15, weight: .bold, design: .rounded))
 
-                Text("全部删除")
+                Text(L10n.key(L10n.Favorites.deleteAll))
                     .font(LookTypography.button)
             }
             .foregroundColor(LookTheme.Colors.danger)
@@ -178,7 +184,8 @@ struct FavoritesView: View {
             fontStyle: favorite.fontStyle,
             isCompact: true,
             compactPreviewHeight: 64,
-            isLocked: style.isPro && !purchaseManager.isProUnlocked
+            isLocked: style.isPro && !purchaseManager.isProUnlocked,
+            previewLocale: settingsStore.appLanguage.locale
         ) {}
         .frame(width: 78, height: 64, alignment: .top)
         .clipped()
@@ -203,7 +210,11 @@ struct FavoritesView: View {
     private func clearAllFavorites() {
         favoriteStore.clearAll()
         isEditing = false
-        showToast("已删除全部收藏")
+        showToast(localized(L10n.Favorites.Toast.deletedAll))
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 
     private func showPaywall(_ source: ProPaywallSource, onUnlocked: @escaping @MainActor () -> Void = {}) {
@@ -218,5 +229,6 @@ struct FavoritesView: View {
         .environmentObject(DisplayConfigStore())
         .environmentObject(FavoriteStore())
         .environmentObject(StyleStore())
+        .environmentObject(SettingsStore())
         .environmentObject(PurchaseManager(autoStart: false))
 }

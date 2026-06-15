@@ -17,7 +17,7 @@ struct SettingsRow: View {
                         .frame(width: 22)
                 }
 
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.body)
                     .foregroundColor(LookTheme.Colors.textPrimary)
 
@@ -55,7 +55,7 @@ struct SettingsToggleRow: View {
 
     var body: some View {
         HStack(spacing: LookSpacing.sm) {
-            Text(title)
+            Text(L10n.key(title))
                 .font(LookTypography.body)
                 .foregroundColor(LookTheme.Colors.textPrimary)
             Spacer()

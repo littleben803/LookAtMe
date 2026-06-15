@@ -33,6 +33,8 @@ struct LookAppApp: App {
     @StateObject private var favoriteStore = FavoriteStore()
     @StateObject private var settingsStore = SettingsStore()
     @StateObject private var purchaseManager = PurchaseManager()
+    @StateObject private var appReviewPromptStore = AppReviewPromptStore()
+    @StateObject private var devicePerformanceStore = DevicePerformanceStore()
 
     var body: some Scene {
         WindowGroup {
@@ -43,6 +45,9 @@ struct LookAppApp: App {
                 .environmentObject(favoriteStore)
                 .environmentObject(settingsStore)
                 .environmentObject(purchaseManager)
+                .environmentObject(appReviewPromptStore)
+                .environmentObject(devicePerformanceStore)
+                .environment(\.locale, settingsStore.appLanguage.locale)
 #if DEBUG
                 .debugLaunchPaywallIfNeeded(purchaseManager: purchaseManager)
 #endif
@@ -57,8 +62,10 @@ private struct DebugLaunchPaywallModifier: ViewModifier {
     @State private var paywallContext: ProPaywallContext?
 
     private var shouldShowPaywall: Bool {
-        ProcessInfo.processInfo.environment["LOOKATME_DEBUG_PAYWALL"] == "1"
+        LookDebugOptions.isDebugEntryPointEnabled &&
+            (ProcessInfo.processInfo.environment["LOOKATME_DEBUG_PAYWALL"] == "1"
             || ProcessInfo.processInfo.arguments.contains("-LookAtMeDebugPaywall")
+            )
     }
 
     func body(content: Content) -> some View {

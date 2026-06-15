@@ -3,10 +3,10 @@ import SwiftUI
 struct FavoritesPlaceholderView: View {
     var body: some View {
         PlaceholderScreen(
-            title: "收藏",
-            subtitle: "收藏",
+            title: L10n.Tab.favorites,
+            subtitle: L10n.Tab.favorites,
             systemImage: "heart",
-            message: "保存常用灯牌，现场快速打开。"
+            message: L10n.Favorites.placeholderMessage
         )
     }
 }

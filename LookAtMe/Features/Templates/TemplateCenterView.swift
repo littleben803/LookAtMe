@@ -7,6 +7,7 @@ struct TemplateCenterView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
+    @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var selectedScene: BannerScene = .concert
     @State private var toastMessage: String?
@@ -41,8 +42,8 @@ struct TemplateCenterView: View {
     private var fixedHeader: some View {
         VStack(alignment: .leading, spacing: LookSpacing.lg) {
             NeonPageHeader(
-                title: "模板中心",
-                subtitle: "长按模板可快速使用或收藏"
+                title: L10n.TemplateCenter.title,
+                subtitle: L10n.TemplateCenter.subtitle
             )
 
             sceneTabs
@@ -61,7 +62,7 @@ struct TemplateCenterView: View {
                     } label: {
                         HStack(spacing: LookSpacing.xs) {
                             Image(systemName: scene.symbolName)
-                            Text(scene.title)
+                            Text(L10n.key(scene.titleKey))
                         }
                         .font(LookTypography.caption.weight(.semibold))
                         .foregroundColor(selectedScene == scene ? LookTheme.Colors.textPrimary : LookTheme.Colors.textTertiary)
@@ -104,12 +105,12 @@ struct TemplateCenterView: View {
                     }
 
                     VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                        Text(template.title)
+                        Text(L10n.key(template.titleKey))
                             .font(LookTypography.sectionTitle)
                             .foregroundColor(LookTheme.Colors.textPrimary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.78)
-                        Text(template.scene.title)
+                        Text(L10n.key(template.scene.titleKey))
                             .font(LookTypography.caption)
                             .foregroundColor(LookTheme.Colors.textTertiary)
                     }
@@ -131,20 +132,20 @@ struct TemplateCenterView: View {
             Button {
                 useTemplate(template)
             } label: {
-                Label("使用", systemImage: "arrow.turn.down.left")
+                Label(L10n.key(L10n.Common.use), systemImage: "arrow.turn.down.left")
             }
 
             Button {
                 favoriteTemplate(template)
             } label: {
-                Label("收藏", systemImage: "heart.fill")
+                Label(L10n.key(L10n.Common.favorite), systemImage: "heart.fill")
             }
         }
     }
 
     private func useTemplate(_ template: BannerTemplate) {
         guard purchaseManager.canUse(template) else {
-            showPaywall(.template(name: template.title)) {
+            showPaywall(.template(titleKey: template.titleKey)) {
                 useTemplate(template)
             }
             return
@@ -154,7 +155,7 @@ struct TemplateCenterView: View {
 
     private func favoriteTemplate(_ template: BannerTemplate) {
         guard purchaseManager.canUse(template) else {
-            showPaywall(.template(name: template.title)) {
+            showPaywall(.template(titleKey: template.titleKey)) {
                 favoriteTemplate(template)
             }
             return
@@ -163,6 +164,7 @@ struct TemplateCenterView: View {
             template,
             displayConfigStore: displayConfigStore,
             styleStore: styleStore,
+            locale: settingsStore.appLanguage.locale,
             isProUnlocked: purchaseManager.isProUnlocked
         )
         handleFavoriteResult(result) {
@@ -177,14 +179,18 @@ struct TemplateCenterView: View {
     private func message(for result: FavoriteAddResult) -> String {
         switch result {
         case .added:
-            "已收藏模板"
+            localized(L10n.TemplateCenter.Toast.favoriteAdded)
         case .updatedExisting:
-            "已更新收藏"
+            localized(L10n.TemplateCenter.Toast.favoriteUpdated)
         case .ignoredEmptyText:
-            "模板内容为空"
+            localized(L10n.TemplateCenter.Toast.templateEmpty)
         case .freeLimitReached(let limit):
-            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+            L10n.format(L10n.TemplateCenter.Toast.favoriteLimitFormat, locale: settingsStore.appLanguage.locale, limit)
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 
     private func handleFavoriteResult(_ result: FavoriteAddResult, retryAfterUnlock: @escaping @MainActor () -> Void) {
@@ -209,6 +215,7 @@ struct TemplateCenterView: View {
             .environmentObject(DisplayConfigStore())
             .environmentObject(StyleStore())
             .environmentObject(FavoriteStore())
+            .environmentObject(SettingsStore())
             .environmentObject(PurchaseManager(autoStart: false))
     }
 }

@@ -11,35 +11,35 @@ struct DisplaySettingsView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: LookSpacing.lg) {
                     NeonPageHeader(
-                        title: "展示设置",
-                        subtitle: "调整 LED 灯牌的播放方式"
+                        title: L10n.DisplaySettings.title,
+                        subtitle: L10n.DisplaySettings.subtitle
                     )
 
-                    settingsGroup("基础参数") {
+                    settingsGroup(L10n.DisplaySettings.basicParameters) {
                         sliderRow(
-                            title: "文字大小",
+                            title: L10n.DisplaySettings.textSize,
                             value: $displayConfigStore.fontScale,
                             range: 0.7...3.0,
                             valueText: "\(Int(displayConfigStore.fontScale * 100))%"
                         )
                         neonDivider
                         sliderRow(
-                            title: "滚动速度",
+                            title: L10n.DisplaySettings.scrollSpeed,
                             value: $displayConfigStore.speed,
                             range: 0.5...2.0,
                             valueText: "\(Int(displayConfigStore.speed * 100))%"
                         )
                     }
 
-                    settingsGroup("播放方式") {
+                    settingsGroup(L10n.DisplaySettings.playback) {
                         VStack(alignment: .leading, spacing: LookSpacing.sm) {
-                            Text("滚动方向")
+                            Text(L10n.key(L10n.DisplaySettings.scrollDirection))
                                 .font(LookTypography.body)
                                 .foregroundColor(LookTheme.Colors.textPrimary)
 
-                            Picker("滚动方向", selection: $displayConfigStore.scrollDirection) {
+                            Picker(L10n.key(L10n.DisplaySettings.scrollDirection), selection: $displayConfigStore.scrollDirection) {
                                 ForEach(BannerScrollDirection.allCases) { direction in
-                                    Text(direction.title).tag(direction)
+                                    Text(L10n.key(direction.titleKey)).tag(direction)
                                 }
                             }
                             .pickerStyle(.segmented)
@@ -48,15 +48,15 @@ struct DisplaySettingsView: View {
                         .padding(.vertical, LookSpacing.xs)
 
                         neonDivider
-                        SettingsToggleRow(title: "镜像反转", isOn: $displayConfigStore.isMirrored)
+                        SettingsToggleRow(title: L10n.DisplaySettings.mirror, isOn: $displayConfigStore.isMirrored)
                         neonDivider
-                        SettingsToggleRow(title: "闪烁效果", isOn: $displayConfigStore.isBlinking)
+                        SettingsToggleRow(title: L10n.DisplaySettings.blink, isOn: $displayConfigStore.isBlinking)
                     }
 
                     Button(role: .destructive) {
                         isShowingResetConfirm = true
                     } label: {
-                        Text("重置所有设置")
+                        Text(L10n.key(L10n.DisplaySettings.resetAll))
                             .font(LookTypography.button)
                             .foregroundColor(LookTheme.Colors.danger)
                             .frame(maxWidth: .infinity, minHeight: 52)
@@ -74,13 +74,13 @@ struct DisplaySettingsView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .alert("重置所有展示设置？", isPresented: $isShowingResetConfirm) {
-            Button("取消", role: .cancel) {}
-            Button("重置", role: .destructive) {
+        .alert(L10n.key(L10n.DisplaySettings.Alert.resetTitle), isPresented: $isShowingResetConfirm) {
+            Button(L10n.key(L10n.Common.cancel), role: .cancel) {}
+            Button(L10n.key(L10n.Common.reset), role: .destructive) {
                 displayConfigStore.resetAllSettings()
             }
         } message: {
-            Text("会恢复文字颜色、背景颜色、字体、大小、速度、方向等展示配置。")
+            Text(L10n.key(L10n.DisplaySettings.Alert.resetMessage))
         }
     }
 
@@ -93,7 +93,7 @@ struct DisplaySettingsView: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: LookSpacing.sm) {
-            Text(title)
+            Text(L10n.key(title))
                 .font(LookTypography.sectionTitle)
                 .foregroundColor(LookTheme.Colors.hotPink)
                 .padding(.horizontal, LookSpacing.xs)
@@ -114,7 +114,7 @@ struct DisplaySettingsView: View {
     ) -> some View {
         VStack(spacing: LookSpacing.xs) {
             HStack {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.body)
                     .foregroundColor(LookTheme.Colors.textPrimary)
                 Spacer()

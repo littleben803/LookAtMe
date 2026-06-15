@@ -35,7 +35,7 @@ struct SceneShortcutButton: View {
                 }
                 .frame(maxWidth: 56, minHeight: 52, maxHeight: 56)
 
-                Text(title)
+                Text(L10n.key(title))
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundColor(isSelected ? LookTheme.Colors.textPrimary : LookTheme.Colors.textTertiary.opacity(0.9))
                     .lineLimit(1)

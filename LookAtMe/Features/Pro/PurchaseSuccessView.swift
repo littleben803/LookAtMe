@@ -13,7 +13,7 @@ struct PurchaseSuccessView: View {
                 successIcon
 
                 VStack(spacing: LookSpacing.sm) {
-                    Text("购买成功！")
+                    Text(L10n.key(L10n.Pro.Success.title))
                         .font(.system(size: 34, weight: .black, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
@@ -29,18 +29,18 @@ struct PurchaseSuccessView: View {
                         .multilineTextAlignment(.center)
                         .shadow(color: LookTheme.Colors.primaryPink.opacity(0.62), radius: 18)
 
-                    Text("高级功能已解锁")
+                    Text(L10n.key(L10n.Pro.Success.subtitle))
                         .font(LookTypography.sectionTitle)
                         .foregroundColor(LookTheme.Colors.hotPink)
 
-                    Text("现在可以使用全部高级灯牌效果了。")
+                    Text(L10n.key(L10n.Pro.Success.message))
                         .font(LookTypography.body)
                         .foregroundColor(LookTheme.Colors.textTertiary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                PrimaryButton("开始使用", systemImage: "sparkles") {
+                PrimaryButton(L10n.Pro.Success.start, systemImage: "sparkles") {
                     onStart()
                 }
 

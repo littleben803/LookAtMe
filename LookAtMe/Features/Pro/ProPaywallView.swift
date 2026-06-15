@@ -4,16 +4,17 @@ struct ProPaywallView: View {
     let context: ProPaywallContext
 
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var didFinishSuccess = false
 
     private let benefits = [
-        "全部霓虹特效",
-        "无限保存收藏",
-        "高级应援模板",
-        "高级字体",
-        "自定义样式保存",
-        "未来新样式免费更新"
+        L10n.Pro.Benefit.allEffects,
+        L10n.Pro.Benefit.unlimitedFavorites,
+        L10n.Pro.Benefit.premiumTemplates,
+        L10n.Pro.Benefit.premiumFonts,
+        L10n.Pro.Benefit.customStyleSave,
+        L10n.Pro.Benefit.futureUpdates
     ]
 
     var body: some View {
@@ -115,7 +116,7 @@ struct ProPaywallView: View {
             .frame(height: 138)
 
             VStack(spacing: LookSpacing.xs) {
-                Text("想恋爱 Pro")
+                Text(L10n.key(L10n.Pro.title))
                     .font(.system(size: 34, weight: .black, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
@@ -131,7 +132,7 @@ struct ProPaywallView: View {
                     .multilineTextAlignment(.center)
                     .shadow(color: LookTheme.Colors.primaryPink.opacity(0.58), radius: 18)
 
-                Text("解锁全部高级灯牌功能")
+                Text(L10n.key(L10n.Pro.subtitle))
                     .font(LookTypography.sectionTitle)
                     .foregroundColor(LookTheme.Colors.hotPink)
                     .multilineTextAlignment(.center)
@@ -149,12 +150,12 @@ struct ProPaywallView: View {
                     .background(Circle().fill(LookTheme.Colors.backgroundBlack.opacity(0.72)))
 
                 VStack(alignment: .leading, spacing: LookSpacing.xxs) {
-                    Text(context.source.promptTitle)
+                    Text(context.source.promptTitle(locale: settingsStore.appLanguage.locale))
                         .font(LookTypography.body.weight(.semibold))
                         .foregroundColor(LookTheme.Colors.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Text(context.source.promptSubtitle)
+                    Text(context.source.promptSubtitle(locale: settingsStore.appLanguage.locale))
                         .font(LookTypography.caption)
                         .foregroundColor(LookTheme.Colors.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -175,7 +176,7 @@ struct ProPaywallView: View {
                             .foregroundColor(LookTheme.Colors.primaryPink)
                             .frame(width: 22)
 
-                        Text(benefit)
+                        Text(L10n.key(benefit))
                             .font(LookTypography.body)
                             .foregroundColor(LookTheme.Colors.textPrimary)
                             .lineLimit(1)
@@ -229,13 +230,13 @@ struct ProPaywallView: View {
             }
             .disabled(purchaseManager.isPurchasing || purchaseManager.isLoadingProducts)
 
-            PaywallSecondaryButton(title: "恢复购买", systemImage: "arrow.clockwise", isDisabled: purchaseManager.isPurchasing) {
+            PaywallSecondaryButton(title: localized(L10n.Pro.restorePurchase), systemImage: "arrow.clockwise", isDisabled: purchaseManager.isPurchasing) {
                 Task {
                     await purchaseManager.restorePurchases()
                 }
             }
 
-            PaywallSecondaryButton(title: "稍后再说", systemImage: "xmark", isDisabled: purchaseManager.isPurchasing) {
+            PaywallSecondaryButton(title: localized(L10n.Pro.later), systemImage: "xmark", isDisabled: purchaseManager.isPurchasing) {
                 close()
             }
         }
@@ -243,13 +244,13 @@ struct ProPaywallView: View {
 
     private var finePrint: some View {
         VStack(spacing: LookSpacing.xxs) {
-            Text(purchaseManager.productDisplayName)
+            Text(purchaseManager.productDisplayName(locale: settingsStore.appLanguage.locale))
                 .font(LookTypography.caption)
                 .foregroundColor(LookTheme.Colors.textTertiary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.78)
 
-            Text("一次购买，永久解锁；价格以 App Store 显示为准。")
+            Text(L10n.key(L10n.Pro.finePrint))
                 .font(LookTypography.caption)
                 .foregroundColor(LookTheme.Colors.textDisabled)
                 .multilineTextAlignment(.center)
@@ -259,16 +260,18 @@ struct ProPaywallView: View {
 
     private var primaryButtonTitle: String {
         if purchaseManager.isPurchasing {
-            return "正在购买"
+            return localized(L10n.Pro.purchasing)
         }
         if purchaseManager.isLoadingProducts {
-            return "商品加载中"
+            return localized(L10n.Pro.loadingProduct)
         }
         guard purchaseManager.product != nil else {
-            return "重新加载商品"
+            return localized(L10n.Pro.reloadProduct)
         }
         let price = purchaseManager.productDisplayPrice
-        return price.isEmpty ? "永久解锁" : "\(price) 永久解锁"
+        return price.isEmpty
+            ? localized(L10n.Pro.unlockForever)
+            : L10n.format(L10n.Pro.unlockForeverPriceFormat, locale: settingsStore.appLanguage.locale, price)
     }
 
     private var primaryButtonIcon: String {
@@ -277,19 +280,19 @@ struct ProPaywallView: View {
 
     private var statusText: String? {
         if purchaseManager.isPurchasing {
-            return "正在购买"
+            return localized(L10n.Pro.purchasing)
         }
         if purchaseManager.isLoadingProducts {
-            return "商品加载中"
+            return localized(L10n.Pro.loadingProduct)
         }
         if purchaseManager.purchaseSuccess {
-            return "购买成功"
+            return localized(L10n.Pro.purchaseSuccess)
         }
         if let errorMessage = purchaseManager.errorMessage {
-            return errorMessage
+            return localized(errorMessage)
         }
         if purchaseManager.product == nil {
-            return "商品加载失败"
+            return localized(L10n.Pro.productLoadFailed)
         }
         return nil
     }
@@ -331,39 +334,41 @@ struct ProPaywallView: View {
     @ViewBuilder
     private var debugDiagnostics: some View {
         #if DEBUG
-        NeonCard(padding: LookSpacing.md) {
-            VStack(alignment: .leading, spacing: LookSpacing.sm) {
-                HStack(spacing: LookSpacing.xs) {
-                    Image(systemName: "ladybug.fill")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                    Text("DEBUG IAP 诊断")
-                        .font(LookTypography.body.weight(.semibold))
-                    Spacer()
-                }
-                .foregroundColor(LookTheme.Colors.warmYellow)
-
-                debugRow("Product ID", value: PurchaseManager.proProductID)
-                debugRow("商品加载", value: purchaseManager.product == nil ? "未加载" : "已加载")
-                debugRow("isProUnlocked", value: purchaseManager.isProUnlocked ? "true" : "false")
-                debugRow("Storefront", value: purchaseManager.debugStorefrontCountryCode ?? "未知")
-                debugRow("环境提示", value: "价格取自当前 StoreKit / Sandbox storefront")
-
-                HStack(spacing: LookSpacing.sm) {
-                    PaywallDebugButton("刷新诊断", systemImage: "arrow.clockwise") {
-                        Task {
-                            await purchaseManager.refreshDebugStorefront()
-                            await purchaseManager.loadProducts()
-                        }
+        if LookDebugOptions.isDebugEntryPointEnabled {
+            NeonCard(padding: LookSpacing.md) {
+                VStack(alignment: .leading, spacing: LookSpacing.sm) {
+                    HStack(spacing: LookSpacing.xs) {
+                        Image(systemName: "ladybug.fill")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                        Text(L10n.key(L10n.Pro.Debug.title))
+                            .font(LookTypography.body.weight(.semibold))
+                        Spacer()
                     }
+                    .foregroundColor(LookTheme.Colors.warmYellow)
 
-                    PaywallDebugButton("重置本地缓存", systemImage: "trash") {
-                        purchaseManager.resetLocalProCacheForDebug()
+                    debugRow("Product ID", value: PurchaseManager.proProductID)
+                    debugRow(localized(L10n.Pro.loadingProduct), value: localized(purchaseManager.product == nil ? L10n.Pro.Debug.productNotLoaded : L10n.Pro.Debug.productLoaded))
+                    debugRow("isProUnlocked", value: purchaseManager.isProUnlocked ? "true" : "false")
+                    debugRow("Storefront", value: purchaseManager.debugStorefrontCountryCode ?? localized(L10n.Pro.Debug.unknown))
+                    debugRow(localized(L10n.Pro.Debug.environmentHintTitle), value: localized(L10n.Pro.Debug.environmentHintValue))
+
+                    HStack(spacing: LookSpacing.sm) {
+                        PaywallDebugButton(localized(L10n.Pro.Debug.refresh), systemImage: "arrow.clockwise") {
+                            Task {
+                                await purchaseManager.refreshDebugStorefront()
+                                await purchaseManager.loadProducts()
+                            }
+                        }
+
+                        PaywallDebugButton(localized(L10n.Pro.Debug.resetCache), systemImage: "trash") {
+                            purchaseManager.resetLocalProCacheForDebug()
+                        }
                     }
                 }
             }
-        }
-        .task {
-            await purchaseManager.refreshDebugStorefront()
+            .task {
+                await purchaseManager.refreshDebugStorefront()
+            }
         }
         #endif
     }
@@ -396,6 +401,10 @@ struct ProPaywallView: View {
         context.onUnlocked()
         purchaseManager.clearTransientState()
         dismiss()
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 }
 
@@ -478,6 +487,7 @@ private extension ProPaywallSource {
 }
 
 #Preview {
-    ProPaywallView(context: ProPaywallContext(source: .style(name: "爱心飘落")))
+    ProPaywallView(context: ProPaywallContext(source: .style(nameKey: L10n.Style.name("style-heart-rain"))))
+        .environmentObject(SettingsStore())
         .environmentObject(PurchaseManager(autoStart: false))
 }

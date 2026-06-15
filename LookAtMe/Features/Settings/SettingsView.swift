@@ -1,16 +1,19 @@
 import SwiftUI
-import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
     @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @EnvironmentObject private var appReviewPromptStore: AppReviewPromptStore
 
     @State private var path: [FeatureRoute] = []
     @State private var isShowingClearConfirm = false
     @State private var toastMessage: String?
     @State private var paywallContext: ProPaywallContext?
+#if DEBUG
+    @State private var isDebugReviewPromptArmed = false
+#endif
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -22,11 +25,11 @@ struct SettingsView: View {
 
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: LookSpacing.lg) {
-                            settingsGroup("显示设置") {
+                            settingsGroup(L10n.Settings.displayGroup) {
                                 resetDisplaySettingsButton
                             } content: {
                                 SettingsRow(
-                                    title: "默认文字颜色",
+                                    title: L10n.Settings.defaultTextColor,
                                     value: displayConfigStore.textColorHex,
                                     colorSwatch: Color(hex: displayConfigStore.textColorHex)
                                 ) {
@@ -34,64 +37,80 @@ struct SettingsView: View {
                                 }
                                 neonDivider
                                 SettingsRow(
-                                    title: "默认背景颜色",
+                                    title: L10n.Settings.defaultBackgroundColor,
                                     value: displayConfigStore.backgroundColorHex,
                                     colorSwatch: Color(hex: displayConfigStore.backgroundColorHex)
                                 ) {
                                     path.append(.backgroundColor)
                                 }
                                 neonDivider
-                                SettingsRow(title: "默认文字大小", value: "\(Int(displayConfigStore.fontScale * 100))%") {
+                                SettingsRow(title: L10n.Settings.defaultTextSize, value: "\(Int(displayConfigStore.fontScale * 100))%") {
                                     path.append(.displaySettings)
                                 }
                                 neonDivider
-                                SettingsRow(title: "默认滚动速度", value: speedText) {
+                                SettingsRow(title: L10n.Settings.defaultScrollSpeed, value: speedText) {
                                     path.append(.displaySettings)
                                 }
                                 neonDivider
-                                SettingsToggleRow(title: "自动横屏", isOn: $settingsStore.autoRotate)
+                                SettingsToggleRow(title: L10n.Settings.autoRotate, isOn: $settingsStore.autoRotate)
                                 neonDivider
-                                SettingsToggleRow(title: "保持屏幕常亮", isOn: $settingsStore.keepAwake)
+                                SettingsToggleRow(title: L10n.Settings.keepAwake, isOn: $settingsStore.keepAwake)
                             }
 
-                            settingsGroup("其他") {
-                                SettingsRow(title: "清除缓存", systemImage: "trash") {
+                            settingsGroup(L10n.Settings.otherGroup) {
+                                SettingsRow(
+                                    title: L10n.Settings.language,
+                                    value: localized(settingsStore.appLanguage.titleKey),
+                                    systemImage: "globe"
+                                ) {
+                                    path.append(.languageSettings)
+                                }
+                                neonDivider
+                                SettingsRow(title: L10n.Settings.clearCache, systemImage: "trash") {
                                     isShowingClearConfirm = true
                                 }
                                 neonDivider
-                                SettingsRow(title: "给我们评分", systemImage: "star") {
+                                SettingsRow(title: L10n.Settings.rateUs, systemImage: "star") {
                                     openReviewPage()
                                 }
                                 neonDivider
-                                ShareLink(item: "想恋爱：把手机变成会发光的表白灯牌") {
+                                ShareLink(item: localized(L10n.Settings.shareMessage)) {
                                     shareRow
                                 }
                                 neonDivider
-                                SettingsRow(title: "使用帮助", systemImage: "questionmark.circle") {
+                                SettingsRow(title: L10n.Settings.help, systemImage: "questionmark.circle") {
                                     path.append(.help)
                                 }
                             }
 
-                            settingsGroup("关于") {
-                                SettingsRow(title: "关于想恋爱") {
+#if DEBUG
+                            if LookDebugOptions.isDebugEntryPointEnabled {
+                                settingsGroup(L10n.Settings.Debug.group) {
+                                    SettingsToggleRow(title: L10n.Settings.Debug.triggerReviewPrompt, isOn: debugReviewPromptBinding)
+                                }
+                            }
+#endif
+
+                            settingsGroup(L10n.Settings.aboutGroup) {
+                                SettingsRow(title: L10n.Settings.aboutApp) {
                                     path.append(.about)
                                 }
                                 neonDivider
-                                SettingsRow(title: "隐私政策") {
+                                SettingsRow(title: L10n.Settings.privacyPolicy) {
                                     path.append(.legal(.privacy))
                                 }
                                 neonDivider
-                                SettingsRow(title: "用户协议") {
+                                SettingsRow(title: L10n.Settings.terms) {
                                     path.append(.legal(.terms))
                                 }
                                 neonDivider
-                                SettingsRow(title: "恢复购买") {
+                                SettingsRow(title: L10n.Settings.restorePurchase) {
                                     showPaywall(.settingsRestore) {
-                                        showToast("高级功能已解锁")
+                                        showToast(localized(L10n.Settings.Toast.proUnlocked))
                                     }
                                 }
                                 neonDivider
-                                SettingsRow(title: "版本号", value: "2.0.0")
+                                SettingsRow(title: L10n.Settings.version, value: "2.0.0")
                             }
                         }
                         .padding(.horizontal, LookSpacing.pageHorizontal)
@@ -105,19 +124,19 @@ struct SettingsView: View {
             }
         }
         .lookToast($toastMessage)
-        .alert("清除缓存", isPresented: $isShowingClearConfirm) {
-            Button("仅清理临时状态") {
+        .alert(localized(L10n.Settings.Alert.clearCacheTitle), isPresented: $isShowingClearConfirm) {
+            Button(localized(L10n.Settings.Alert.clearTemporary)) {
                 displayConfigStore.clearTransientState()
-                showToast("已清理临时状态")
+                showToast(localized(L10n.Settings.Toast.transientCleared))
             }
-            Button("同时删除收藏", role: .destructive) {
+            Button(localized(L10n.Settings.Alert.clearWithFavorites), role: .destructive) {
                 displayConfigStore.clearTransientState()
                 favoriteStore.clearAll()
-                showToast("已清理临时状态和收藏")
+                showToast(localized(L10n.Settings.Toast.transientAndFavoritesCleared))
             }
-            Button("取消", role: .cancel) {}
+            Button(localized(L10n.Common.cancel), role: .cancel) {}
         } message: {
-            Text("默认不会删除收藏；只有选择“同时删除收藏”才会清空收藏数据。")
+            Text(L10n.key(L10n.Settings.Alert.clearCacheMessage))
         }
         .fullScreenCover(item: $paywallContext) { context in
             ProPaywallView(context: context)
@@ -141,6 +160,8 @@ struct SettingsView: View {
             FontPickerView()
         case .displaySettings:
             DisplaySettingsView()
+        case .languageSettings:
+            LanguageSettingsView()
         case .help:
             HelpView()
         case .about:
@@ -153,16 +174,16 @@ struct SettingsView: View {
     private var speedText: String {
         switch displayConfigStore.speed {
         case ..<0.85:
-            "较慢"
+            localized(L10n.Settings.speedSlow)
         case 0.85...1.25:
-            "中等"
+            localized(L10n.Settings.speedMedium)
         default:
-            "较快"
+            localized(L10n.Settings.speedFast)
         }
     }
 
     private var fixedHeader: some View {
-        Text("设置")
+        Text(L10n.key(L10n.Settings.title))
             .font(LookTypography.pageTitle)
             .foregroundColor(LookTheme.Colors.textPrimary)
             .padding(.horizontal, LookSpacing.pageHorizontal)
@@ -177,7 +198,7 @@ struct SettingsView: View {
             HStack(spacing: LookSpacing.xxs) {
                 Image(systemName: "arrow.counterclockwise")
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                Text("重置")
+                Text(L10n.key(L10n.Settings.reset))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
             }
             .foregroundColor(LookTheme.Colors.hotPink)
@@ -196,8 +217,6 @@ struct SettingsView: View {
         Divider().overlay(LookTheme.Colors.textDisabled.opacity(0.24))
     }
 
-    private static let appReviewURL = URL(string: "https://apps.apple.com/app/id966060914?action=write-review")!
-
     private var shareRow: some View {
         HStack(spacing: LookSpacing.sm) {
             Image(systemName: "square.and.arrow.up")
@@ -205,7 +224,7 @@ struct SettingsView: View {
                 .foregroundColor(LookTheme.Colors.primaryPink)
                 .frame(width: 22)
 
-            Text("分享给朋友")
+            Text(L10n.key(L10n.Settings.shareToFriends))
                 .font(LookTypography.body)
                 .foregroundColor(LookTheme.Colors.textPrimary)
 
@@ -232,7 +251,7 @@ struct SettingsView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: LookSpacing.sm) {
             HStack(alignment: .center) {
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
                     .foregroundColor(LookTheme.Colors.hotPink)
 
@@ -252,19 +271,40 @@ struct SettingsView: View {
     private func resetDisplaySettings() {
         displayConfigStore.resetDisplaySettings()
         settingsStore.resetDisplaySettings()
-        showToast("已恢复默认显示设置")
+        showToast(localized(L10n.Settings.Toast.displaySettingsReset))
     }
 
     private func openReviewPage() {
-        UIApplication.shared.open(Self.appReviewURL, options: [:]) { success in
-            guard !success else {
-                return
+        AppReviewLink.openWriteReviewPage(
+            onSuccess: {
+                appReviewPromptStore.suppressAutomaticPrompt()
+            },
+            onFailure: {
+                showToast(localized(L10n.Settings.Toast.appStoreUnavailable))
             }
+        )
+    }
 
-            Task { @MainActor in
-                showToast("暂时无法打开 App Store")
+#if DEBUG
+    private var debugReviewPromptBinding: Binding<Bool> {
+        Binding(
+            get: { isDebugReviewPromptArmed },
+            set: { isOn in
+                isDebugReviewPromptArmed = isOn
+                if isOn {
+                    appReviewPromptStore.prepareDebugAutomaticPromptTrigger()
+                    showToast(localized(L10n.Settings.Toast.debugReviewPromptEnabled))
+                } else {
+                    appReviewPromptStore.resetDebugAutomaticPromptState()
+                    showToast(localized(L10n.Settings.Toast.debugReviewPromptReset))
+                }
             }
-        }
+        )
+    }
+#endif
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 
     private func showToast(_ message: String) {
@@ -285,4 +325,5 @@ struct SettingsView: View {
         .environmentObject(TemplateStore())
         .environmentObject(StyleStore())
         .environmentObject(PurchaseManager(autoStart: false))
+        .environmentObject(AppReviewPromptStore())
 }

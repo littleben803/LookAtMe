@@ -35,7 +35,11 @@ final class PurchaseManager: ObservableObject {
     private var transactionUpdatesTask: Task<Void, Never>?
 
     var productDisplayName: String {
-        product?.displayName ?? "想恋爱 Pro 永久解锁"
+        product?.displayName ?? L10n.Purchase.productFallbackName
+    }
+
+    func productDisplayName(locale: Locale) -> String {
+        product?.displayName ?? L10n.string(L10n.Purchase.productFallbackName, locale: locale)
     }
 
     var productDisplayPrice: String {
@@ -79,7 +83,7 @@ final class PurchaseManager: ObservableObject {
             let products = try await Product.products(for: [Self.proProductID])
             guard let product = products.first(where: { $0.id == Self.proProductID }) else {
                 self.product = nil
-                errorMessage = "商品加载失败，请稍后重试"
+                errorMessage = L10n.Purchase.Error.productLoadFailed
                 return
             }
 
@@ -87,7 +91,7 @@ final class PurchaseManager: ObservableObject {
             errorMessage = nil
         } catch {
             self.product = nil
-            errorMessage = message(for: error, fallback: "商品加载失败，请检查网络后重试")
+            errorMessage = message(for: error, fallbackKey: L10n.Purchase.Error.productLoadFailedNetwork)
         }
     }
 
@@ -100,7 +104,7 @@ final class PurchaseManager: ObservableObject {
         }
 
         guard let product else {
-            errorMessage = "商品加载失败，请稍后重试"
+            errorMessage = L10n.Purchase.Error.productLoadFailed
             return
         }
 
@@ -115,27 +119,27 @@ final class PurchaseManager: ObservableObject {
                 let transaction = try verified(verificationResult)
                 guard transaction.productID == Self.proProductID else {
                     await transaction.finish()
-                    errorMessage = "购买商品不匹配，请稍后重试"
+                    errorMessage = L10n.Purchase.Error.productMismatch
                     return
                 }
 
                 updateProAccess(isUnlocked: transaction.revocationDate == nil)
                 purchaseSuccess = transaction.revocationDate == nil
-                errorMessage = transaction.revocationDate == nil ? nil : "购买已撤销，请恢复购买后重试"
+                errorMessage = transaction.revocationDate == nil ? nil : L10n.Purchase.Error.purchaseRevoked
                 await transaction.finish()
                 await refreshEntitlements()
 
             case .userCancelled:
-                errorMessage = "已取消购买"
+                errorMessage = L10n.Purchase.Error.userCancelled
 
             case .pending:
-                errorMessage = "购买正在处理中，请稍后在设置中恢复购买"
+                errorMessage = L10n.Purchase.Error.purchasePending
 
             @unknown default:
-                errorMessage = "购买失败，请稍后重试"
+                errorMessage = L10n.Purchase.Error.purchaseFailed
             }
         } catch {
-            errorMessage = message(for: error, fallback: "购买失败，请稍后重试")
+            errorMessage = message(for: error, fallbackKey: L10n.Purchase.Error.purchaseFailed)
         }
     }
 
@@ -152,10 +156,10 @@ final class PurchaseManager: ObservableObject {
                 purchaseSuccess = true
                 errorMessage = nil
             } else {
-                errorMessage = "没有找到可恢复的 Pro 购买"
+                errorMessage = L10n.Purchase.Error.restoreNotFound
             }
         } catch {
-            errorMessage = message(for: error, fallback: "恢复购买失败，请检查网络后重试")
+            errorMessage = message(for: error, fallbackKey: L10n.Purchase.Error.restoreFailedNetwork)
         }
     }
 
@@ -172,7 +176,7 @@ final class PurchaseManager: ObservableObject {
                     hasValidProEntitlement = true
                 }
             } catch {
-                errorMessage = message(for: error, fallback: "交易验证失败，请稍后重试")
+                errorMessage = message(for: error, fallbackKey: L10n.Purchase.Error.verificationFailed)
             }
         }
 
@@ -230,7 +234,7 @@ final class PurchaseManager: ObservableObject {
                     await transaction.finish()
                     await self.refreshEntitlements()
                 } catch {
-                    self.errorMessage = self.message(for: error, fallback: "交易验证失败，请稍后重试")
+                    self.errorMessage = self.message(for: error, fallbackKey: L10n.Purchase.Error.verificationFailed)
                 }
             }
         }
@@ -250,25 +254,25 @@ final class PurchaseManager: ObservableObject {
         }
     }
 
-    private func message(for error: Error, fallback: String) -> String {
+    private func message(for error: Error, fallbackKey: String) -> String {
         if let purchaseError = error as? PurchaseManagerError {
-            return purchaseError.localizedDescription
+            return purchaseError.errorDescription ?? fallbackKey
         }
 
         if let storeKitError = error as? StoreKitError {
             switch storeKitError {
             case .userCancelled:
-                return "已取消购买"
+                return L10n.Purchase.Error.userCancelled
             case .networkError:
-                return "网络连接失败，请稍后重试"
+                return L10n.Purchase.Error.networkFailed
             case .systemError:
-                return "购买失败，请稍后重试"
+                return L10n.Purchase.Error.purchaseFailed
             default:
-                return fallback
+                return fallbackKey
             }
         }
 
-        return fallback
+        return fallbackKey
     }
 }
 
@@ -278,7 +282,7 @@ private enum PurchaseManagerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unverifiedTransaction:
-            "交易未通过验证，请稍后重试"
+            L10n.Purchase.Error.unverifiedTransaction
         }
     }
 }

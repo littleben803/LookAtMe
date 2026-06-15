@@ -9,7 +9,10 @@ struct StyleCard: View {
     var compactPreviewHeight: CGFloat = 62
     var showsAccessTag: Bool = false
     var isLocked: Bool = false
+    var previewLocale: Locale?
     let action: () -> Void
+
+    @Environment(\.locale) private var environmentLocale
 
     var body: some View {
         if isCompact {
@@ -50,7 +53,7 @@ struct StyleCard: View {
                     }
                 }
 
-                Text(style.name)
+                Text(L10n.key(style.nameKey))
                     .font(.system(size: 11, weight: .bold, design: .rounded))
                     .foregroundColor(LookTheme.Colors.textPrimary)
                     .lineLimit(1)
@@ -89,13 +92,13 @@ struct StyleCard: View {
 
                     HStack(spacing: isCompact ? 2 : LookSpacing.xs) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(style.name)
+                            Text(L10n.key(style.nameKey))
                                 .font(.system(size: isCompact ? 10.5 : 13, weight: .bold, design: .rounded))
                                 .foregroundColor(LookTheme.Colors.textPrimary)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.62)
 
-                            Text(style.isPro ? "高级样式" : "免费")
+                            Text(L10n.key(style.isPro ? L10n.Common.premiumStyle : L10n.Common.free))
                                 .font(.system(size: isCompact ? 9 : 12, weight: .semibold, design: .rounded))
                                 .foregroundColor(style.isPro ? LookTheme.Colors.warmYellow : LookTheme.Colors.textTertiary)
                         }
@@ -125,14 +128,16 @@ struct StyleCard: View {
 
     @ViewBuilder
     private var stylePreview: some View {
+        let previewText = style.localizedPreviewText(locale: previewLocale ?? environmentLocale)
+
         switch style.type {
         case .marquee:
-            Text(style.previewText)
+            Text(previewText)
                 .font(fontStyle.font(size: isCompact ? 18 : 24))
                 .foregroundColor(previewColor)
                 .shadow(color: previewColor.opacity(0.9), radius: 8)
         case .neonBlink:
-            Text(style.previewText)
+            Text(previewText)
                 .font(fontStyle.font(size: isCompact ? 18 : 24))
                 .foregroundStyle(
                     LinearGradient(
@@ -148,14 +153,14 @@ struct StyleCard: View {
                     .fill(previewColor.opacity(0.22))
                     .frame(width: isCompact ? 34 : 50, height: isCompact ? 34 : 50)
                     .blur(radius: 8)
-                Text(style.previewText)
+                Text(previewText)
                     .font(fontStyle.font(size: isCompact ? 16 : 21))
                     .foregroundColor(previewColor)
                     .shadow(color: previewColor.opacity(0.95), radius: 10)
             }
         case .typewriter:
             HStack(spacing: 2) {
-                ForEach(Array(style.previewText.enumerated()), id: \.offset) { index, character in
+                ForEach(Array(previewText.enumerated()), id: \.offset) { index, character in
                     Text(String(character))
                         .font(fontStyle.font(size: isCompact ? 15 : 20))
                         .foregroundColor(index.isMultiple(of: 2) ? previewColor : LookTheme.Colors.softPink)
@@ -173,7 +178,7 @@ struct StyleCard: View {
                 }
             }
         case .rainbow:
-            Text(style.previewText)
+            Text(previewText)
                 .font(.system(size: isCompact ? 15 : 22, weight: .heavy, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
@@ -190,7 +195,7 @@ struct StyleCard: View {
                 .shadow(color: LookTheme.Colors.neonPurple.opacity(0.9), radius: 8)
         case .starFlash:
             ZStack {
-                Text(style.previewText)
+                Text(previewText)
                     .font(fontStyle.font(size: isCompact ? 15 : 20))
                     .foregroundColor(LookTheme.Colors.warmYellow)
                     .shadow(color: LookTheme.Colors.warmYellow.opacity(0.9), radius: 8)
@@ -203,10 +208,10 @@ struct StyleCard: View {
             }
         case .bulletFlyIn:
             VStack(alignment: .leading, spacing: isCompact ? 2 : 4) {
-                ForEach(["看这里", "LOVE", "打CALL"], id: \.self) { text in
-                    Text(text)
+                ForEach([L10n.StylePreview.bulletLookHere, L10n.StylePreview.bulletLove, L10n.StylePreview.bulletCall], id: \.self) { textKey in
+                    Text(L10n.key(textKey))
                         .font(fontStyle.font(size: isCompact ? 10 : 13))
-                        .foregroundColor(text == style.previewText ? previewColor : LookTheme.Colors.textTertiary)
+                        .foregroundColor(textKey == style.previewTextKey ? previewColor : LookTheme.Colors.textTertiary)
                         .shadow(color: previewColor.opacity(0.45), radius: 5)
                 }
             }
@@ -233,7 +238,7 @@ struct StyleCard: View {
                         .shadow(color: LookTheme.Colors.warmYellow.opacity(0.7), radius: 7)
                 }
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(fontStyle.font(size: isCompact ? 14 : 19))
                     .foregroundColor(LookTheme.Colors.softPink)
                     .shadow(color: LookTheme.Colors.primaryPink.opacity(0.9), radius: 9)
@@ -260,7 +265,7 @@ struct StyleCard: View {
                         .shadow(color: LookTheme.Colors.electricBlue.opacity(0.88), radius: 8)
                 }
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(.system(size: isCompact ? 12 : 17, weight: .black, design: .rounded))
                     .foregroundColor(.white)
                     .shadow(color: LookTheme.Colors.electricBlue.opacity(0.95), radius: 7)
@@ -281,7 +286,7 @@ struct StyleCard: View {
                     .frame(width: isCompact ? 28 : 38, height: isCompact ? 28 : 38)
                     .blur(radius: 10)
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(.system(size: isCompact ? 13 : 18, weight: .heavy, design: .rounded))
                     .foregroundColor(.white)
                     .shadow(color: LookTheme.Colors.primaryPink.opacity(0.95), radius: 8)
@@ -304,7 +309,7 @@ struct StyleCard: View {
                                 .frame(width: 3, height: CGFloat((isCompact ? 7 : 10) + (index % 3) * 5))
                         }
                     }
-                    Text(style.previewText)
+                    Text(previewText)
                         .font(fontStyle.font(size: isCompact ? 10 : 13))
                         .foregroundColor(LookTheme.Colors.textPrimary)
                 }
@@ -330,7 +335,7 @@ struct StyleCard: View {
                         .shadow(color: LookTheme.Colors.neonPurple.opacity(0.7), radius: 10)
                 }
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(fontStyle.font(size: isCompact ? 14 : 19))
                     .foregroundColor(.white)
                     .shadow(color: LookTheme.Colors.electricBlue.opacity(0.9), radius: 8)
@@ -351,7 +356,7 @@ struct StyleCard: View {
                         .shadow(color: LookTheme.Colors.electricBlue.opacity(0.58), radius: 5)
                 }
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(fontStyle.font(size: isCompact ? 13 : 18))
                     .foregroundColor(LookTheme.Colors.softPink)
                     .shadow(color: LookTheme.Colors.hotPink.opacity(0.9), radius: 8)
@@ -377,7 +382,7 @@ struct StyleCard: View {
                     Image(systemName: "crown.fill")
                         .font(.system(size: isCompact ? 11 : 15, weight: .bold))
                         .foregroundColor(LookTheme.Colors.warmYellow)
-                    Text(style.previewText)
+                    Text(previewText)
                         .font(fontStyle.font(size: isCompact ? 15 : 20))
                         .foregroundColor(.white)
                         .shadow(color: LookTheme.Colors.warmYellow.opacity(0.95), radius: 9)
@@ -392,15 +397,15 @@ struct StyleCard: View {
                         .offset(x: CGFloat((index - 1) * 8), y: CGFloat((index - 1) * (isCompact ? 10 : 13)))
                 }
 
-                Text(style.previewText)
+                Text(previewText)
                     .font(.system(size: isCompact ? 16 : 22, weight: .black, design: .rounded))
                     .foregroundColor(LookTheme.Colors.electricBlue)
                     .offset(x: -2, y: 0)
-                Text(style.previewText)
+                Text(previewText)
                     .font(.system(size: isCompact ? 16 : 22, weight: .black, design: .rounded))
                     .foregroundColor(LookTheme.Colors.hotPink)
                     .offset(x: 2, y: 0)
-                Text(style.previewText)
+                Text(previewText)
                     .font(.system(size: isCompact ? 16 : 22, weight: .black, design: .rounded))
                     .foregroundColor(.white)
             }
@@ -427,7 +432,7 @@ private struct StyleAccessTag: View {
         HStack(spacing: 3) {
             Image(systemName: isPro ? "crown.fill" : "sparkles")
                 .font(.system(size: isPro ? 7.5 : 8.2, weight: .bold))
-            Text(isPro ? "Pro" : "免费")
+            Text(L10n.key(isPro ? L10n.Common.pro : L10n.Common.free))
                 .font(.system(size: 8, weight: .heavy, design: .rounded))
         }
         .foregroundColor(isPro ? LookTheme.Colors.backgroundBlack : LookTheme.Colors.textPrimary)

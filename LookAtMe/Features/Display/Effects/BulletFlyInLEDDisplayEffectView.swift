@@ -3,6 +3,8 @@ import SwiftUI
 struct BulletFlyInLEDDisplayEffectView: View {
     let context: LEDDisplayEffectContext
 
+    @Environment(\.locale) private var locale
+
     var body: some View {
         let width = max(1, context.viewportSize.width)
         let height = max(1, context.viewportSize.height)
@@ -145,11 +147,11 @@ struct BulletFlyInLEDDisplayEffectView: View {
         case 0:
             context.draft.text
         case 1:
-            "看这里 \(context.draft.text)"
+            L10n.format(L10n.DisplayEffect.BulletFlyIn.lookHereFormat, locale: locale, context.draft.text)
         case 2:
             "\(context.draft.text) !!!"
         default:
-            "为你打 CALL"
+            L10n.string(L10n.DisplayEffect.BulletFlyIn.call, locale: locale)
         }
     }
 

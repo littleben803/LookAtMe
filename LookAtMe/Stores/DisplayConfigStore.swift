@@ -92,9 +92,9 @@ final class DisplayConfigStore: ObservableObject {
         selectedScene = scene
     }
 
-    func applyTemplate(_ template: BannerTemplate) {
+    func applyTemplate(_ template: BannerTemplate, locale: Locale) {
         selectedScene = template.scene
-        text = String(template.text.prefix(Self.textLimit))
+        text = String(template.localizedText(locale: locale).prefix(Self.textLimit))
     }
 
     func selectStyle(_ style: BannerStyle) {

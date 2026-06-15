@@ -11,6 +11,10 @@ final class SettingsStore: ObservableObject {
         didSet { save() }
     }
 
+    @Published var appLanguage: AppLanguage {
+        didSet { save() }
+    }
+
     private let userDefaults: UserDefaults
     private let settingsKey = "look.settings.v1"
 
@@ -19,6 +23,7 @@ final class SettingsStore: ObservableObject {
         let state = Self.loadState(from: userDefaults, key: settingsKey)
         self.autoRotate = state.autoRotate
         self.keepAwake = state.keepAwake
+        self.appLanguage = state.appLanguage
     }
 
     func resetDisplaySettings() {
@@ -27,7 +32,7 @@ final class SettingsStore: ObservableObject {
     }
 
     private func save() {
-        let state = SettingsState(autoRotate: autoRotate, keepAwake: keepAwake)
+        let state = SettingsState(autoRotate: autoRotate, keepAwake: keepAwake, appLanguage: appLanguage)
         guard let data = try? JSONEncoder().encode(state) else {
             return
         }
@@ -48,6 +53,20 @@ final class SettingsStore: ObservableObject {
 private struct SettingsState: Codable {
     var autoRotate: Bool
     var keepAwake: Bool
+    var appLanguage: AppLanguage
 
-    static let `default` = SettingsState(autoRotate: true, keepAwake: true)
+    static let `default` = SettingsState(autoRotate: true, keepAwake: true, appLanguage: .system)
+
+    init(autoRotate: Bool, keepAwake: Bool, appLanguage: AppLanguage) {
+        self.autoRotate = autoRotate
+        self.keepAwake = keepAwake
+        self.appLanguage = appLanguage
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.autoRotate = try container.decodeIfPresent(Bool.self, forKey: .autoRotate) ?? Self.default.autoRotate
+        self.keepAwake = try container.decodeIfPresent(Bool.self, forKey: .keepAwake) ?? Self.default.keepAwake
+        self.appLanguage = try container.decodeIfPresent(AppLanguage.self, forKey: .appLanguage) ?? Self.default.appLanguage
+    }
 }

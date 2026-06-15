@@ -66,9 +66,10 @@ final class FavoriteStore: ObservableObject {
         _ template: BannerTemplate,
         displayConfigStore: DisplayConfigStore,
         styleStore: StyleStore,
+        locale: Locale,
         isProUnlocked: Bool = false
     ) -> FavoriteAddResult {
-        let draft = displayConfigStore.draft(styleStore: styleStore, text: template.text)
+        let draft = displayConfigStore.draft(styleStore: styleStore, text: template.localizedText(locale: locale))
         return addFavorite(from: draft, isProUnlocked: isProUnlocked)
     }
 

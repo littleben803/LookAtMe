@@ -8,6 +8,7 @@ enum FeatureRoute: Hashable {
     case backgroundColor
     case fontPicker
     case displaySettings
+    case languageSettings
     case help
     case about
     case legal(LegalDocument)
@@ -19,12 +20,12 @@ enum LegalDocument: String, Hashable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var titleKey: String {
         switch self {
         case .privacy:
-            "隐私政策"
+            L10n.Legal.privacyTitle
         case .terms:
-            "用户协议"
+            L10n.Legal.termsTitle
         }
     }
 }

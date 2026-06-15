@@ -141,7 +141,7 @@ struct LEDDisplayPreviewView: View {
 
             Spacer()
 
-            Text(draft.selectedStyle.name)
+            Text(L10n.key(draft.selectedStyle.nameKey))
                 .font(LookTypography.caption)
                 .foregroundColor(LookTheme.Colors.textTertiary)
                 .padding(.horizontal, LookSpacing.sm)
@@ -284,7 +284,7 @@ struct LEDDisplayPreviewView: View {
         let targetDraft = currentDraft
         if favoriteStore.favoriteID(for: targetDraft) != nil {
             favoriteStore.removeFavorite(matching: targetDraft)
-            showToast("已取消收藏")
+            showToast(localized(L10n.DisplayPreview.Toast.favoriteRemoved))
         } else {
             let result = favoriteStore.addFavorite(from: targetDraft, isProUnlocked: purchaseManager.isProUnlocked)
             handleFavoriteResult(result) {
@@ -297,14 +297,18 @@ struct LEDDisplayPreviewView: View {
     private func message(for result: FavoriteAddResult) -> String {
         switch result {
         case .added:
-            "已收藏当前灯牌"
+            localized(L10n.DisplayPreview.Toast.favoriteAdded)
         case .updatedExisting:
-            "已更新收藏"
+            localized(L10n.DisplayPreview.Toast.favoriteUpdated)
         case .ignoredEmptyText:
-            "先输入一句想收藏的话"
+            localized(L10n.DisplayPreview.Toast.inputFavoriteFirst)
         case .freeLimitReached(let limit):
-            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+            L10n.format(L10n.DisplayPreview.Toast.favoriteLimitFormat, locale: settingsStore.appLanguage.locale, limit)
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 
     private func showToast(_ message: String) {

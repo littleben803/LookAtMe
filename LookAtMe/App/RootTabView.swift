@@ -33,19 +33,19 @@ struct RootTabView: View {
         TabView(selection: $navigationState.selectedTab) {
             HomeView()
                 .tabItem {
-                    Label("首页", systemImage: "house.fill")
+                    Label(L10n.key(L10n.Tab.home), systemImage: "house.fill")
                 }
                 .tag(RootTab.home)
 
             FavoritesView()
                 .tabItem {
-                    Label("收藏", systemImage: navigationState.selectedTab == .favorites ? "heart.fill" : "heart")
+                    Label(L10n.key(L10n.Tab.favorites), systemImage: navigationState.selectedTab == .favorites ? "heart.fill" : "heart")
                 }
                 .tag(RootTab.favorites)
 
             SettingsView()
                 .tabItem {
-                    Label("设置", systemImage: "gearshape.fill")
+                    Label(L10n.key(L10n.Tab.settings), systemImage: "gearshape.fill")
                 }
                 .tag(RootTab.settings)
         }

@@ -31,7 +31,7 @@ public struct PrimaryButton: View {
                         .font(.system(size: 17, weight: .bold, design: .rounded))
                 }
 
-                Text(title)
+                Text(L10n.key(title))
                     .font(LookTypography.button)
                     .lineLimit(1)
                     .minimumScaleFactor(0.82)
@@ -59,4 +59,3 @@ public struct PrimaryButton: View {
         action()
     }
 }
-

@@ -41,11 +41,15 @@ struct HomeView: View {
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var favoriteStore: FavoriteStore
+    @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @EnvironmentObject private var appReviewPromptStore: AppReviewPromptStore
+    @EnvironmentObject private var devicePerformanceStore: DevicePerformanceStore
 
     @State private var path: [FeatureRoute] = []
     @State private var toastMessage: String?
     @State private var isShowingDisplayPreview = false
+    @State private var isShowingReviewPrompt = false
     @State private var measuredHeights: [HomeMeasuredRegion: CGFloat] = [:]
     @State private var isHeroFireworksActive = false
     @State private var paywallContext: ProPaywallContext?
@@ -83,13 +87,28 @@ struct HomeView: View {
                 isHeroFireworksActive = true
                 ensureSelectedStyleIsAvailable()
                 ensureSelectedFontIsAvailable()
+#if DEBUG
+                if LookDebugOptions.isDebugEntryPointEnabled {
+                    presentReviewPromptIfNeeded()
+                }
+#endif
             }
             .onDisappear {
                 isHeroFireworksActive = false
             }
         }
         .lookToast($toastMessage)
-        .fullScreenCover(isPresented: $isShowingDisplayPreview) {
+        .alert(localized(L10n.Home.ReviewPrompt.title), isPresented: $isShowingReviewPrompt) {
+            Button(localized(L10n.Home.ReviewPrompt.rate)) {
+                AppReviewLink.openWriteReviewPage(onFailure: {
+                    showToast(localized(L10n.Home.Toast.appStoreUnavailable))
+                })
+            }
+            Button(localized(L10n.Home.ReviewPrompt.neverAgain), role: .cancel) {}
+        } message: {
+            Text(L10n.key(L10n.Home.ReviewPrompt.message))
+        }
+        .fullScreenCover(isPresented: $isShowingDisplayPreview, onDismiss: presentReviewPromptIfNeeded) {
             LEDDisplayPreviewView(draft: displayConfigStore.draft(styleStore: styleStore))
         }
         .fullScreenCover(item: $paywallContext) { context in
@@ -106,7 +125,7 @@ struct HomeView: View {
             StylePickerView()
         case .templateCenter:
             TemplateCenterView { template in
-                displayConfigStore.applyTemplate(template)
+                displayConfigStore.applyTemplate(template, locale: settingsStore.appLanguage.locale)
                 path.removeAll()
             }
         case .textColor:
@@ -117,6 +136,8 @@ struct HomeView: View {
             FontPickerView()
         case .displaySettings:
             DisplaySettingsView()
+        case .languageSettings:
+            LanguageSettingsView()
         case .help:
             HelpView()
         case .about:
@@ -173,14 +194,16 @@ struct HomeView: View {
         ZStack(alignment: .topTrailing) {
             HeroStageBackdrop()
 
-            HeroFireworksOverlay(isActive: isHeroFireworksActive, topSafeArea: topSafeArea)
-                .allowsHitTesting(false)
+            if devicePerformanceStore.profile.enablesHomeFireworks {
+                HeroFireworksOverlay(isActive: isHeroFireworksActive, topSafeArea: topSafeArea)
+                    .allowsHitTesting(false)
+            }
 
             VStack(spacing: 8) {
                 Spacer(minLength: 0)
 
                 HStack(spacing: 10) {
-                    Text("想恋爱")
+                    Text(L10n.key(L10n.Home.appName))
                         .font(.system(size: 42, weight: .black, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
@@ -206,7 +229,7 @@ struct HomeView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 8, weight: .bold))
-                    Text("让全世界看到你的爱")
+                    Text(L10n.key(L10n.Home.tagline))
                     Image(systemName: "heart.fill")
                         .font(.system(size: 8, weight: .bold))
                 }
@@ -227,7 +250,7 @@ struct HomeView: View {
                 } label: {
                     HStack(spacing: 3) {
                         Image(systemName: "crown.fill")
-                        Text("Pro")
+                        Text(L10n.key(L10n.Common.pro))
                     }
                     .font(.system(size: 11, weight: .heavy, design: .rounded))
                     .foregroundColor(LookTheme.Colors.warmYellow)
@@ -255,8 +278,8 @@ struct HomeView: View {
             NeonTextInput(
                 text: $displayConfigStore.text,
                 limit: DisplayConfigStore.textLimit,
-                placeholder: "输入你想表达的话...",
-                example: "例如：周深我爱你！ 💗"
+                placeholder: L10n.Home.inputPlaceholder,
+                example: L10n.Home.inputExample
             )
 
             Button {
@@ -279,7 +302,7 @@ struct HomeView: View {
         HStack(spacing: 8) {
             ForEach(BannerScene.homeCases) { scene in
                 SceneShortcutButton(
-                    title: scene.title,
+                    title: scene.titleKey,
                     systemImage: scene.symbolName,
                     tint: scene.accentColor,
                     isSelected: displayConfigStore.selectedScene == scene
@@ -289,7 +312,7 @@ struct HomeView: View {
             }
 
             SceneShortcutButton(
-                title: "更多",
+                title: L10n.Common.more,
                 systemImage: "square.grid.2x2.fill",
                 tint: LookTheme.Colors.neonPurple,
                 isSelected: false
@@ -302,13 +325,13 @@ struct HomeView: View {
 
     private var templatesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            homeSectionHeader("热门模板 🔥") {
+            homeSectionHeader(L10n.Home.hotTemplates) {
                 path.append(.templateCenter)
             }
 
             LazyVGrid(columns: templateColumns, spacing: 10) {
                 ForEach(homeTemplates) { template in
-                    TemplateChip(title: template.title) {
+                    TemplateChip(title: template.titleKey) {
                         applyTemplate(template)
                     }
                 }
@@ -319,7 +342,7 @@ struct HomeView: View {
 
     private func stylesSection(layout: HomeBodyLayout) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            homeSectionHeader("样式选择") {
+            homeSectionHeader(L10n.Home.styleSelection) {
                 path.append(.stylePicker)
             }
             .measureHomeHeight(.stylesHeader)
@@ -337,7 +360,8 @@ struct HomeView: View {
                         isCompact: true,
                         compactPreviewHeight: layout.stylePreviewHeight,
                         showsAccessTag: !purchaseManager.isProUnlocked,
-                        isLocked: isStyleLocked(style)
+                        isLocked: isStyleLocked(style),
+                        previewLocale: settingsStore.appLanguage.locale
                     ) {
                         selectStyle(style)
                     }
@@ -443,7 +467,7 @@ struct HomeView: View {
             startDisplay()
         } label: {
             ZStack {
-                Text("开始展示")
+                Text(L10n.key(L10n.Home.startDisplay))
                     .font(.system(size: 22, weight: .heavy, design: .rounded))
                     .foregroundColor(.white)
 
@@ -501,18 +525,18 @@ struct HomeView: View {
         }
 
         return [
-            BannerTemplate(id: "home-target-zhou-shen", title: "周深我爱你!💗", scene: .concert, text: "周深我爱你!💗", isPro: false),
-            BannerTemplate(id: "home-target-an-yi", title: "宝贝我爱你💋", scene: .concert, text: "宝贝我爱你💋", isPro: false),
-            BannerTemplate(id: "home-target-birthday", title: "生日快乐🎂", scene: .concert, text: "生日快乐🎂", isPro: false),
-            BannerTemplate(id: "home-target-here", title: "这里这里!✋", scene: .concert, text: "这里这里!✋", isPro: false),
-            BannerTemplate(id: "home-target-star", title: "宝儿姐💘", scene: .concert, text: "宝儿姐💘", isPro: false),
-            BannerTemplate(id: "home-target-call", title: "加油打CALL🎉", scene: .concert, text: "加油打CALL🎉", isPro: false)
+            BannerTemplate(id: "home-target-zhou-shen", scene: .concert, isPro: false),
+            BannerTemplate(id: "home-target-an-yi", scene: .concert, isPro: false),
+            BannerTemplate(id: "home-target-birthday", scene: .concert, isPro: false),
+            BannerTemplate(id: "home-target-here", scene: .concert, isPro: false),
+            BannerTemplate(id: "home-target-star", scene: .concert, isPro: false),
+            BannerTemplate(id: "home-target-call", scene: .concert, isPro: false)
         ]
     }
 
     private func homeSectionHeader(_ title: String, action: @escaping () -> Void) -> some View {
         HStack(alignment: .center) {
-            Text(title)
+            Text(L10n.key(title))
                 .font(.system(size: 18, weight: .heavy, design: .rounded))
                 .foregroundColor(LookTheme.Colors.textPrimary)
                 .shadow(color: LookTheme.Colors.primaryPink.opacity(0.28), radius: 6)
@@ -521,7 +545,7 @@ struct HomeView: View {
 
             Button(action: action) {
                 HStack(spacing: 2) {
-                    Text("更多")
+                    Text(L10n.key(L10n.Common.more))
                     Image(systemName: "chevron.right")
                         .font(.system(size: 9, weight: .bold))
                 }
@@ -534,7 +558,7 @@ struct HomeView: View {
 
     private func selectStyle(_ style: BannerStyle) {
         guard purchaseManager.canUse(style) else {
-            showPaywall(.style(name: style.name)) {
+            showPaywall(.style(nameKey: style.nameKey)) {
                 selectStyle(style)
             }
             return
@@ -544,7 +568,7 @@ struct HomeView: View {
 
     private func favoriteCurrentDraft() {
         guard !displayConfigStore.trimmedText.isEmpty else {
-            showToast("先输入一句想收藏的话")
+            showToast(localized(L10n.Home.Toast.inputFavoriteFirst))
             return
         }
         let result = favoriteStore.addFavorite(
@@ -558,33 +582,42 @@ struct HomeView: View {
 
     private func startDisplay() {
         guard !displayConfigStore.trimmedText.isEmpty else {
-            showToast("先输入一句想说的话")
+            showToast(localized(L10n.Home.Toast.inputDisplayFirst))
             return
         }
         let selectedStyle = styleStore.style(withID: displayConfigStore.selectedStyleID)
         guard purchaseManager.canUse(selectedStyle) else {
-            showPaywall(.style(name: selectedStyle.name)) {
+            showPaywall(.style(nameKey: selectedStyle.nameKey)) {
                 startDisplay()
             }
             return
         }
         guard purchaseManager.canUse(displayConfigStore.fontStyle) else {
-            showPaywall(.premiumFont(name: displayConfigStore.fontStyle.title)) {
+            showPaywall(.premiumFont(titleKey: displayConfigStore.fontStyle.titleKey)) {
                 startDisplay()
             }
             return
         }
+        appReviewPromptStore.recordSuccessfulDisplayStart()
         isShowingDisplayPreview = true
+    }
+
+    private func presentReviewPromptIfNeeded() {
+        guard appReviewPromptStore.consumeAutomaticPromptIfEligible() else {
+            return
+        }
+
+        isShowingReviewPrompt = true
     }
 
     private func applyTemplate(_ template: BannerTemplate) {
         guard purchaseManager.canUse(template) else {
-            showPaywall(.template(name: template.title)) {
+            showPaywall(.template(titleKey: template.titleKey)) {
                 applyTemplate(template)
             }
             return
         }
-        displayConfigStore.applyTemplate(template)
+        displayConfigStore.applyTemplate(template, locale: settingsStore.appLanguage.locale)
     }
 
     private func ensureSelectedStyleIsAvailable() {
@@ -618,14 +651,18 @@ struct HomeView: View {
     private func message(for result: FavoriteAddResult) -> String {
         switch result {
         case .added:
-            "已收藏"
+            localized(L10n.Home.Toast.favoriteAdded)
         case .updatedExisting:
-            "已更新收藏"
+            localized(L10n.Home.Toast.favoriteUpdated)
         case .ignoredEmptyText:
-            "先输入一句想收藏的话"
+            localized(L10n.Home.Toast.inputFavoriteFirst)
         case .freeLimitReached(let limit):
-            "免费版最多收藏 \(limit) 条，Pro 可无限收藏"
+            L10n.format(L10n.Home.Toast.favoriteLimitFormat, locale: settingsStore.appLanguage.locale, limit)
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        L10n.string(key, locale: settingsStore.appLanguage.locale)
     }
 
     private func showToast(_ message: String) {
@@ -924,5 +961,8 @@ private extension View {
         .environmentObject(StyleStore())
         .environmentObject(DisplayConfigStore())
         .environmentObject(FavoriteStore())
+        .environmentObject(SettingsStore())
         .environmentObject(PurchaseManager(autoStart: false))
+        .environmentObject(AppReviewPromptStore())
+        .environmentObject(DevicePerformanceStore())
 }

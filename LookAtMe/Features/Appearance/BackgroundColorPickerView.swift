@@ -18,10 +18,10 @@ struct BackgroundColorPickerView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: LookSpacing.lg) {
                     NeonPageHeader(
-                        title: "背景颜色",
-                        subtitle: "保持深色舞台感，避免户外使用刺眼"
+                        title: L10n.Appearance.backgroundColorTitle,
+                        subtitle: L10n.Appearance.backgroundColorSubtitle
                     ) {
-                        Button("恢复默认") {
+                        Button(L10n.key(L10n.Common.resetDefault)) {
                             displayConfigStore.backgroundColorHex = LookTheme.Hex.backgroundBlack
                         }
                         .font(LookTypography.caption.weight(.semibold))
@@ -70,7 +70,7 @@ struct BackgroundColorPickerView: View {
                 )
                 .shadow(color: LookTheme.Colors.primaryPink.opacity(0.24), radius: 18, y: 10)
 
-            Text("想恋爱")
+            Text(L10n.key(L10n.Home.appName))
                 .font(displayConfigStore.fontStyle.font(size: 34 * displayConfigStore.fontScale))
                 .foregroundColor(Color(hex: displayConfigStore.textColorHex))
                 .lineLimit(1)

@@ -3,6 +3,7 @@ import SwiftUI
 struct StylePickerView: View {
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var filter: StyleFilter = .all
     @State private var toastMessage: String?
@@ -39,7 +40,8 @@ struct StylePickerView: View {
                                 isSelected: displayConfigStore.selectedStyleID == style.id,
                                 previewColor: Color(hex: displayConfigStore.textColorHex),
                                 fontStyle: displayConfigStore.fontStyle,
-                                isLocked: isStyleLocked(style)
+                                isLocked: isStyleLocked(style),
+                                previewLocale: settingsStore.appLanguage.locale
                             ) {
                                 select(style)
                             }
@@ -61,13 +63,13 @@ struct StylePickerView: View {
     private var fixedHeader: some View {
         VStack(alignment: .leading, spacing: LookSpacing.lg) {
             NeonPageHeader(
-                title: "样式选择",
-                subtitle: purchaseManager.isProUnlocked ? "全部样式均可直接使用" : "免费样式可直接使用，Pro 样式解锁后使用"
+                title: L10n.StylePicker.title,
+                subtitle: purchaseManager.isProUnlocked ? L10n.StylePicker.subtitleUnlocked : L10n.StylePicker.subtitleLocked
             )
 
-            Picker("筛选", selection: $filter) {
+            Picker(L10n.key(L10n.StylePicker.filter), selection: $filter) {
                 ForEach(StyleFilter.allCases) { item in
-                    Text(item.title(isProUnlocked: purchaseManager.isProUnlocked)).tag(item)
+                    Text(L10n.key(item.titleKey(isProUnlocked: purchaseManager.isProUnlocked))).tag(item)
                 }
             }
             .pickerStyle(.segmented)
@@ -80,7 +82,7 @@ struct StylePickerView: View {
 
     private func select(_ style: BannerStyle) {
         guard purchaseManager.canUse(style) else {
-            showPaywall(.style(name: style.name)) {
+            showPaywall(.style(nameKey: style.nameKey)) {
                 select(style)
             }
             return
@@ -105,14 +107,14 @@ private enum StyleFilter: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    func title(isProUnlocked: Bool) -> String {
+    func titleKey(isProUnlocked: Bool) -> String {
         switch self {
         case .all:
-            "全部"
+            L10n.StylePicker.filterAll
         case .free:
-            "免费"
+            L10n.StylePicker.filterFree
         case .pro:
-            isProUnlocked ? "高级" : "Pro"
+            isProUnlocked ? L10n.StylePicker.filterPremium : L10n.Common.pro
         }
     }
 }
@@ -122,6 +124,7 @@ private enum StyleFilter: String, CaseIterable, Identifiable {
             StylePickerView()
                 .environmentObject(StyleStore())
                 .environmentObject(DisplayConfigStore())
+                .environmentObject(SettingsStore())
                 .environmentObject(PurchaseManager(autoStart: false))
     }
 }

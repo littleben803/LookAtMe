@@ -11,18 +11,18 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
 
     static let homeCases: [BannerScene] = [.concert, .confession, .birthday, .pickup]
 
-    var title: String {
+    var titleKey: String {
         switch self {
         case .concert:
-            "演唱会"
+            L10n.BannerScene.concert
         case .confession:
-            "表白"
+            L10n.BannerScene.confession
         case .birthday:
-            "生日"
+            L10n.BannerScene.birthday
         case .pickup:
-            "接机"
+            L10n.BannerScene.pickup
         case .fun:
-            "整活"
+            L10n.BannerScene.fun
         }
     }
 
@@ -59,10 +59,26 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
 
 struct BannerTemplate: Identifiable, Equatable {
     let id: String
-    let title: String
     let scene: BannerScene
-    let text: String
     let isPro: Bool
+    let titleKey: String
+    let textKey: String
+
+    init(id: String, scene: BannerScene, isPro: Bool, titleKey: String? = nil, textKey: String? = nil) {
+        self.id = id
+        self.scene = scene
+        self.isPro = isPro
+        self.titleKey = titleKey ?? L10n.Template.title(id)
+        self.textKey = textKey ?? L10n.Template.text(id)
+    }
+
+    func localizedTitle(locale: Locale) -> String {
+        L10n.string(titleKey, locale: locale)
+    }
+
+    func localizedText(locale: Locale) -> String {
+        L10n.string(textKey, locale: locale)
+    }
 }
 
 enum BannerStyleType: String, CaseIterable, Identifiable, Codable {
@@ -88,10 +104,26 @@ enum BannerStyleType: String, CaseIterable, Identifiable, Codable {
 
 struct BannerStyle: Identifiable, Equatable {
     let id: String
-    let name: String
     let type: BannerStyleType
     let isPro: Bool
-    let previewText: String
+    let nameKey: String
+    let previewTextKey: String
+
+    init(id: String, type: BannerStyleType, isPro: Bool, nameKey: String? = nil, previewTextKey: String? = nil) {
+        self.id = id
+        self.type = type
+        self.isPro = isPro
+        self.nameKey = nameKey ?? L10n.Style.name(id)
+        self.previewTextKey = previewTextKey ?? L10n.Style.preview(id)
+    }
+
+    func localizedName(locale: Locale) -> String {
+        L10n.string(nameKey, locale: locale)
+    }
+
+    func localizedPreviewText(locale: Locale) -> String {
+        L10n.string(previewTextKey, locale: locale)
+    }
 }
 
 enum BannerFontStyle: String, CaseIterable, Identifiable, Codable {
@@ -104,20 +136,20 @@ enum BannerFontStyle: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var titleKey: String {
         switch self {
         case .roundedHeavy:
-            "圆润黑体"
+            L10n.BannerFontStyle.roundedHeavy
         case .classicHeavy:
-            "经典粗体"
+            L10n.BannerFontStyle.classicHeavy
         case .neonTitle:
-            "霓虹标题"
+            L10n.BannerFontStyle.neonTitle
         case .monoBold:
-            "等宽灯牌"
+            L10n.BannerFontStyle.monoBold
         case .cuteRounded:
-            "可爱圆体"
+            L10n.BannerFontStyle.cuteRounded
         case .regular:
-            "简洁常规"
+            L10n.BannerFontStyle.regular
         }
     }
 
@@ -162,14 +194,15 @@ enum BannerScrollDirection: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var titleKey: String {
         switch self {
         case .rightToLeft:
-            "从右到左"
+            L10n.DisplaySettings.Direction.rightToLeft
         case .leftToRight:
-            "从左到右"
+            L10n.DisplaySettings.Direction.leftToRight
         }
     }
+
 }
 
 struct BannerDraft {
