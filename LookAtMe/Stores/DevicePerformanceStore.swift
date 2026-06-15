@@ -13,8 +13,16 @@ struct DevicePerformanceProfile: Equatable {
     let thermalState: ProcessInfo.ThermalState
     let hasRecentMemoryPressure: Bool
 
-    var enablesHomeFireworks: Bool {
+    var isHomeFireworksPerformanceEligible: Bool {
         score >= DevicePerformanceScorer.homeFireworksMinimumScore
+    }
+
+    var enablesHomeFireworks: Bool {
+#if DEBUG
+        true
+#else
+        isHomeFireworksPerformanceEligible
+#endif
     }
 }
 
