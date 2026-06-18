@@ -3,31 +3,7 @@ import UIKit
 
 struct RootTabView: View {
     @StateObject private var navigationState = AppNavigationState()
-
-    init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        appearance.backgroundColor = UIColor(red: 0.05, green: 0.01, blue: 0.12, alpha: 0.88)
-
-        let selectedColor = UIColor(red: 1.0, green: 0.30, blue: 0.65, alpha: 1.0)
-        let normalColor = UIColor(red: 0.75, green: 0.69, blue: 0.82, alpha: 0.8)
-
-        let itemAppearance = UITabBarItemAppearance()
-        itemAppearance.normal.iconColor = normalColor
-        itemAppearance.normal.titleTextAttributes = [.foregroundColor: normalColor]
-        itemAppearance.selected.iconColor = selectedColor
-        itemAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
-
-        appearance.stackedLayoutAppearance = itemAppearance
-        appearance.inlineLayoutAppearance = itemAppearance
-        appearance.compactInlineLayoutAppearance = itemAppearance
-
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-        UITabBar.appearance().tintColor = selectedColor
-        UITabBar.appearance().unselectedItemTintColor = normalColor
-    }
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         TabView(selection: $navigationState.selectedTab) {
@@ -49,10 +25,78 @@ struct RootTabView: View {
                 }
                 .tag(RootTab.settings)
         }
-        .tint(LookTheme.Colors.primaryPink)
+        .tint(skin.primary)
+        .background(TabBarSkinApplier(skin: skin).frame(width: 0, height: 0))
+        .onAppear {
+            UITabBar.applyLookSkin(skin)
+        }
+        .onChange(of: skin) { _, newSkin in
+            UITabBar.applyLookSkin(newSkin)
+        }
         .environmentObject(navigationState)
         .preferredColorScheme(.dark)
         .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+}
+
+private struct TabBarSkinApplier: UIViewControllerRepresentable {
+    let skin: LookSkin
+
+    func makeUIViewController(context: Context) -> Controller {
+        Controller()
+    }
+
+    func updateUIViewController(_ uiViewController: Controller, context: Context) {
+        uiViewController.apply(skin)
+    }
+
+    final class Controller: UIViewController {
+        private var lastSkinID: LookSkinID?
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            if let lastSkinID {
+                UITabBar.applyLookSkin(LookSkin.skin(for: lastSkinID), tabBar: tabBarController?.tabBar)
+            }
+        }
+
+        func apply(_ skin: LookSkin) {
+            lastSkinID = skin.id
+            UITabBar.applyLookSkin(skin, tabBar: tabBarController?.tabBar)
+        }
+    }
+}
+
+private extension UITabBar {
+    static func applyLookSkin(_ skin: LookSkin, tabBar: UITabBar? = nil) {
+        let selectedColor = UIColor(skin.primary)
+        let normalColor = UIColor(skin.textTertiary.opacity(0.82))
+        let backgroundColor = UIColor(skin.background.opacity(0.9))
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        appearance.backgroundColor = backgroundColor
+
+        let itemAppearance = UITabBarItemAppearance()
+        itemAppearance.normal.iconColor = normalColor
+        itemAppearance.normal.titleTextAttributes = [.foregroundColor: normalColor]
+        itemAppearance.selected.iconColor = selectedColor
+        itemAppearance.selected.titleTextAttributes = [.foregroundColor: selectedColor]
+
+        appearance.stackedLayoutAppearance = itemAppearance
+        appearance.inlineLayoutAppearance = itemAppearance
+        appearance.compactInlineLayoutAppearance = itemAppearance
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().tintColor = selectedColor
+        UITabBar.appearance().unselectedItemTintColor = normalColor
+
+        tabBar?.standardAppearance = appearance
+        tabBar?.scrollEdgeAppearance = appearance
+        tabBar?.tintColor = selectedColor
+        tabBar?.unselectedItemTintColor = normalColor
     }
 }
 

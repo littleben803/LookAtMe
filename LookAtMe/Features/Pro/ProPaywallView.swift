@@ -6,6 +6,7 @@ struct ProPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @Environment(\.lookSkin) private var skin
     @State private var didFinishSuccess = false
 
     private let benefits = [
@@ -46,7 +47,7 @@ struct ProPaywallView: View {
             LookScreenBackground()
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: LookSpacing.xl) {
+                VStack(spacing: LookSpacing.md) {
                     topBar
                     hero
                     triggerCard
@@ -57,7 +58,7 @@ struct ProPaywallView: View {
                     finePrint
                 }
                 .padding(.horizontal, LookSpacing.pageHorizontal)
-                .padding(.top, LookSpacing.lg)
+                .padding(.top, LookSpacing.sm)
                 .padding(.bottom, LookSpacing.xxxl)
             }
         }
@@ -72,72 +73,101 @@ struct ProPaywallView: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
                     .frame(width: 36, height: 36)
-                    .background(Circle().fill(LookTheme.Colors.cardPurple.opacity(0.86)))
-                    .overlay(Circle().stroke(LookTheme.Colors.primaryPink.opacity(0.36), lineWidth: 1))
+                    .background(Circle().fill(skin.card.opacity(0.86)))
+                    .overlay(Circle().stroke(skin.primary.opacity(0.36), lineWidth: 1))
             }
             .buttonStyle(.plain)
         }
     }
 
     private var hero: some View {
-        VStack(spacing: LookSpacing.md) {
-            ZStack {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                LookTheme.Colors.primaryPink.opacity(0.42),
-                                LookTheme.Colors.electricBlue.opacity(0.14),
-                                .clear
-                            ],
-                            center: .center,
-                            startRadius: 8,
-                            endRadius: 104
-                        )
-                    )
-                    .frame(width: 196, height: 196)
+        ZStack {
+            Image(skin.assets.paywallHero)
+                .resizable()
+                .scaledToFill()
+                .frame(height: 214)
+                .clipped()
 
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 52, weight: .black, design: .rounded))
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.26),
+                    skin.background.opacity(0.42),
+                    skin.background.opacity(0.9)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            VStack(spacing: LookSpacing.xs) {
+                Image(systemName: skin.chrome.proHeroSymbol)
+                    .font(.system(size: 32, weight: .black, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [
-                                LookTheme.Colors.warmYellow,
-                                LookTheme.Colors.hotPink
+                                skin.pro,
+                                skin.primary
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: LookTheme.Colors.warmYellow.opacity(0.62), radius: 18)
-            }
-            .frame(height: 138)
+                    .shadow(color: skin.pro.opacity(0.72), radius: 16)
 
-            VStack(spacing: LookSpacing.xs) {
                 Text(L10n.key(L10n.Pro.title))
-                    .font(.system(size: 34, weight: .black, design: .rounded))
+                    .font(.system(size: 29, weight: .black, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [
-                                LookTheme.Colors.textPrimary,
-                                LookTheme.Colors.softPink,
-                                LookTheme.Colors.primaryPink
+                                skin.textPrimary,
+                                skin.textSecondary,
+                                skin.primary
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
                     .multilineTextAlignment(.center)
-                    .shadow(color: LookTheme.Colors.primaryPink.opacity(0.58), radius: 18)
+                    .shadow(color: skin.primary.opacity(0.58), radius: 18)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
 
                 Text(L10n.key(L10n.Pro.subtitle))
-                    .font(LookTypography.sectionTitle)
-                    .foregroundColor(LookTheme.Colors.hotPink)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundColor(skin.textSecondary)
                     .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.76)
+
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: LookSpacing.xs) {
+                        PaywallHeroBadge(title: L10n.Pro.heroBadgeEffects, systemImage: "sparkles")
+                        PaywallHeroBadge(title: L10n.Pro.heroBadgeTemplates, systemImage: "rectangle.stack.fill")
+                        PaywallHeroBadge(title: L10n.Pro.heroBadgeSavedLooks, systemImage: "heart.text.square.fill")
+                    }
+
+                    VStack(spacing: LookSpacing.xs) {
+                        HStack(spacing: LookSpacing.xs) {
+                            PaywallHeroBadge(title: L10n.Pro.heroBadgeEffects, systemImage: "sparkles")
+                            PaywallHeroBadge(title: L10n.Pro.heroBadgeTemplates, systemImage: "rectangle.stack.fill")
+                        }
+
+                        PaywallHeroBadge(title: L10n.Pro.heroBadgeSavedLooks, systemImage: "heart.text.square.fill")
+                    }
+                }
+                .padding(.top, 2)
             }
+            .padding(.horizontal, LookSpacing.md)
+            .padding(.vertical, LookSpacing.md)
         }
+        .frame(height: 214)
+        .clipShape(RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                .stroke(skin.pro.opacity(0.42), lineWidth: 1)
+        )
+        .shadow(color: skin.pro.opacity(0.18), radius: 20, y: 10)
     }
 
     private var triggerCard: some View {
@@ -145,19 +175,19 @@ struct ProPaywallView: View {
             HStack(alignment: .top, spacing: LookSpacing.md) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.warmYellow)
+                    .foregroundColor(skin.pro)
                     .frame(width: 34, height: 34)
-                    .background(Circle().fill(LookTheme.Colors.backgroundBlack.opacity(0.72)))
+                    .background(Circle().fill(skin.background.opacity(0.72)))
 
                 VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                     Text(context.source.promptTitle(locale: settingsStore.appLanguage.locale))
                         .font(LookTypography.body.weight(.semibold))
-                        .foregroundColor(LookTheme.Colors.textPrimary)
+                        .foregroundColor(skin.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
 
                     Text(context.source.promptSubtitle(locale: settingsStore.appLanguage.locale))
                         .font(LookTypography.caption)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
+                        .foregroundColor(skin.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -167,23 +197,40 @@ struct ProPaywallView: View {
     }
 
     private var benefitsCard: some View {
-        NeonCard {
-            VStack(alignment: .leading, spacing: LookSpacing.md) {
+        NeonCard(padding: LookSpacing.sm) {
+            LazyVGrid(
+                columns: [
+                    GridItem(.flexible(), spacing: LookSpacing.xs),
+                    GridItem(.flexible(), spacing: LookSpacing.xs)
+                ],
+                spacing: LookSpacing.xs
+            ) {
                 ForEach(benefits, id: \.self) { benefit in
-                    HStack(spacing: LookSpacing.sm) {
+                    HStack(spacing: LookSpacing.xs) {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundColor(LookTheme.Colors.primaryPink)
-                            .frame(width: 22)
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundColor(skin.primary)
+                            .frame(width: 18)
 
                         Text(L10n.key(benefit))
-                            .font(LookTypography.body)
-                            .foregroundColor(LookTheme.Colors.textPrimary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.82)
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .foregroundColor(skin.textPrimary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.72)
 
                         Spacer(minLength: 0)
                     }
+                    .frame(minHeight: 34, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: skin.chrome.controlRadius, style: .continuous)
+                            .fill(Color.black.opacity(0.22))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: skin.chrome.controlRadius, style: .continuous)
+                                    .stroke(skin.primary.opacity(0.16), lineWidth: 0.8)
+                            )
+                    )
                 }
             }
         }
@@ -196,7 +243,7 @@ struct ProPaywallView: View {
                 if purchaseManager.isLoadingProducts || purchaseManager.isPurchasing {
                     ProgressView()
                         .progressViewStyle(.circular)
-                        .tint(LookTheme.Colors.primaryPink)
+                        .tint(skin.primary)
                 } else {
                     Image(systemName: statusIconName)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -214,7 +261,7 @@ struct ProPaywallView: View {
             .padding(.vertical, LookSpacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
-                    .fill(LookTheme.Colors.cardPurple.opacity(0.72))
+                    .fill(skin.card.opacity(0.72))
                     .overlay(
                         RoundedRectangle(cornerRadius: LookRadius.chip, style: .continuous)
                             .stroke(statusColor.opacity(0.34), lineWidth: 1)
@@ -224,7 +271,7 @@ struct ProPaywallView: View {
     }
 
     private var actions: some View {
-        VStack(spacing: LookSpacing.md) {
+        VStack(spacing: LookSpacing.sm) {
             PrimaryButton(primaryButtonTitle, systemImage: primaryButtonIcon, isLoading: purchaseManager.isPurchasing || purchaseManager.isLoadingProducts) {
                 runPrimaryAction()
             }
@@ -246,13 +293,13 @@ struct ProPaywallView: View {
         VStack(spacing: LookSpacing.xxs) {
             Text(purchaseManager.productDisplayName(locale: settingsStore.appLanguage.locale))
                 .font(LookTypography.caption)
-                .foregroundColor(LookTheme.Colors.textTertiary)
+                .foregroundColor(skin.textTertiary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.78)
 
             Text(L10n.key(L10n.Pro.finePrint))
                 .font(LookTypography.caption)
-                .foregroundColor(LookTheme.Colors.textDisabled)
+                .foregroundColor(skin.textTertiary.opacity(0.76))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -312,9 +359,9 @@ struct ProPaywallView: View {
             return LookTheme.Colors.success
         }
         if purchaseManager.errorMessage != nil || purchaseManager.product == nil {
-            return LookTheme.Colors.warmYellow
+            return skin.pro
         }
-        return LookTheme.Colors.textTertiary
+        return skin.textTertiary
     }
 
     private func runPrimaryAction() {
@@ -408,11 +455,51 @@ struct ProPaywallView: View {
     }
 }
 
+private struct PaywallHeroBadge: View {
+    let title: String
+    let systemImage: String
+    @Environment(\.lookSkin) private var skin
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+                .font(.system(size: 9, weight: .black, design: .rounded))
+
+            Text(L10n.key(title))
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.68)
+        }
+        .foregroundColor(skin.pro)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(
+            Capsule()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: "#332006").opacity(0.92),
+                            skin.card.opacity(0.88)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            Capsule()
+                .stroke(skin.pro.opacity(0.36), lineWidth: 0.8)
+        )
+        .shadow(color: skin.pro.opacity(0.18), radius: 8)
+    }
+}
+
 private struct PaywallSecondaryButton: View {
     let title: String
     let systemImage: String
     var isDisabled = false
     let action: () -> Void
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         Button {
@@ -428,12 +515,12 @@ private struct PaywallSecondaryButton: View {
                 Text(title)
                     .font(LookTypography.body.weight(.semibold))
             }
-            .foregroundColor(LookTheme.Colors.textPrimary)
+            .foregroundColor(skin.textPrimary)
             .frame(maxWidth: .infinity, minHeight: 48)
             .background(
                 Capsule()
-                    .fill(LookTheme.Colors.cardPurple.opacity(0.86))
-                    .overlay(Capsule().stroke(LookTheme.Colors.primaryPink.opacity(0.28), lineWidth: 1))
+                    .fill(skin.card.opacity(0.86))
+                    .overlay(Capsule().stroke(skin.primary.opacity(0.28), lineWidth: 1))
             )
             .opacity(isDisabled ? 0.5 : 1)
         }

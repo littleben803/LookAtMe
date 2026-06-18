@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TextColorPickerView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @Environment(\.lookSkin) private var skin
 
     private let colors = [
         "#FF4DA6", "#FF73C5", "#FFB3DE", "#FF2D55",
@@ -28,7 +29,7 @@ struct TextColorPickerView: View {
                             displayConfigStore.textColorHex = LookTheme.Hex.primaryPink
                         }
                         .font(LookTypography.caption.weight(.semibold))
-                        .foregroundColor(LookTheme.Colors.hotPink)
+                        .foregroundColor(skin.primary)
                     }
 
                     previewCard
@@ -59,7 +60,7 @@ struct TextColorPickerView: View {
             VStack(alignment: .leading, spacing: LookSpacing.sm) {
                 Text(L10n.key(L10n.Appearance.preview))
                     .font(LookTypography.caption)
-                    .foregroundColor(LookTheme.Colors.textTertiary)
+                    .foregroundColor(skin.textTertiary)
 
                 Text(L10n.key(L10n.Appearance.previewMessage))
                     .font(displayConfigStore.fontStyle.font(size: 34 * displayConfigStore.fontScale))

@@ -14,7 +14,7 @@ struct ProPaywallContext: Identifiable {
 enum ProPaywallSource {
     case homePro
     case style(nameKey: String)
-    case template(titleKey: String)
+    case template(title: String)
     case premiumFont(titleKey: String)
     case favoriteLimit
     case favoriteProStyle
@@ -27,8 +27,8 @@ enum ProPaywallSource {
             L10n.string(L10n.Pro.Context.homeTitle, locale: locale)
         case .style(let nameKey):
             L10n.format(L10n.Pro.Context.styleTitleFormat, locale: locale, L10n.string(nameKey, locale: locale))
-        case .template(let titleKey):
-            L10n.format(L10n.Pro.Context.templateTitleFormat, locale: locale, L10n.string(titleKey, locale: locale))
+        case .template(let title):
+            L10n.format(L10n.Pro.Context.templateTitleFormat, locale: locale, title)
         case .premiumFont(let titleKey):
             L10n.format(L10n.Pro.Context.fontTitleFormat, locale: locale, L10n.string(titleKey, locale: locale))
         case .favoriteLimit:

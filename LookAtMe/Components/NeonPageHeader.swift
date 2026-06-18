@@ -7,6 +7,7 @@ struct NeonPageHeader<Trailing: View>: View {
     let trailing: Trailing
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.lookSkin) private var skin
 
     init(
         title: String,
@@ -28,11 +29,11 @@ struct NeonPageHeader<Trailing: View>: View {
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .bold))
-                        .foregroundColor(LookTheme.Colors.textPrimary)
+                        .foregroundColor(skin.textPrimary)
                         .frame(width: 42, height: 42)
-                        .background(Circle().fill(LookTheme.Colors.cardPurple.opacity(0.92)))
-                        .overlay(Circle().stroke(LookTheme.Colors.primaryPink.opacity(0.45), lineWidth: 1))
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.24), radius: 12)
+                        .background(Circle().fill(skin.card.opacity(0.92)))
+                        .overlay(Circle().stroke(skin.primary.opacity(0.45), lineWidth: 1))
+                        .shadow(color: skin.primary.opacity(0.24), radius: 12)
                 }
                 .buttonStyle(.plain)
             }
@@ -40,12 +41,21 @@ struct NeonPageHeader<Trailing: View>: View {
             VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                 Text(L10n.key(title))
                     .font(LookTypography.pageTitle)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [skin.textPrimary, skin.textSecondary, skin.primary.opacity(0.82)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
 
                 if let subtitle {
                     Text(L10n.key(subtitle))
                         .font(LookTypography.caption)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
+                        .foregroundColor(skin.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 

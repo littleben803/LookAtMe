@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MoreFeaturesPlaceholderView: View {
+    @Environment(\.lookSkin) private var skin
+
     private let items: [(String, String)] = [
         (L10n.MoreFeatures.stylePicker, "sparkles"),
         (L10n.MoreFeatures.templateCenter, "text.rectangle.page"),
@@ -17,11 +19,11 @@ struct MoreFeaturesPlaceholderView: View {
             VStack(alignment: .leading, spacing: LookSpacing.lg) {
                 Text(L10n.key(L10n.MoreFeatures.title))
                     .font(LookTypography.pageTitle)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
 
                 Text(L10n.key(L10n.MoreFeatures.placeholderMessage))
                     .font(LookTypography.body)
-                    .foregroundColor(LookTheme.Colors.textTertiary)
+                    .foregroundColor(skin.textTertiary)
 
                 LazyVGrid(
                     columns: [
@@ -35,10 +37,10 @@ struct MoreFeaturesPlaceholderView: View {
                             VStack(spacing: LookSpacing.sm) {
                                 Image(systemName: item.1)
                                     .font(.system(size: 24, weight: .bold, design: .rounded))
-                                    .foregroundColor(LookTheme.Colors.primaryPink)
+                                    .foregroundColor(skin.primary)
                                 Text(L10n.key(item.0))
                                     .font(LookTypography.body)
-                                    .foregroundColor(LookTheme.Colors.textPrimary)
+                                    .foregroundColor(skin.textPrimary)
                             }
                             .frame(maxWidth: .infinity, minHeight: 72)
                         }

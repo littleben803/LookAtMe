@@ -5,32 +5,32 @@ struct PlaceholderScreen: View {
     let subtitle: String
     let systemImage: String
     let message: String
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack {
-            LookTheme.appBackground
-                .ignoresSafeArea()
+            LookScreenBackground()
 
             VStack(spacing: LookSpacing.xl) {
                 Image(systemName: systemImage)
                     .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.primaryPink)
+                    .foregroundColor(skin.primary)
                     .lookShadow(LookShadow.neon)
 
                 VStack(spacing: LookSpacing.xs) {
                     Text(L10n.key(title))
                         .font(LookTypography.largeTitle)
-                        .foregroundColor(LookTheme.Colors.textPrimary)
+                        .foregroundColor(skin.textPrimary)
 
                     Text(L10n.key(subtitle))
                         .font(LookTypography.sectionTitle)
-                        .foregroundColor(LookTheme.Colors.hotPink)
+                        .foregroundColor(skin.primary)
                 }
 
                 NeonCard {
                     Text(L10n.key(message))
                         .font(LookTypography.body)
-                        .foregroundColor(LookTheme.Colors.textSecondary)
+                        .foregroundColor(skin.textSecondary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity)

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct HelpView: View {
+    @Environment(\.lookSkin) private var skin
+
     private let items = [
         (L10n.Help.makeBannerTitle, L10n.Help.makeBannerMessage),
         (L10n.Help.concertTitle, L10n.Help.concertMessage),
@@ -23,10 +25,10 @@ struct HelpView: View {
                                 VStack(alignment: .leading, spacing: LookSpacing.xs) {
                                     Text(L10n.key(item.0))
                                         .font(LookTypography.sectionTitle)
-                                        .foregroundColor(LookTheme.Colors.textPrimary)
+                                        .foregroundColor(skin.textPrimary)
                                     Text(L10n.key(item.1))
                                         .font(LookTypography.body)
-                                        .foregroundColor(LookTheme.Colors.textTertiary)
+                                        .foregroundColor(skin.textTertiary)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)

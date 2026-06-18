@@ -6,6 +6,10 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
     case birthday
     case pickup
     case fun
+    case sports
+    case school
+    case travel
+    case oshi
 
     var id: String { rawValue }
 
@@ -23,6 +27,14 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
             L10n.BannerScene.pickup
         case .fun:
             L10n.BannerScene.fun
+        case .sports:
+            L10n.BannerScene.sports
+        case .school:
+            L10n.BannerScene.school
+        case .travel:
+            L10n.BannerScene.travel
+        case .oshi:
+            L10n.BannerScene.oshi
         }
     }
 
@@ -38,6 +50,14 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
             "airplane"
         case .fun:
             "sparkles"
+        case .sports:
+            "trophy.fill"
+        case .school:
+            "graduationcap.fill"
+        case .travel:
+            "signpost.right.fill"
+        case .oshi:
+            "star.circle.fill"
         }
     }
 
@@ -53,7 +73,50 @@ enum BannerScene: String, CaseIterable, Identifiable, Codable {
             LookTheme.Colors.electricBlue
         case .fun:
             LookTheme.Colors.neonPurple
+        case .sports:
+            LookTheme.Colors.electricBlue
+        case .school:
+            LookTheme.Colors.hotPink
+        case .travel:
+            LookTheme.Colors.softPink
+        case .oshi:
+            LookTheme.Colors.warmYellow
         }
+    }
+}
+
+struct BannerTemplateCopy: Equatable {
+    let en: String
+    let ja: String
+    let zhHans: String
+    let zhHant: String
+
+    init(en: String, ja: String, zhHans: String, zhHant: String? = nil) {
+        self.en = en
+        self.ja = ja
+        self.zhHans = zhHans
+        self.zhHant = zhHant ?? zhHans
+    }
+
+    func localized(locale: Locale) -> String {
+        let identifier = locale.identifier.replacingOccurrences(of: "_", with: "-").lowercased()
+
+        if identifier.hasPrefix("ja") {
+            return ja
+        }
+
+        if identifier.hasPrefix("zh-hant")
+            || identifier.hasPrefix("zh-tw")
+            || identifier.hasPrefix("zh-hk")
+            || identifier.hasPrefix("zh-mo") {
+            return zhHant
+        }
+
+        if identifier.hasPrefix("zh") {
+            return zhHans
+        }
+
+        return en
     }
 }
 
@@ -63,21 +126,41 @@ struct BannerTemplate: Identifiable, Equatable {
     let isPro: Bool
     let titleKey: String
     let textKey: String
+    let localizedTitleCopy: BannerTemplateCopy?
+    let localizedTextCopy: BannerTemplateCopy?
 
-    init(id: String, scene: BannerScene, isPro: Bool, titleKey: String? = nil, textKey: String? = nil) {
+    init(
+        id: String,
+        scene: BannerScene,
+        isPro: Bool,
+        titleKey: String? = nil,
+        textKey: String? = nil,
+        localizedTitleCopy: BannerTemplateCopy? = nil,
+        localizedTextCopy: BannerTemplateCopy? = nil
+    ) {
         self.id = id
         self.scene = scene
         self.isPro = isPro
         self.titleKey = titleKey ?? L10n.Template.title(id)
         self.textKey = textKey ?? L10n.Template.text(id)
+        self.localizedTitleCopy = localizedTitleCopy
+        self.localizedTextCopy = localizedTextCopy
     }
 
     func localizedTitle(locale: Locale) -> String {
-        L10n.string(titleKey, locale: locale)
+        if let localizedTitleCopy {
+            return localizedTitleCopy.localized(locale: locale)
+        }
+
+        return L10n.string(titleKey, locale: locale)
     }
 
     func localizedText(locale: Locale) -> String {
-        L10n.string(textKey, locale: locale)
+        if let localizedTextCopy {
+            return localizedTextCopy.localized(locale: locale)
+        }
+
+        return L10n.string(textKey, locale: locale)
     }
 }
 

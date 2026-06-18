@@ -1,0 +1,34 @@
+{
+  "id": "live_stage_console",
+  "displayName": "Live Stage Console",
+  "market": "United States",
+  "systemLanguageRules": ["en*", "fallback"],
+  "fallback": true,
+  "personality": [
+    "live event console",
+    "concert stage",
+    "sports and party ready",
+    "bold controls",
+    "premium stage lighting"
+  ],
+  "palette": {
+    "background": "#050712",
+    "surface": "#111827",
+    "primary": "#FF3E9E",
+    "secondary": "#00E7FF",
+    "amber": "#FFD166",
+    "green": "#38F29A",
+    "danger": "#FF5A5F"
+  },
+  "assets": {
+    "board": "high-fidelity-board.png",
+    "appBackground": "backgrounds/app-background@3x.png",
+    "homeHero": "backgrounds/home-hero@3x.png",
+    "paywallHero": "backgrounds/paywall-hero@3x.png"
+  },
+  "implementationNotes": [
+    "Keep CTAs direct and high contrast.",
+    "Template browsing should feel fast and searchable.",
+    "Use stage-light assets for Pro moments; keep ordinary controls utilitarian."
+  ]
+}

@@ -6,6 +6,7 @@ struct SettingsView: View {
     @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @EnvironmentObject private var appReviewPromptStore: AppReviewPromptStore
+    @Environment(\.lookSkin) private var skin
 
     @State private var path: [FeatureRoute] = []
     @State private var isShowingClearConfirm = false
@@ -84,9 +85,21 @@ struct SettingsView: View {
                             }
 
 #if DEBUG
-                            if LookDebugOptions.isDebugEntryPointEnabled {
+                            if LookDebugOptions.isSettingsDebugGroupEnabled {
                                 settingsGroup(L10n.Settings.Debug.group) {
-                                    SettingsToggleRow(title: L10n.Settings.Debug.triggerReviewPrompt, isOn: debugReviewPromptBinding)
+                                    if LookDebugOptions.isThemeDebugEntryPointEnabled {
+                                        SettingsRow(title: "Theme", value: skin.displayName, systemImage: "paintpalette") {
+                                            path.append(.debugThemeSettings)
+                                        }
+                                    }
+
+                                    if LookDebugOptions.isDebugEntryPointEnabled {
+                                        if LookDebugOptions.isThemeDebugEntryPointEnabled {
+                                            neonDivider
+                                        }
+
+                                        SettingsToggleRow(title: L10n.Settings.Debug.triggerReviewPrompt, isOn: debugReviewPromptBinding)
+                                    }
                                 }
                             }
 #endif
@@ -162,6 +175,10 @@ struct SettingsView: View {
             DisplaySettingsView()
         case .languageSettings:
             LanguageSettingsView()
+#if DEBUG
+        case .debugThemeSettings:
+            DebugThemeSettingsView()
+#endif
         case .help:
             HelpView()
         case .about:
@@ -185,7 +202,13 @@ struct SettingsView: View {
     private var fixedHeader: some View {
         Text(L10n.key(L10n.Settings.title))
             .font(LookTypography.pageTitle)
-            .foregroundColor(LookTheme.Colors.textPrimary)
+            .foregroundStyle(
+                LinearGradient(
+                    colors: [skin.textPrimary, skin.textSecondary, skin.primary.opacity(0.82)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .padding(.horizontal, LookSpacing.pageHorizontal)
             .padding(.top, LookSpacing.xl)
             .padding(.bottom, LookSpacing.md)
@@ -201,38 +224,38 @@ struct SettingsView: View {
                 Text(L10n.key(L10n.Settings.reset))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
             }
-            .foregroundColor(LookTheme.Colors.hotPink)
+            .foregroundColor(skin.primary)
             .padding(.horizontal, LookSpacing.sm)
             .padding(.vertical, LookSpacing.xs)
             .background(
                 Capsule()
-                    .fill(LookTheme.Colors.cardPurple.opacity(0.86))
-                    .overlay(Capsule().stroke(LookTheme.Colors.primaryPink.opacity(0.34), lineWidth: 1))
+                    .fill(skin.card.opacity(0.86))
+                    .overlay(Capsule().stroke(skin.primary.opacity(0.34), lineWidth: 1))
             )
         }
         .buttonStyle(.plain)
     }
 
     private var neonDivider: some View {
-        Divider().overlay(LookTheme.Colors.textDisabled.opacity(0.24))
+        Divider().overlay(skin.textTertiary.opacity(0.2))
     }
 
     private var shareRow: some View {
         HStack(spacing: LookSpacing.sm) {
             Image(systemName: "square.and.arrow.up")
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundColor(LookTheme.Colors.primaryPink)
+                .foregroundColor(skin.primary)
                 .frame(width: 22)
 
             Text(L10n.key(L10n.Settings.shareToFriends))
                 .font(LookTypography.body)
-                .foregroundColor(LookTheme.Colors.textPrimary)
+                .foregroundColor(skin.textPrimary)
 
             Spacer()
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(LookTheme.Colors.textDisabled)
+                .foregroundColor(skin.textTertiary.opacity(0.66))
         }
         .padding(.vertical, LookSpacing.sm)
     }
@@ -253,7 +276,7 @@ struct SettingsView: View {
             HStack(alignment: .center) {
                 Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
-                    .foregroundColor(LookTheme.Colors.hotPink)
+                    .foregroundColor(skin.primary)
 
                 Spacer()
                 trailing()

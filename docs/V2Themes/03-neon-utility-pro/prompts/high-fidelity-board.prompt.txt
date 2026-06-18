@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1270
+Timestamp: 2026-06-17T19:29:42.135Z
+Call ID: ig_05eea055be06e849016a32f522826c8191aa65d0a20cc732e4
+
+Use case: ui-mockup
+Asset type: high-fidelity mobile app design board for an iOS LED sign app
+Primary request: Create a polished high-fidelity design board for theme 3 named "Neon Utility Pro" for Mainland China and Taiwan. Show four iPhone app screens side by side: Home LED composer, Template Center, Style Gallery, Pro Paywall. The app turns a phone into a glowing LED sign for concerts, confession, birthdays, airport pickup, school events, sports, and gatherings.
+Visual direction: premium neon utility, practical and sophisticated, not cute and not generic. Dark navy/black base, magenta primary, cyan signal lines, acid green small accents, warm gold for Pro, subtle grid, radar/signal motifs, crisp LED matrix preview, compact native iOS layout.
+Composition/framing: 16:9 landscape design board, four tall phone screens evenly spaced. Home first screen should look clearly changed and impressive: large LED preview, dense but clean controls, quick templates. Template Center should be attractive with categories and built-in phrases, not a plain list. Style cards should use more space for preview art with compact title/badge layout. Pro page hero must fit first viewport and feel premium.
+UI content: short readable labels can include Home, Templates, Styles, Pro, Start, Restore, or Chinese labels such as 首页, 模板, 样式, 高级, 开始, 接机, 生日, 表白. LED examples like "看这里" or "欢迎回家" only if clean.
+Constraints: high-fidelity mobile UI, native iOS, no fake brand logos, no random gibberish, no generic AI gradient blob, no HTML/CSS screenshot look, no watermark, no cartoon characters.

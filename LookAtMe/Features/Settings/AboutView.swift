@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AboutView: View {
     @EnvironmentObject private var settingsStore: SettingsStore
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack {
@@ -16,13 +17,13 @@ struct AboutView: View {
                             VStack(spacing: LookSpacing.md) {
                                 ZStack {
                                     Circle()
-                                        .fill(LookTheme.primaryButtonGradient)
+                                        .fill(skin.primaryButtonGradient)
                                         .frame(width: 76, height: 76)
-                                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.62), radius: 18)
+                                        .shadow(color: skin.primary.opacity(0.62), radius: 18)
 
                                     Image(systemName: "heart.text.square.fill")
                                         .font(.system(size: 32, weight: .bold, design: .rounded))
-                                        .foregroundColor(LookTheme.Colors.textPrimary)
+                                        .foregroundColor(skin.textPrimary)
                                 }
 
                                 VStack(spacing: LookSpacing.xs) {
@@ -31,24 +32,24 @@ struct AboutView: View {
                                         .foregroundStyle(
                                             LinearGradient(
                                                 colors: [
-                                                    LookTheme.Colors.textPrimary,
-                                                    LookTheme.Colors.softPink,
-                                                    LookTheme.Colors.primaryPink
+                                                    skin.textPrimary,
+                                                    skin.textSecondary,
+                                                    skin.primary
                                                 ],
                                                 startPoint: .top,
                                                 endPoint: .bottom
                                             )
                                         )
-                                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.72), radius: 12)
+                                        .shadow(color: skin.primary.opacity(0.72), radius: 12)
 
                                     Text(L10n.format(L10n.About.versionFormat, locale: settingsStore.appLanguage.locale, "2.0.0"))
                                         .font(LookTypography.caption)
-                                        .foregroundColor(LookTheme.Colors.textTertiary)
+                                        .foregroundColor(skin.textTertiary)
                                 }
 
                                 Text(L10n.key(L10n.About.description))
                                     .font(LookTypography.body)
-                                    .foregroundColor(LookTheme.Colors.textSecondary)
+                                    .foregroundColor(skin.textSecondary)
                                     .multilineTextAlignment(.center)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -88,15 +89,15 @@ struct AboutView: View {
             HStack {
                 Image(systemName: icon)
                     .font(.system(size: 17, weight: .bold))
-                    .foregroundColor(LookTheme.Colors.primaryPink)
+                    .foregroundColor(skin.primary)
                     .frame(width: 24)
                 Text(L10n.key(title))
                     .font(LookTypography.body)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(LookTheme.Colors.textDisabled)
+                    .foregroundColor(skin.textTertiary.opacity(0.66))
             }
         }
     }

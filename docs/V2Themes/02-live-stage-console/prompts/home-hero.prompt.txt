@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1263
+Timestamp: 2026-06-17T19:26:27.821Z
+Call ID: ig_05eea055be06e849016a32f4ad91a88191b8a0f5d6d390aa23
+
+Use case: ui-mockup
+Asset type: 16:9 home hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution landscape home hero background for the Live Stage Console theme. It will sit behind the main LED sign preview on the Home screen.
+Visual direction: U.S. live concert stage console, dark arena depth, magenta and cyan laser beams, amber spotlights, subtle smoke, LED wall texture, practical control-room energy.
+Composition/framing: 16:9 landscape, center-safe stage area for overlay LED preview, darker edges, strong depth but no UI panels, no devices, no text.
+Style/medium: polished product hero bitmap, crisp high-resolution, cinematic live event lighting.
+Constraints: no words, no logos, no watermark, no performers close-up, no generic AI gradient blob, no HTML/CSS look.

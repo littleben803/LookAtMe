@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1275
+Timestamp: 2026-06-17T19:30:39.070Z
+Call ID: ig_05eea055be06e849016a32f5a5ad5c819184865d0a1e610d5e
+
+Use case: ui-mockup
+Asset type: 9:16 mobile app background texture for project asset
+Primary request: Generate a high-resolution vertical app background for the Neon Utility Pro theme. It is for Chinese Simplified/Traditional system-language markets in an iOS LED sign app.
+Visual direction: premium neon utility, dark navy/black, magenta primary glow, cyan signal grid, subtle acid green micro indicators, warm gold tiny Pro shimmer, sleek glass and radar/signal-line atmosphere.
+Composition/framing: portrait 9:16, strong readable center-safe area for dense UI, darker top and bottom for navigation and toolbar readability, no UI panels, no phone, no text.
+Style/medium: polished digital product background bitmap, high-resolution, clean and sophisticated.
+Constraints: no Chinese characters, no logos, no watermark, no cartoon characters, no generic blob gradient, no HTML/CSS look, not beige, not plain blue slate.

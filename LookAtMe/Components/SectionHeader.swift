@@ -4,6 +4,7 @@ public struct SectionHeader<Trailing: View>: View {
     private let title: String
     private let subtitle: String?
     private let trailing: Trailing
+    @Environment(\.lookSkin) private var skin
 
     public init(
         _ title: String,
@@ -20,12 +21,12 @@ public struct SectionHeader<Trailing: View>: View {
             VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                 Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
 
                 if let subtitle {
                     Text(L10n.key(subtitle))
                         .font(LookTypography.caption)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
+                        .foregroundColor(skin.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }

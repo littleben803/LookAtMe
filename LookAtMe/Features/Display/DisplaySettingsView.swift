@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DisplaySettingsView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @Environment(\.lookSkin) private var skin
     @State private var isShowingResetConfirm = false
 
     var body: some View {
@@ -35,7 +36,7 @@ struct DisplaySettingsView: View {
                         VStack(alignment: .leading, spacing: LookSpacing.sm) {
                             Text(L10n.key(L10n.DisplaySettings.scrollDirection))
                                 .font(LookTypography.body)
-                                .foregroundColor(LookTheme.Colors.textPrimary)
+                                .foregroundColor(skin.textPrimary)
 
                             Picker(L10n.key(L10n.DisplaySettings.scrollDirection), selection: $displayConfigStore.scrollDirection) {
                                 ForEach(BannerScrollDirection.allCases) { direction in
@@ -43,7 +44,7 @@ struct DisplaySettingsView: View {
                                 }
                             }
                             .pickerStyle(.segmented)
-                            .tint(LookTheme.Colors.primaryPink)
+                            .tint(skin.primary)
                         }
                         .padding(.vertical, LookSpacing.xs)
 
@@ -62,7 +63,7 @@ struct DisplaySettingsView: View {
                             .frame(maxWidth: .infinity, minHeight: 52)
                             .background(
                                 Capsule()
-                                    .fill(LookTheme.Colors.cardPurple.opacity(0.88))
+                                    .fill(skin.card.opacity(0.88))
                                     .overlay(Capsule().stroke(LookTheme.Colors.danger.opacity(0.42), lineWidth: 1))
                             )
                     }
@@ -85,7 +86,7 @@ struct DisplaySettingsView: View {
     }
 
     private var neonDivider: some View {
-        Divider().overlay(LookTheme.Colors.textDisabled.opacity(0.24))
+        Divider().overlay(skin.textTertiary.opacity(0.2))
     }
 
     private func settingsGroup<Content: View>(
@@ -95,7 +96,7 @@ struct DisplaySettingsView: View {
         VStack(alignment: .leading, spacing: LookSpacing.sm) {
             Text(L10n.key(title))
                 .font(LookTypography.sectionTitle)
-                .foregroundColor(LookTheme.Colors.hotPink)
+                .foregroundColor(skin.primary)
                 .padding(.horizontal, LookSpacing.xs)
 
             NeonCard {
@@ -116,14 +117,14 @@ struct DisplaySettingsView: View {
             HStack {
                 Text(L10n.key(title))
                     .font(LookTypography.body)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
                 Spacer()
                 Text(valueText)
                     .font(LookTypography.caption.monospacedDigit())
-                    .foregroundColor(LookTheme.Colors.textTertiary)
+                    .foregroundColor(skin.textTertiary)
             }
             Slider(value: value, in: range)
-                .tint(LookTheme.Colors.primaryPink)
+                .tint(skin.primary)
         }
         .padding(.vertical, LookSpacing.sm)
     }

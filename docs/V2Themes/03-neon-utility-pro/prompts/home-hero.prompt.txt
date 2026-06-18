@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1277
+Timestamp: 2026-06-17T19:31:34.403Z
+Call ID: ig_05eea055be06e849016a32f5dd5b8c8191a401787fbc21ece4
+
+Use case: ui-mockup
+Asset type: 16:9 home hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution landscape home hero background for the Neon Utility Pro theme. It will sit behind the main LED sign preview on Home.
+Visual direction: premium neon utility dashboard, dark navy/black, magenta and cyan signal lines, LED matrix wall, subtle radar grid, acid green micro indicators, clean professional glow.
+Composition/framing: 16:9 landscape, central LED preview-safe area with dark readable center, geometric signal frame around edges, no UI cards, no phones, no text.
+Style/medium: polished product hero bitmap, crisp high-resolution, sophisticated and practical.
+Constraints: no Chinese characters, no logos, no watermark, no cartoon characters, no generic blob gradient, no HTML/CSS look.

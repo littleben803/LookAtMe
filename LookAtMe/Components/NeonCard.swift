@@ -3,6 +3,7 @@ import SwiftUI
 public struct NeonCard<Content: View>: View {
     private let padding: CGFloat
     private let content: Content
+    @Environment(\.lookSkin) private var skin
 
     public init(
         padding: CGFloat = LookSpacing.cardPadding,
@@ -16,14 +17,13 @@ public struct NeonCard<Content: View>: View {
         content
             .padding(padding)
             .background(
-                RoundedRectangle(cornerRadius: LookRadius.card, style: .continuous)
-                    .fill(LookTheme.Colors.cardPurple)
+                RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                    .fill(skin.surfaceGradient)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: LookRadius.card, style: .continuous)
-                    .stroke(LookTheme.neonBorderGradient, lineWidth: 1)
+                RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                    .stroke(skin.neonBorderGradient, lineWidth: 1)
             )
-            .lookShadow(LookShadow.card)
+            .shadow(color: skin.primary.opacity(0.16), radius: 16, y: 8)
     }
 }
-

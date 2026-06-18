@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ProBadge: View {
+    @Environment(\.lookSkin) private var skin
+
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: "crown.fill")
@@ -8,14 +10,14 @@ struct ProBadge: View {
             Text("Pro")
                 .font(.system(size: 9, weight: .heavy, design: .rounded))
         }
-        .foregroundColor(LookTheme.Colors.backgroundBlack)
+        .foregroundColor(skin.background)
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
         .background(
             Capsule()
                 .fill(
                     LinearGradient(
-                        colors: [LookTheme.Colors.warmYellow, LookTheme.Colors.hotPink],
+                        colors: [skin.pro, skin.primary],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -23,4 +25,3 @@ struct ProBadge: View {
         )
     }
 }
-

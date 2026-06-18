@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1251
+Timestamp: 2026-06-17T19:24:03.515Z
+Call ID: ig_05eea055be06e849016a32f42bbb548191ac7f5b34f8840c07
+
+Use case: ui-mockup
+Asset type: 16:9 Pro paywall hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution landscape Pro hero background for the Oshi Pop Neon theme. It should feel like a premium paid unlock moment for Japanese concert fan signs.
+Visual direction: glossy black stage, golden ticket glow, hot pink neon ribbons, cyan rim lights, holographic hearts and stars, LED marquee sparkle, refined kawaii luxury, energetic but not cluttered.
+Composition/framing: 16:9 landscape, clear visual hierarchy with a radiant premium center, enough dark safe space near top and bottom for paywall copy/buttons overlay, no phone mockups, no UI components.
+Style/medium: polished product hero bitmap, crisp high-resolution, premium App Store quality.
+Constraints: no text, no logos, no watermark, no anime characters, no random objects, no CSS gradient look, avoid cheap casino vibe.

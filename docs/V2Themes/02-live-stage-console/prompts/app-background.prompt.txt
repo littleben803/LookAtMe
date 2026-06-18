@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1261
+Timestamp: 2026-06-17T19:25:35.762Z
+Call ID: ig_05eea055be06e849016a32f48c70648191abba891424936ded
+
+Use case: ui-mockup
+Asset type: 9:16 mobile app background texture for project asset
+Primary request: Generate a high-resolution vertical app background for the Live Stage Console theme. The app is an iOS LED sign tool for U.S. concerts, sports events, parties, and airport pickup.
+Visual direction: dark graphite event console, subtle carbon texture, magenta and cyan side glows, amber stage light haze, faint LED grid, laser green micro accents, premium live-show atmosphere.
+Composition/framing: portrait 9:16, clean center-safe area for UI panels, darker top and bottom for nav readability, no phone frame, no UI, no text.
+Style/medium: polished digital product background bitmap, crisp high-resolution, practical and modern.
+Constraints: no logos, no watermark, no random words, no character art, no generic purple-blue blob gradient, no HTML/CSS look.

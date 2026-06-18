@@ -1,0 +1,11 @@
+Generated with built-in Image Gen.
+Source rollout line: 1199
+Timestamp: 2026-06-17T19:21:50.709Z
+Call ID: ig_05eea055be06e849016a32f38762708191b5efd2fe110836ea
+
+Use case: ui-mockup
+Asset type: 9:16 mobile app background texture for project asset
+Primary request: Generate a high-resolution vertical background for an iOS LED sign app theme named Oshi Pop Neon. Japanese oshi-katsu concert neon mood, dark glossy black base with hot pink, electric cyan, mint green, lemon yellow, holographic sticker shimmer, LED dot bokeh, subtle diagonal light trails.
+Composition/framing: portrait 9:16, usable as full-screen app background, clear center-safe area, no UI panels, no phones, no text, no logos, no characters.
+Style/medium: polished digital product background, crisp high-resolution bitmap, premium mobile UI asset.
+Avoid: generic purple gradient blobs, HTML/CSS look, watermark, words, fake logos, low-res noise.

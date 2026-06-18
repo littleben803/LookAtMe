@@ -4,6 +4,7 @@ struct LegalTextView: View {
     let document: LegalDocument
 
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack {
@@ -18,7 +19,7 @@ struct LegalTextView: View {
                             ForEach(paragraphs, id: \.self) { paragraph in
                                 Text(L10n.key(paragraph))
                                     .font(LookTypography.body)
-                                    .foregroundColor(LookTheme.Colors.textSecondary)
+                                    .foregroundColor(skin.textSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                         }

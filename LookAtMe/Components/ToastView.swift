@@ -2,22 +2,23 @@ import SwiftUI
 
 struct ToastView: View {
     let message: String
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         Text(message)
             .font(LookTypography.body)
-            .foregroundColor(LookTheme.Colors.textPrimary)
+            .foregroundColor(skin.textPrimary)
             .padding(.horizontal, LookSpacing.lg)
             .padding(.vertical, LookSpacing.sm)
             .background(
                 Capsule()
-                    .fill(LookTheme.Colors.elevatedPurple.opacity(0.96))
+                    .fill(skin.cardElevated.opacity(0.96))
                     .overlay(
                         Capsule()
-                            .stroke(LookTheme.Colors.primaryPink.opacity(0.5), lineWidth: 1)
+                            .stroke(skin.primary.opacity(0.5), lineWidth: 1)
                     )
             )
-            .shadow(color: LookTheme.Colors.primaryPink.opacity(0.35), radius: 14)
+            .shadow(color: skin.primary.opacity(0.35), radius: 14)
     }
 }
 

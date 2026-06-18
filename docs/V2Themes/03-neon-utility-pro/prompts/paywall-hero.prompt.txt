@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1279
+Timestamp: 2026-06-17T19:32:28.961Z
+Call ID: ig_05eea055be06e849016a32f614c18c8191bb5c96a81beaa497
+
+Use case: ui-mockup
+Asset type: 16:9 Pro paywall hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution Pro paywall hero background for the Neon Utility Pro theme. It should feel like a clean premium unlock moment for Chinese Simplified/Traditional markets.
+Visual direction: dark premium utility console, warm gold crown/light ring as paid unlock symbol, magenta and cyan neon signal frame, subtle radar grid, LED matrix sparkle, refined and trustworthy, not noisy.
+Composition/framing: 16:9 landscape, centered premium focal glow, plenty of dark readable safe space around top and bottom for overlay copy and purchase controls, no UI components, no phones.
+Style/medium: polished product hero bitmap, crisp high-resolution, app-store-ready premium asset.
+Constraints: no Chinese characters, no text, no logos, no watermark, no cartoon characters, no casino vibe, no generic gradient blob, no HTML/CSS look.

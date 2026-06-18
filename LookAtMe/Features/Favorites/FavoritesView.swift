@@ -7,6 +7,7 @@ struct FavoritesView: View {
     @EnvironmentObject private var styleStore: StyleStore
     @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @Environment(\.lookSkin) private var skin
 
     @State private var isEditing = false
     @State private var isShowingDeleteAllConfirm = false
@@ -67,7 +68,13 @@ struct FavoritesView: View {
         HStack(alignment: .firstTextBaseline) {
             Text(L10n.key(L10n.Favorites.title))
                 .font(LookTypography.pageTitle)
-                .foregroundColor(LookTheme.Colors.textPrimary)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [skin.textPrimary, skin.textSecondary, skin.primary.opacity(0.82)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
 
             Spacer()
 
@@ -77,7 +84,7 @@ struct FavoritesView: View {
                 }
             }
             .font(LookTypography.body)
-            .foregroundColor(LookTheme.Colors.hotPink)
+            .foregroundColor(skin.primary)
             .disabled(favoriteStore.favorites.isEmpty)
             .opacity(favoriteStore.favorites.isEmpty ? 0.45 : 1)
         }
@@ -111,13 +118,13 @@ struct FavoritesView: View {
                     VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                         Text(favorite.text)
                             .font(LookTypography.sectionTitle)
-                            .foregroundColor(LookTheme.Colors.textPrimary)
+                            .foregroundColor(skin.textPrimary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.72)
 
                         Text("\(localized(favorite.scene.titleKey)) · \(localized(styleStore.style(withID: favorite.styleID).nameKey))")
                             .font(LookTypography.caption)
-                            .foregroundColor(LookTheme.Colors.textTertiary)
+                            .foregroundColor(skin.textTertiary)
                             .lineLimit(1)
 
                         Text(L10n.format(
@@ -127,12 +134,12 @@ struct FavoritesView: View {
                             Int(favorite.fontScale * 100)
                         ))
                             .font(LookTypography.caption.monospacedDigit())
-                            .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
+                            .foregroundColor(skin.textTertiary.opacity(0.82))
                             .lineLimit(1)
 
                         Text(Self.dateFormatter.string(from: favorite.createdAt))
                             .font(LookTypography.caption.monospacedDigit())
-                            .foregroundColor(LookTheme.Colors.textDisabled)
+                            .foregroundColor(skin.textTertiary.opacity(0.62))
                     }
 
                     Spacer()
@@ -142,7 +149,7 @@ struct FavoritesView: View {
                     } label: {
                         Image(systemName: isEditing ? "trash.fill" : "heart.fill")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(isEditing ? LookTheme.Colors.danger : LookTheme.Colors.hotPink)
+                            .foregroundColor(isEditing ? LookTheme.Colors.danger : skin.primary)
                             .frame(width: 36, height: 36)
                     }
                     .buttonStyle(.plain)
@@ -167,7 +174,7 @@ struct FavoritesView: View {
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(
                 Capsule()
-                    .fill(LookTheme.Colors.cardPurple.opacity(0.88))
+                    .fill(skin.card.opacity(0.88))
                     .overlay(Capsule().stroke(LookTheme.Colors.danger.opacity(0.42), lineWidth: 1))
             )
         }

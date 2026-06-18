@@ -6,6 +6,7 @@ public struct EmptyStateView: View {
     private let message: String?
     private let actionTitle: String?
     private let action: (() -> Void)?
+    @Environment(\.lookSkin) private var skin
 
     public init(
         systemImage: String = "heart.text.square",
@@ -25,29 +26,29 @@ public struct EmptyStateView: View {
         VStack(spacing: LookSpacing.md) {
             ZStack {
                 Circle()
-                    .fill(LookTheme.Colors.elevatedPurple)
+                    .fill(skin.cardElevated)
                     .frame(width: 72, height: 72)
                     .overlay(
                         Circle()
-                            .stroke(LookTheme.neonBorderGradient, lineWidth: 1)
+                            .stroke(skin.neonBorderGradient, lineWidth: 1)
                     )
                     .lookShadow(LookShadow.neon)
 
                 Image(systemName: systemImage)
                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.primaryPink)
+                    .foregroundColor(skin.primary)
             }
 
             VStack(spacing: LookSpacing.xs) {
                 Text(L10n.key(title))
                     .font(LookTypography.sectionTitle)
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
                     .multilineTextAlignment(.center)
 
                 if let message {
                     Text(L10n.key(message))
                         .font(LookTypography.body)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
+                        .foregroundColor(skin.textTertiary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }

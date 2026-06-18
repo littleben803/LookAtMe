@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1123
+Timestamp: 2026-06-17T19:18:53.689Z
+Call ID: ig_05eea055be06e849016a32f2c5bc2081918a50266296ed0d3b
+
+Use case: ui-mockup
+Asset type: high-fidelity mobile app design board for an iOS LED sign app
+Primary request: Create a polished high-fidelity design board for theme 1 named "Oshi Pop Neon" for Japan. Show four iPhone app screens side by side: Home LED composer, Template Center, Style Gallery, Pro Paywall. The app turns a phone into a glowing LED fan sign for concerts, birthdays, confessions, airport pickup, and playful social moments.
+Visual direction: Japanese oshi-katsu pop neon, premium Harajuku concert energy, cute but not childish. Dark glossy base, hot pink, electric cyan, mint green, lemon yellow, white LED dots, small holographic sticker accents, subtle glass panels, lively micro-interaction cues.
+Composition/framing: 16:9 landscape design board, four tall phone screens evenly spaced, crisp UI details, no oversized marketing hero, first screen must visibly show functional controls and LED preview.
+UI content: readable short labels such as Home, Templates, Styles, Pro, Live Sign, Fan Chant, Birthday, Love, Airport, Start. Include a large LED preview with text like "LOVE YOU" and a template phrase like "最高!" only if text renders cleanly.
+Constraints: native iOS app UI, premium product design, highly refined spacing, compact but friendly, avoid generic AI gradient blobs, avoid random illegible text, avoid fake brand logos, avoid anime characters, no HTML/CSS screenshot look, no watermark.

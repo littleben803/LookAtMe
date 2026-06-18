@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LanguageSettingsView: View {
     @EnvironmentObject private var settingsStore: SettingsStore
+    @Environment(\.lookSkin) private var skin
     @State private var toastMessage: String?
 
     var body: some View {
@@ -45,19 +46,19 @@ struct LanguageSettingsView: View {
                 HStack(spacing: LookSpacing.md) {
                     Image(systemName: language == .system ? "globe" : "character.bubble")
                         .font(.system(size: 19, weight: .bold, design: .rounded))
-                        .foregroundColor(LookTheme.Colors.primaryPink)
+                        .foregroundColor(skin.primary)
                         .frame(width: 34, height: 34)
-                        .background(Circle().fill(LookTheme.Colors.cardPurple.opacity(0.96)))
-                        .overlay(Circle().stroke(LookTheme.Colors.primaryPink.opacity(0.3), lineWidth: 1))
+                        .background(Circle().fill(skin.card.opacity(0.96)))
+                        .overlay(Circle().stroke(skin.primary.opacity(0.3), lineWidth: 1))
 
                     VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                         Text(L10n.key(language.titleKey))
                             .font(LookTypography.body.weight(.semibold))
-                            .foregroundColor(LookTheme.Colors.textPrimary)
+                            .foregroundColor(skin.textPrimary)
 
                         Text(detailText(for: language))
                             .font(LookTypography.caption)
-                            .foregroundColor(LookTheme.Colors.textTertiary)
+                            .foregroundColor(skin.textTertiary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
@@ -66,7 +67,7 @@ struct LanguageSettingsView: View {
                     if settingsStore.appLanguage == language {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(LookTheme.Colors.primaryPink)
+                            .foregroundColor(skin.primary)
                     }
                 }
             }

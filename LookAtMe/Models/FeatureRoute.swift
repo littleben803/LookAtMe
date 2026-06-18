@@ -9,6 +9,9 @@ enum FeatureRoute: Hashable {
     case fontPicker
     case displaySettings
     case languageSettings
+#if DEBUG
+    case debugThemeSettings
+#endif
     case help
     case about
     case legal(LegalDocument)

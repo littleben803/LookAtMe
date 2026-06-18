@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1265
+Timestamp: 2026-06-17T19:27:31.040Z
+Call ID: ig_05eea055be06e849016a32f4e0e3808191973ac7d6ff3b1a25
+
+Use case: ui-mockup
+Asset type: 16:9 Pro paywall hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution Pro paywall hero background for the Live Stage Console theme. It should communicate premium unlock for a U.S. live event LED sign app.
+Visual direction: headline concert finale, dark arena, magenta/cyan lasers, amber spotlight crown, golden backstage pass glow, LED wall and confetti sparkle, energetic premium stage moment.
+Composition/framing: 16:9 landscape, clear premium focal point in the center, dark readable space around top and lower thirds for overlay copy and CTA, no UI cards, no phones.
+Style/medium: polished product hero bitmap, crisp high-resolution, cinematic event design.
+Constraints: no text, no logos, no watermark, no performer faces, no casino style, no generic blob gradient, no HTML/CSS look.

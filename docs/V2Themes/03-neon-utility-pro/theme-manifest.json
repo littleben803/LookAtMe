@@ -1,0 +1,34 @@
+{
+  "id": "neon_utility_pro",
+  "displayName": "Neon Utility Pro",
+  "market": "Mainland China and Taiwan",
+  "systemLanguageRules": ["zh-Hans*", "zh-CN", "zh-SG", "zh-Hant*", "zh-TW", "zh-HK", "zh-MO"],
+  "fallback": false,
+  "personality": [
+    "premium utility",
+    "signal grid",
+    "dense templates",
+    "clear controls",
+    "professional neon"
+  ],
+  "palette": {
+    "background": "#060915",
+    "surface": "#101A2D",
+    "primary": "#FF4DA6",
+    "secondary": "#00F2FF",
+    "green": "#8DF07B",
+    "pro": "#FFD166",
+    "text": "#F7FAFF"
+  },
+  "assets": {
+    "board": "high-fidelity-board.png",
+    "appBackground": "backgrounds/app-background@3x.png",
+    "homeHero": "backgrounds/home-hero@3x.png",
+    "paywallHero": "backgrounds/paywall-hero@3x.png"
+  },
+  "implementationNotes": [
+    "Prefer dense but readable controls over decorative spacing.",
+    "Use signal-frame backgrounds for preview areas and Pro hero.",
+    "Keep Simplified and Traditional Chinese text handled by localization, not theme selection."
+  ]
+}

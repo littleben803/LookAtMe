@@ -1,0 +1,34 @@
+{
+  "id": "oshi_pop_neon",
+  "displayName": "Oshi Pop Neon",
+  "market": "Japan",
+  "systemLanguageRules": ["ja*"],
+  "fallback": false,
+  "personality": [
+    "oshi-katsu",
+    "kawaii neon",
+    "concert fan sign",
+    "holographic stickers",
+    "playful premium"
+  ],
+  "palette": {
+    "background": "#07040F",
+    "surface": "#151020",
+    "primary": "#FF4DA6",
+    "secondary": "#00F2FF",
+    "mint": "#5CFFB1",
+    "lemon": "#FFE45E",
+    "pro": "#FFD166"
+  },
+  "assets": {
+    "board": "high-fidelity-board.png",
+    "appBackground": "backgrounds/app-background@3x.png",
+    "homeHero": "backgrounds/home-hero@3x.png",
+    "paywallHero": "backgrounds/paywall-hero@3x.png"
+  },
+  "implementationNotes": [
+    "Use playful accent stickers only as small supporting details.",
+    "Keep LED preview and Start action visually dominant on Home.",
+    "Do not let decorative elements reduce text readability in landscape LED mode."
+  ]
+}

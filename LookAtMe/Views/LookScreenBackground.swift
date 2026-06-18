@@ -1,13 +1,30 @@
 import SwiftUI
 
 struct LookScreenBackground: View {
+    @Environment(\.lookSkin) private var skin
+
     var body: some View {
         ZStack {
-            LookTheme.appBackground
+            Image(skin.assets.appBackground)
+                .resizable()
+                .scaledToFill()
+                .opacity(skin.chrome.backgroundImageOpacity)
+                .overlay(
+                    LinearGradient(
+                        colors: [
+                            skin.background.opacity(1 - skin.chrome.glassOpacity * 0.45),
+                            skin.background.opacity(0.78),
+                            skin.background.opacity(0.94)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+
             RadialGradient(
                 colors: [
-                    LookTheme.Colors.primaryPink.opacity(0.24),
-                    LookTheme.Colors.neonPurple.opacity(0.12),
+                    skin.primary.opacity(0.18),
+                    skin.secondary.opacity(0.08),
                     .clear
                 ],
                 center: .top,
@@ -16,15 +33,41 @@ struct LookScreenBackground: View {
             )
             RadialGradient(
                 colors: [
-                    LookTheme.Colors.electricBlue.opacity(0.12),
+                    skin.secondary.opacity(0.14),
                     .clear
                 ],
                 center: .bottomTrailing,
                 startRadius: 20,
                 endRadius: 300
             )
+
+            if skin.isNeonUtilityPro {
+                UtilityGridOverlay()
+                    .stroke(skin.secondary.opacity(0.08), lineWidth: 0.6)
+                    .blendMode(.plusLighter)
+            }
         }
         .ignoresSafeArea()
     }
 }
 
+private struct UtilityGridOverlay: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let step: CGFloat = 32
+        var x = rect.minX
+        while x <= rect.maxX {
+            path.move(to: CGPoint(x: x, y: rect.minY))
+            path.addLine(to: CGPoint(x: x, y: rect.maxY))
+            x += step
+        }
+
+        var y = rect.minY
+        while y <= rect.maxY {
+            path.move(to: CGPoint(x: rect.minX, y: y))
+            path.addLine(to: CGPoint(x: rect.maxX, y: y))
+            y += step
+        }
+        return path
+    }
+}

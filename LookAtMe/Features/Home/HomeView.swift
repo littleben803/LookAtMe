@@ -45,6 +45,7 @@ struct HomeView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @EnvironmentObject private var appReviewPromptStore: AppReviewPromptStore
     @EnvironmentObject private var devicePerformanceStore: DevicePerformanceStore
+    @Environment(\.lookSkin) private var skin
 
     @State private var path: [FeatureRoute] = []
     @State private var toastMessage: String?
@@ -138,6 +139,10 @@ struct HomeView: View {
             DisplaySettingsView()
         case .languageSettings:
             LanguageSettingsView()
+#if DEBUG
+        case .debugThemeSettings:
+            DebugThemeSettingsView()
+#endif
         case .help:
             HelpView()
         case .about:
@@ -159,9 +164,9 @@ struct HomeView: View {
         .background(
             LinearGradient(
                 colors: [
-                    Color(hex: "#05040B").opacity(0.98),
-                    Color(hex: "#05040B").opacity(0.9),
-                    Color(hex: "#05040B").opacity(0.0)
+                    skin.background.opacity(0.98),
+                    skin.background.opacity(0.9),
+                    skin.background.opacity(0.0)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -199,50 +204,59 @@ struct HomeView: View {
                     .allowsHitTesting(false)
             }
 
-            VStack(spacing: 8) {
-                Spacer(minLength: 0)
+            VStack(spacing: skin.isNeonUtilityPro ? 7 : 8) {
+                Spacer(minLength: max(12, topSafeArea * 0.22))
 
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
+                    Image(systemName: skin.chrome.sectionSymbol)
+                        .font(.system(size: 13, weight: .black, design: .rounded))
+                        .foregroundColor(skin.secondary)
+                        .frame(width: 26, height: 26)
+                        .background(Circle().fill(Color.black.opacity(0.42)))
+                        .overlay(Circle().stroke(skin.secondary.opacity(0.42), lineWidth: 0.8))
+
                     Text(L10n.key(L10n.Home.appName))
-                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .font(.system(size: skin.isNeonUtilityPro ? 26 : 29, weight: .black, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
-                                    Color(hex: "#FFE1F5"),
-                                    LookTheme.Colors.primaryPink,
-                                    Color(hex: "#FF89D2")
+                                    skin.textPrimary,
+                                    skin.primary,
+                                    skin.secondary.opacity(0.88)
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.95), radius: 11)
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.55), radius: 24)
+                        .shadow(color: skin.primary.opacity(0.95), radius: 11)
+                        .shadow(color: skin.secondary.opacity(0.36), radius: 24)
+                        .lineLimit(1)
 
-                    Image(systemName: "heart")
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundColor(LookTheme.Colors.primaryPink)
-                        .rotationEffect(.degrees(-14))
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.9), radius: 9)
-                }
+                    Spacer(minLength: 0)
 
-                HStack(spacing: 8) {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 8, weight: .bold))
                     Text(L10n.key(L10n.Home.tagline))
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 11, weight: .heavy, design: .rounded))
+                        .foregroundColor(skin.textSecondary.opacity(0.86))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.68)
                 }
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundColor(LookTheme.Colors.softPink)
-                .shadow(color: LookTheme.Colors.primaryPink.opacity(0.5), radius: 7)
+                .padding(.horizontal, 18)
+
+                HomeHeroDisplayPanel(text: heroPreviewText)
+                    .padding(.horizontal, 18)
+
+                HStack(spacing: 6) {
+                    HomeHeroPill(title: L10n.Home.heroLedReady, systemImage: "textformat.size")
+                    HomeHeroPill(title: L10n.Home.heroLiveMode, systemImage: "dot.radiowaves.left.and.right")
+                    HomeHeroPill(title: L10n.Home.heroTemplates, systemImage: "square.grid.2x2.fill")
+                }
+                .padding(.top, 2)
 
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.top, 18)
-            .padding(.bottom, 18)
-            .offset(y: max(20, topSafeArea * 0.44))
+            .padding(.top, max(12, topSafeArea * 0.28))
+            .padding(.bottom, 14)
 
             if !purchaseManager.isProUnlocked {
                 Button {
@@ -253,15 +267,15 @@ struct HomeView: View {
                         Text(L10n.key(L10n.Common.pro))
                     }
                     .font(.system(size: 11, weight: .heavy, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.warmYellow)
+                    .foregroundColor(skin.pro)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
                     .background(
                         Capsule()
                             .fill(Color.black.opacity(0.58))
-                            .overlay(Capsule().stroke(LookTheme.Colors.warmYellow.opacity(0.45), lineWidth: 0.8))
+                            .overlay(Capsule().stroke(skin.pro.opacity(0.45), lineWidth: 0.8))
                     )
-                    .shadow(color: LookTheme.Colors.warmYellow.opacity(0.32), radius: 8)
+                    .shadow(color: skin.pro.opacity(0.32), radius: 8)
                 }
                 .buttonStyle(.plain)
                 .padding(.top, max(30, topSafeArea + 6))
@@ -270,7 +284,7 @@ struct HomeView: View {
         }
         .aspectRatio(1320.0 / 598.0, contentMode: .fit)
         .frame(maxWidth: .infinity)
-        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.24), radius: 18, y: 10)
+        .shadow(color: skin.primary.opacity(0.24), radius: 18, y: 10)
     }
 
     private var inputSection: some View {
@@ -287,10 +301,10 @@ struct HomeView: View {
             } label: {
                 Image(systemName: favoriteStore.isFavorite(draft: displayConfigStore.draft(styleStore: styleStore)) ? "heart.fill" : "heart")
                     .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(LookTheme.Colors.primaryPink)
+                    .foregroundColor(skin.primary)
                     .frame(width: 28, height: 28)
                     .background(Circle().fill(Color.black.opacity(0.36)))
-                    .overlay(Circle().stroke(LookTheme.Colors.primaryPink.opacity(0.38), lineWidth: 0.8))
+                    .overlay(Circle().stroke(skin.primary.opacity(0.38), lineWidth: 0.8))
             }
             .buttonStyle(.plain)
             .padding(.top, 9)
@@ -314,7 +328,7 @@ struct HomeView: View {
             SceneShortcutButton(
                 title: L10n.Common.more,
                 systemImage: "square.grid.2x2.fill",
-                tint: LookTheme.Colors.neonPurple,
+                tint: skin.secondary,
                 isSelected: false
             ) {
                 path.append(.more)
@@ -331,7 +345,10 @@ struct HomeView: View {
 
             LazyVGrid(columns: templateColumns, spacing: 10) {
                 ForEach(homeTemplates) { template in
-                    TemplateChip(title: template.titleKey) {
+                    TemplateChip(
+                        title: template.localizedTitle(locale: settingsStore.appLanguage.locale),
+                        isPro: template.isPro && !purchaseManager.isProUnlocked
+                    ) {
                         applyTemplate(template)
                     }
                 }
@@ -457,7 +474,7 @@ struct HomeView: View {
                     Spacer()
                     Image(systemName: "play.fill")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(LookTheme.Colors.primaryPink)
+                        .foregroundColor(skin.primary)
                         .frame(width: 42, height: 42)
                         .background(Circle().fill(Color.white))
                         .shadow(color: Color.white.opacity(0.42), radius: 8)
@@ -469,8 +486,8 @@ struct HomeView: View {
                 LinearGradient(
                     colors: [
                         Color(hex: "#FF2E8F"),
-                        LookTheme.Colors.primaryPink,
-                        Color(hex: "#FF6DBE")
+                        skin.primary,
+                        skin.secondary.opacity(0.78)
                     ],
                     startPoint: .leading,
                     endPoint: .trailing
@@ -478,7 +495,7 @@ struct HomeView: View {
             )
             .clipShape(Capsule())
             .overlay(Capsule().stroke(Color.white.opacity(0.12), lineWidth: 1))
-            .shadow(color: LookTheme.Colors.primaryPink.opacity(0.48), radius: 16, y: 6)
+            .shadow(color: skin.primary.opacity(0.48), radius: 16, y: 6)
         }
         .buttonStyle(.plain)
     }
@@ -491,9 +508,9 @@ struct HomeView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(hex: "#05040B").opacity(0.0),
-                        Color(hex: "#05040B").opacity(0.88),
-                        Color(hex: "#05040B").opacity(0.96)
+                        skin.background.opacity(0.0),
+                        skin.background.opacity(0.88),
+                        skin.background.opacity(0.96)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -502,26 +519,26 @@ struct HomeView: View {
     }
 
     private var homeTemplates: [BannerTemplate] {
-        guard displayConfigStore.selectedScene == .concert else {
-            return templateStore.homeTemplates(for: displayConfigStore.selectedScene)
-        }
+        templateStore.homeTemplates(for: displayConfigStore.selectedScene)
+    }
 
-        return [
-            BannerTemplate(id: "home-target-zhou-shen", scene: .concert, isPro: false),
-            BannerTemplate(id: "home-target-an-yi", scene: .concert, isPro: false),
-            BannerTemplate(id: "home-target-birthday", scene: .concert, isPro: false),
-            BannerTemplate(id: "home-target-here", scene: .concert, isPro: false),
-            BannerTemplate(id: "home-target-star", scene: .concert, isPro: false),
-            BannerTemplate(id: "home-target-call", scene: .concert, isPro: false)
-        ]
+    private var heroPreviewText: String {
+        let trimmedText = displayConfigStore.trimmedText
+        return trimmedText.isEmpty ? localized(L10n.Home.inputExample) : trimmedText
     }
 
     private func homeSectionHeader(_ title: String, action: @escaping () -> Void) -> some View {
         HStack(alignment: .center) {
-            Text(L10n.key(title))
-                .font(.system(size: 18, weight: .heavy, design: .rounded))
-                .foregroundColor(LookTheme.Colors.textPrimary)
-                .shadow(color: LookTheme.Colors.primaryPink.opacity(0.28), radius: 6)
+            HStack(spacing: 7) {
+                Image(systemName: skin.chrome.sectionSymbol)
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundColor(skin.secondary)
+
+                Text(L10n.key(title))
+                    .font(.system(size: 18, weight: .heavy, design: .rounded))
+                    .foregroundColor(skin.textPrimary)
+                    .shadow(color: skin.primary.opacity(0.28), radius: 6)
+            }
 
             Spacer()
 
@@ -532,7 +549,7 @@ struct HomeView: View {
                         .font(.system(size: 9, weight: .bold))
                 }
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.7))
+                .foregroundColor(skin.textTertiary.opacity(0.76))
             }
             .buttonStyle(.plain)
         }
@@ -594,7 +611,7 @@ struct HomeView: View {
 
     private func applyTemplate(_ template: BannerTemplate) {
         guard purchaseManager.canUse(template) else {
-            showPaywall(.template(titleKey: template.titleKey)) {
+            showPaywall(.template(title: template.localizedTitle(locale: settingsStore.appLanguage.locale))) {
                 applyTemplate(template)
             }
             return
@@ -657,15 +674,195 @@ struct HomeView: View {
     }
 }
 
-private struct HomeStageBackground: View {
+private struct HomeHeroDisplayPanel: View {
+    let text: String
+    @Environment(\.lookSkin) private var skin
+
     var body: some View {
         ZStack {
-            Color(hex: "#05040B")
+            RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 8, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.82),
+                            skin.backgroundElevated.opacity(0.88)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 8, style: .continuous)
+                        .stroke(skin.neonBorderGradient, lineWidth: 1.1)
+                )
+
+            heroAccentLayer
+                .clipShape(RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 8, style: .continuous))
+
+            HStack(spacing: 10) {
+                Image(systemName: skin.chrome.homePreviewSymbol)
+                    .font(.system(size: skin.isLiveStageConsole ? 16 : 15, weight: .black, design: .rounded))
+                    .foregroundColor(skin.secondary)
+                    .frame(width: 30, height: 30)
+                    .background(Circle().fill(skin.secondary.opacity(0.13)))
+                    .overlay(Circle().stroke(skin.secondary.opacity(0.34), lineWidth: 0.8))
+
+                Text(text)
+                    .font(.system(size: skin.isNeonUtilityPro ? 25 : 28, weight: .black, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [skin.textPrimary, skin.primary, skin.pro.opacity(0.92)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.48)
+                    .shadow(color: skin.primary.opacity(0.95), radius: 8)
+                    .shadow(color: skin.secondary.opacity(0.42), radius: 18)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 12)
+        }
+        .frame(height: skin.isNeonUtilityPro ? 56 : 62)
+        .shadow(color: skin.primary.opacity(0.32), radius: 16, y: 7)
+    }
+
+    @ViewBuilder
+    private var heroAccentLayer: some View {
+        if skin.isOshiPopNeon {
+            HStack {
+                Spacer()
+                ForEach(0..<4, id: \.self) { index in
+                    Image(systemName: index.isMultiple(of: 2) ? "heart.fill" : "sparkle")
+                        .font(.system(size: CGFloat(9 + index * 2), weight: .black, design: .rounded))
+                        .foregroundColor(index.isMultiple(of: 2) ? skin.primary.opacity(0.32) : skin.pro.opacity(0.3))
+                        .rotationEffect(.degrees(Double(index * 13 - 18)))
+                }
+            }
+            .padding(.trailing, 14)
+        } else if skin.isLiveStageConsole {
+            HStack(alignment: .bottom, spacing: 5) {
+                Spacer()
+                ForEach(0..<9, id: \.self) { index in
+                    Capsule()
+                        .fill(index.isMultiple(of: 2) ? skin.secondary.opacity(0.28) : skin.primary.opacity(0.24))
+                        .frame(width: 4, height: CGFloat(14 + (index % 4) * 7))
+                        .shadow(color: skin.secondary.opacity(0.22), radius: 6)
+                }
+            }
+            .padding(.trailing, 18)
+            .padding(.bottom, 10)
+        } else {
+            ZStack(alignment: .trailing) {
+                UtilityHeroGrid()
+                    .stroke(skin.secondary.opacity(0.16), lineWidth: 0.7)
+
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, skin.accent.opacity(0.22), .clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 88)
+                    .blendMode(.plusLighter)
+            }
+        }
+    }
+}
+
+private struct UtilityHeroGrid: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let step: CGFloat = 18
+        var x = rect.minX
+        while x <= rect.maxX {
+            path.move(to: CGPoint(x: x, y: rect.minY))
+            path.addLine(to: CGPoint(x: x, y: rect.maxY))
+            x += step
+        }
+
+        var y = rect.minY
+        while y <= rect.maxY {
+            path.move(to: CGPoint(x: rect.minX, y: y))
+            path.addLine(to: CGPoint(x: rect.maxX, y: y))
+            y += step
+        }
+        return path
+    }
+}
+
+private struct HomeHeroPill: View {
+    let title: String
+    let systemImage: String
+    @Environment(\.lookSkin) private var skin
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+                .font(.system(size: 8.5, weight: .black, design: .rounded))
+
+            Text(L10n.key(title))
+                .font(.system(size: 9.5, weight: .black, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+        }
+        .foregroundColor(skin.textPrimary.opacity(0.92))
+        .padding(.horizontal, 7)
+        .padding(.vertical, 4)
+        .background(
+            Capsule()
+                .fill(Color.black.opacity(0.36))
+                .overlay(
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    skin.primary.opacity(0.18),
+                                    skin.secondary.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                )
+        )
+        .overlay(
+            Capsule()
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            skin.textSecondary.opacity(0.5),
+                            skin.secondary.opacity(0.25)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.8
+                )
+        )
+        .shadow(color: skin.primary.opacity(0.22), radius: 8)
+    }
+}
+
+private struct HomeStageBackground: View {
+    @Environment(\.lookSkin) private var skin
+
+    var body: some View {
+        ZStack {
+            Image(skin.assets.appBackground)
+                .resizable()
+                .scaledToFill()
+                .opacity(skin.chrome.backgroundImageOpacity)
+                .overlay(skin.background.opacity(skin.isLiveStageConsole ? 0.56 : 0.62))
 
             RadialGradient(
                 colors: [
-                    LookTheme.Colors.primaryPink.opacity(0.28),
-                    LookTheme.Colors.neonPurple.opacity(0.16),
+                    skin.primary.opacity(0.18),
+                    skin.secondary.opacity(0.1),
                     .clear
                 ],
                 center: .topLeading,
@@ -676,8 +873,8 @@ private struct HomeStageBackground: View {
 
             RadialGradient(
                 colors: [
-                    LookTheme.Colors.electricBlue.opacity(0.12),
-                    LookTheme.Colors.neonPurple.opacity(0.1),
+                    skin.secondary.opacity(0.12),
+                    skin.accent.opacity(0.08),
                     .clear
                 ],
                 center: .bottomTrailing,
@@ -688,7 +885,7 @@ private struct HomeStageBackground: View {
             LinearGradient(
                 colors: [
                     Color.black.opacity(0.18),
-                    Color(hex: "#12051F").opacity(0.6),
+                    skin.backgroundElevated.opacity(0.58),
                     Color.black.opacity(0.72)
                 ],
                 startPoint: .top,
@@ -700,6 +897,8 @@ private struct HomeStageBackground: View {
 }
 
 private struct HeroStageBackdrop: View {
+    @Environment(\.lookSkin) private var skin
+
     var body: some View {
         GeometryReader { proxy in
             heroImage(width: proxy.size.width, height: proxy.size.height)
@@ -720,7 +919,7 @@ private struct HeroStageBackdrop: View {
     }
 
     private func heroImage(width: CGFloat, height: CGFloat) -> some View {
-        Image("HomeHeroStage")
+        Image(skin.assets.homeHero)
             .resizable()
             .scaledToFill()
             .frame(width: width, height: height)

@@ -3,6 +3,7 @@ import SwiftUI
 struct FontPickerView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @Environment(\.lookSkin) private var skin
     @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
@@ -46,17 +47,17 @@ struct FontPickerView: View {
                         HStack {
                             Text(L10n.key(fontStyle.titleKey))
                                 .font(LookTypography.body.weight(.semibold))
-                                .foregroundColor(LookTheme.Colors.textPrimary)
+                                .foregroundColor(skin.textPrimary)
                             Spacer()
                             if displayConfigStore.fontStyle == fontStyle {
                                 Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 19, weight: .bold))
-                                    .foregroundColor(LookTheme.Colors.primaryPink)
+                                    .foregroundColor(skin.primary)
                             }
                             if isFontLocked(fontStyle) {
                                 Image(systemName: "lock.fill")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(LookTheme.Colors.warmYellow)
+                                    .foregroundColor(skin.pro)
                             }
                             if isFontLocked(fontStyle) {
                                 ProBadge()
@@ -65,7 +66,7 @@ struct FontPickerView: View {
 
                         Text(fontStyle.subtitle)
                             .font(LookTypography.caption)
-                            .foregroundColor(LookTheme.Colors.textTertiary)
+                            .foregroundColor(skin.textTertiary)
 
                         Text(L10n.key(L10n.Appearance.previewMessage))
                             .font(fontStyle.font(size: 28))
@@ -79,7 +80,7 @@ struct FontPickerView: View {
             }
             .overlay(
                 RoundedRectangle(cornerRadius: LookRadius.card, style: .continuous)
-                    .stroke(displayConfigStore.fontStyle == fontStyle ? LookTheme.Colors.primaryPink : .clear, lineWidth: 1.8)
+                    .stroke(displayConfigStore.fontStyle == fontStyle ? skin.primary : .clear, lineWidth: 1.8)
             )
         }
         .buttonStyle(.plain)

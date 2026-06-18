@@ -35,6 +35,7 @@ struct LookAppApp: App {
     @StateObject private var purchaseManager = PurchaseManager()
     @StateObject private var appReviewPromptStore = AppReviewPromptStore()
     @StateObject private var devicePerformanceStore = DevicePerformanceStore()
+    @StateObject private var skinManager = LookSkinManager()
 
     var body: some Scene {
         WindowGroup {
@@ -47,7 +48,12 @@ struct LookAppApp: App {
                 .environmentObject(purchaseManager)
                 .environmentObject(appReviewPromptStore)
                 .environmentObject(devicePerformanceStore)
+                .environmentObject(skinManager)
+                .environment(\.lookSkin, skinManager.skin)
                 .environment(\.locale, settingsStore.appLanguage.locale)
+                .onReceive(NotificationCenter.default.publisher(for: NSLocale.currentLocaleDidChangeNotification)) { _ in
+                    skinManager.refreshFromSystemLanguage()
+                }
 #if DEBUG
                 .debugLaunchPaywallIfNeeded(purchaseManager: purchaseManager)
 #endif

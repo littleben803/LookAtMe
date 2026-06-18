@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BackgroundColorPickerView: View {
     @EnvironmentObject private var displayConfigStore: DisplayConfigStore
+    @Environment(\.lookSkin) private var skin
 
     private let colors = [
         "#0D0221", "#160428", "#1F0A36", "#2A0E4D",
@@ -25,7 +26,7 @@ struct BackgroundColorPickerView: View {
                             displayConfigStore.backgroundColorHex = LookTheme.Hex.backgroundBlack
                         }
                         .font(LookTypography.caption.weight(.semibold))
-                        .foregroundColor(LookTheme.Colors.hotPink)
+                        .foregroundColor(skin.primary)
                     }
 
                     previewCard
@@ -53,22 +54,22 @@ struct BackgroundColorPickerView: View {
 
     private var previewCard: some View {
         ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: LookRadius.card, style: .continuous)
+            RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
                             Color(hex: displayConfigStore.backgroundColorHex),
-                            LookTheme.Colors.cardPurple.opacity(0.88)
+                            skin.card.opacity(0.88)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: LookRadius.card, style: .continuous)
-                        .stroke(LookTheme.neonBorderGradient, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                        .stroke(skin.neonBorderGradient, lineWidth: 1)
                 )
-                .shadow(color: LookTheme.Colors.primaryPink.opacity(0.24), radius: 18, y: 10)
+                .shadow(color: skin.primary.opacity(0.24), radius: 18, y: 10)
 
             Text(L10n.key(L10n.Home.appName))
                 .font(displayConfigStore.fontStyle.font(size: 34 * displayConfigStore.fontScale))

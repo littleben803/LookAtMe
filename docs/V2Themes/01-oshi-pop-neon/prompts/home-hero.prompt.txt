@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1246
+Timestamp: 2026-06-17T19:23:29.490Z
+Call ID: ig_05eea055be06e849016a32f40e66348191831e2c5c44f45564
+
+Use case: ui-mockup
+Asset type: 16:9 home hero background bitmap for iOS LED sign app
+Primary request: Generate a high-resolution landscape hero background for the Oshi Pop Neon theme. It will sit behind the Home screen LED preview area, not as a full UI.
+Visual direction: Japanese oshi-katsu concert venue, glossy black stage depth, hot pink and electric cyan light beams, mint and lemon LED dot sparkles, subtle holographic sticker shimmer, premium kawaii neon energy without characters.
+Composition/framing: 16:9 landscape, strong center focal glow suitable for an LED text preview overlay, darker edges for readable UI chrome, no phones, no controls, no UI cards.
+Style/medium: polished digital product background asset, crisp high-resolution, cinematic but playful.
+Constraints: no readable text, no logos, no watermark, no anime characters, no generic gradient blobs, no HTML/CSS look, avoid overcrowding.

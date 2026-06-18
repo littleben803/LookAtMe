@@ -141,6 +141,9 @@ enum L10n {
     enum Home {
         static let appName = "home.app_name"
         static let tagline = "home.tagline"
+        static let heroLedReady = "home.hero_pill.led_ready"
+        static let heroLiveMode = "home.hero_pill.live_mode"
+        static let heroTemplates = "home.hero_pill.templates"
         static let placeholderMessage = "home.placeholder.message"
         static let inputPlaceholder = "home.input.placeholder"
         static let inputExample = "home.input.example"
@@ -225,6 +228,9 @@ enum L10n {
         static let filterAll = "style_picker.filter.all"
         static let filterFree = "style_picker.filter.free"
         static let filterPremium = "style_picker.filter.premium"
+        static let proTeaserTitle = "style_picker.pro_teaser.title"
+        static let proTeaserSubtitle = "style_picker.pro_teaser.subtitle"
+        static let proTeaserAction = "style_picker.pro_teaser.action"
     }
 
     enum Appearance {
@@ -284,6 +290,10 @@ enum L10n {
         static let birthday = "banner_scene.birthday"
         static let pickup = "banner_scene.pickup"
         static let fun = "banner_scene.fun"
+        static let sports = "banner_scene.sports"
+        static let school = "banner_scene.school"
+        static let travel = "banner_scene.travel"
+        static let oshi = "banner_scene.oshi"
     }
 
     enum BannerFontStyle {
@@ -343,6 +353,9 @@ enum L10n {
     enum Pro {
         static let title = "pro.title"
         static let subtitle = "pro.subtitle"
+        static let heroBadgeEffects = "pro.hero_badge.effects"
+        static let heroBadgeTemplates = "pro.hero_badge.templates"
+        static let heroBadgeSavedLooks = "pro.hero_badge.saved_looks"
         static let finePrint = "pro.fine_print"
         static let restorePurchase = "pro.restore_purchase"
         static let later = "pro.later"

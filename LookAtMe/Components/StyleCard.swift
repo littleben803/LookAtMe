@@ -13,6 +13,7 @@ struct StyleCard: View {
     let action: () -> Void
 
     @Environment(\.locale) private var environmentLocale
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         if isCompact {
@@ -42,9 +43,9 @@ struct StyleCard: View {
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(isSelected ? LookTheme.Colors.primaryPink : LookTheme.Colors.neonPurple.opacity(0.42), lineWidth: isSelected ? 1.6 : 0.9)
+                                .stroke(isSelected ? skin.primary : skin.secondary.opacity(0.42), lineWidth: isSelected ? 1.6 : 0.9)
                         )
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(isSelected ? 0.34 : 0.12), radius: isSelected ? 12 : 7)
+                        .shadow(color: skin.primary.opacity(isSelected ? 0.34 : 0.12), radius: isSelected ? 12 : 7)
 
                     if showsAccessTag {
                         StyleAccessTag(isPro: style.isPro)
@@ -55,7 +56,7 @@ struct StyleCard: View {
 
                 Text(L10n.key(style.nameKey))
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundColor(LookTheme.Colors.textPrimary)
+                    .foregroundColor(skin.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity)
@@ -70,7 +71,7 @@ struct StyleCard: View {
     private var regularBody: some View {
         Button(action: action) {
             ZStack(alignment: .topTrailing) {
-                VStack(alignment: isCompact ? .center : .leading, spacing: isCompact ? 5 : LookSpacing.xs) {
+                VStack(alignment: .leading, spacing: LookSpacing.sm) {
                     ZStack {
                         stylePreview
                             .opacity(isLocked ? 0.45 : 1)
@@ -79,47 +80,54 @@ struct StyleCard: View {
                             StyleLockOverlay()
                         }
                     }
-                        .frame(height: isCompact ? 50 : 64)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: isCompact ? 10 : LookRadius.styleCard, style: .continuous)
-                                .fill(Color(hex: "#090614"))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: isCompact ? 10 : LookRadius.styleCard, style: .continuous)
-                                .stroke(LookTheme.Colors.neonPurple.opacity(isCompact ? 0.35 : 0.42), lineWidth: isCompact ? 0.8 : 1)
-                        )
+                    .frame(height: 82)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 4, style: .continuous)
+                            .fill(Color(hex: "#090614"))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 4, style: .continuous)
+                            .stroke(skin.secondary.opacity(0.42), lineWidth: 1)
+                    )
 
-                    HStack(spacing: isCompact ? 2 : LookSpacing.xs) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(L10n.key(style.nameKey))
-                                .font(.system(size: isCompact ? 10.5 : 13, weight: .bold, design: .rounded))
-                                .foregroundColor(LookTheme.Colors.textPrimary)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.62)
+                    HStack(spacing: LookSpacing.xs) {
+                        Text(L10n.key(style.nameKey))
+                            .font(.system(size: 14, weight: .heavy, design: .rounded))
+                            .foregroundColor(skin.textPrimary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.62)
 
-                            Text(L10n.key(style.isPro ? L10n.Common.premiumStyle : L10n.Common.free))
-                                .font(.system(size: isCompact ? 9 : 12, weight: .semibold, design: .rounded))
-                                .foregroundColor(style.isPro ? LookTheme.Colors.warmYellow : LookTheme.Colors.textTertiary)
+                        Spacer(minLength: 0)
+
+                        StyleAccessTag(isPro: style.isPro)
+
+                        if isSelected {
+                            Image(systemName: skin.chrome.styleSelectedSymbol)
+                                .font(.system(size: 14, weight: .black, design: .rounded))
+                                .foregroundColor(skin.primary)
+                                .shadow(color: skin.primary.opacity(0.54), radius: 7)
                         }
-                        Spacer(minLength: isCompact ? 0 : LookSpacing.xs)
                     }
                 }
-                .padding(isCompact ? 6 : LookSpacing.sm)
+                .padding(LookSpacing.sm)
                 .background(
-                    RoundedRectangle(cornerRadius: isCompact ? 12 : LookRadius.styleCard, style: .continuous)
-                        .fill(Color(hex: "#120A1E").opacity(0.94))
+                    RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                        .fill(skin.card.opacity(0.94))
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: isCompact ? 12 : LookRadius.styleCard, style: .continuous)
-                        .stroke(isSelected ? LookTheme.Colors.primaryPink : LookTheme.Colors.primaryPink.opacity(0.24), lineWidth: isSelected ? (isCompact ? 1.2 : 1.8) : 0.8)
+                    RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                        .stroke(isSelected ? skin.primary : skin.primary.opacity(0.24), lineWidth: isSelected ? 1.8 : 0.8)
                 )
-                .shadow(color: LookTheme.Colors.primaryPink.opacity(isSelected ? 0.34 : 0.14), radius: isSelected ? (isCompact ? 12 : 16) : 7)
+                .shadow(color: skin.primary.opacity(isSelected ? 0.34 : 0.14), radius: isSelected ? 16 : 7)
 
-                if showsAccessTag, style.isPro {
-                    ProBadge()
-                        .scaleEffect(isCompact ? 0.72 : 1)
-                        .padding(isCompact ? 2 : 8)
+                if showsAccessTag, style.isPro, isLocked {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundColor(skin.background)
+                        .frame(width: 28, height: 28)
+                        .background(Circle().fill(skin.pro))
+                        .padding(8)
                 }
             }
         }
@@ -414,19 +422,22 @@ struct StyleCard: View {
 }
 
 private struct StyleLockOverlay: View {
+    @Environment(\.lookSkin) private var skin
+
     var body: some View {
         Image(systemName: "lock.fill")
             .font(.system(size: 12, weight: .bold))
-            .foregroundColor(LookTheme.Colors.warmYellow)
+            .foregroundColor(skin.pro)
             .frame(width: 28, height: 28)
             .background(Circle().fill(Color.black.opacity(0.68)))
-            .overlay(Circle().stroke(LookTheme.Colors.warmYellow.opacity(0.58), lineWidth: 1))
-            .shadow(color: LookTheme.Colors.warmYellow.opacity(0.38), radius: 8)
+            .overlay(Circle().stroke(skin.pro.opacity(0.58), lineWidth: 1))
+            .shadow(color: skin.pro.opacity(0.38), radius: 8)
     }
 }
 
 private struct StyleAccessTag: View {
     let isPro: Bool
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         HStack(spacing: 3) {
@@ -435,7 +446,7 @@ private struct StyleAccessTag: View {
             Text(L10n.key(isPro ? L10n.Common.pro : L10n.Common.free))
                 .font(.system(size: 8, weight: .heavy, design: .rounded))
         }
-        .foregroundColor(isPro ? LookTheme.Colors.backgroundBlack : LookTheme.Colors.textPrimary)
+        .foregroundColor(isPro ? skin.background : skin.textPrimary)
         .padding(.horizontal, 5)
         .padding(.vertical, 3)
         .background(
@@ -452,13 +463,13 @@ private struct StyleAccessTag: View {
     private var background: LinearGradient {
         if isPro {
             LinearGradient(
-                colors: [LookTheme.Colors.warmYellow, Color(hex: "#FFB703")],
+                colors: [skin.pro, Color(hex: "#FFB703")],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         } else {
             LinearGradient(
-                colors: [Color(hex: "#20112E").opacity(0.96), Color(hex: "#3A1633").opacity(0.96)],
+                colors: [skin.card.opacity(0.96), skin.cardElevated.opacity(0.96)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -466,10 +477,10 @@ private struct StyleAccessTag: View {
     }
 
     private var borderColor: Color {
-        isPro ? LookTheme.Colors.warmYellow.opacity(0.75) : LookTheme.Colors.primaryPink.opacity(0.5)
+        isPro ? skin.pro.opacity(0.75) : skin.primary.opacity(0.5)
     }
 
     private var shadowColor: Color {
-        isPro ? LookTheme.Colors.warmYellow.opacity(0.34) : LookTheme.Colors.primaryPink.opacity(0.2)
+        isPro ? skin.pro.opacity(0.34) : skin.primary.opacity(0.2)
     }
 }

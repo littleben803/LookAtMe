@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PurchaseSuccessView: View {
     let onStart: () -> Void
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack {
@@ -18,24 +19,24 @@ struct PurchaseSuccessView: View {
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
-                                    LookTheme.Colors.textPrimary,
-                                    LookTheme.Colors.softPink,
-                                    LookTheme.Colors.primaryPink
+                                    skin.textPrimary,
+                                    skin.textSecondary,
+                                    skin.primary
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
                         .multilineTextAlignment(.center)
-                        .shadow(color: LookTheme.Colors.primaryPink.opacity(0.62), radius: 18)
+                        .shadow(color: skin.primary.opacity(0.62), radius: 18)
 
                     Text(L10n.key(L10n.Pro.Success.subtitle))
                         .font(LookTypography.sectionTitle)
-                        .foregroundColor(LookTheme.Colors.hotPink)
+                        .foregroundColor(skin.primary)
 
                     Text(L10n.key(L10n.Pro.Success.message))
                         .font(LookTypography.body)
-                        .foregroundColor(LookTheme.Colors.textTertiary)
+                        .foregroundColor(skin.textTertiary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -56,8 +57,8 @@ struct PurchaseSuccessView: View {
                 .fill(
                     RadialGradient(
                         colors: [
-                            LookTheme.Colors.primaryPink.opacity(0.42),
-                            LookTheme.Colors.neonPurple.opacity(0.18),
+                            skin.primary.opacity(0.42),
+                            skin.secondary.opacity(0.18),
                             .clear
                         ],
                         center: .center,
@@ -69,27 +70,27 @@ struct PurchaseSuccessView: View {
                 .blur(radius: 2)
 
             Circle()
-                .fill(LookTheme.Colors.cardPurple.opacity(0.88))
+                .fill(skin.card.opacity(0.88))
                 .frame(width: 112, height: 112)
                 .overlay(
                     Circle()
-                        .stroke(LookTheme.neonBorderGradient, lineWidth: 1.4)
+                        .stroke(skin.neonBorderGradient, lineWidth: 1.4)
                 )
-                .shadow(color: LookTheme.Colors.primaryPink.opacity(0.48), radius: 28)
+                .shadow(color: skin.primary.opacity(0.48), radius: 28)
 
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 44, weight: .black, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [
-                            LookTheme.Colors.warmYellow,
-                            LookTheme.Colors.hotPink
+                            skin.pro,
+                            skin.primary
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .shadow(color: LookTheme.Colors.warmYellow.opacity(0.58), radius: 16)
+                .shadow(color: skin.pro.opacity(0.58), radius: 16)
         }
     }
 }

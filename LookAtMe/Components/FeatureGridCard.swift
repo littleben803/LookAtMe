@@ -28,6 +28,7 @@ struct FeatureGridCardLabel: View {
     let systemImage: String
     var isPro: Bool = false
     var isLocked: Bool = false
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -37,26 +38,26 @@ struct FeatureGridCardLabel: View {
                     .foregroundStyle(
                         LinearGradient(
                             colors: isLocked
-                                ? [LookTheme.Colors.warmYellow, LookTheme.Colors.hotPink]
-                                : [LookTheme.Colors.primaryPink, LookTheme.Colors.electricBlue],
+                                ? [skin.pro, skin.primary]
+                                : [skin.primary, skin.secondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .frame(width: 42, height: 42)
-                    .background(Circle().fill(LookTheme.Colors.backgroundBlack.opacity(0.58)))
+                    .background(Circle().fill(skin.background.opacity(0.58)))
 
                 VStack(alignment: .leading, spacing: LookSpacing.xxs) {
                     Text(L10n.key(title))
                         .font(LookTypography.body.weight(.semibold))
-                        .foregroundColor(LookTheme.Colors.textPrimary)
+                        .foregroundColor(skin.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
 
                     if let subtitle {
                         Text(L10n.key(subtitle))
                             .font(LookTypography.caption)
-                            .foregroundColor(LookTheme.Colors.textTertiary)
+                            .foregroundColor(skin.textTertiary)
                             .lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -65,14 +66,14 @@ struct FeatureGridCardLabel: View {
             .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
             .padding(LookSpacing.md)
             .background(
-                RoundedRectangle(cornerRadius: LookRadius.styleCard, style: .continuous)
-                    .fill(LookTheme.Colors.cardPurple.opacity(0.9))
+                RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                    .fill(skin.card.opacity(0.9))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: LookRadius.styleCard, style: .continuous)
-                    .stroke(isLocked ? LookTheme.Colors.warmYellow.opacity(0.38) : LookTheme.Colors.primaryPink.opacity(0.38), lineWidth: 1)
+                RoundedRectangle(cornerRadius: skin.chrome.cardRadius, style: .continuous)
+                    .stroke(isLocked ? skin.pro.opacity(0.38) : skin.primary.opacity(0.38), lineWidth: 1)
             )
-            .shadow(color: LookTheme.Colors.primaryPink.opacity(0.18), radius: 12, y: 8)
+            .shadow(color: skin.primary.opacity(0.18), radius: 12, y: 8)
 
             if isPro {
                 ProBadge()

@@ -7,30 +7,31 @@ struct NeonTextInput: View {
     let example: String
 
     @FocusState private var isFocused: Bool
+    @Environment(\.lookSkin) private var skin
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(hex: "#13091F").opacity(0.9))
+            RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 6, style: .continuous)
+                .fill(skin.card.opacity(0.88))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: skin.chrome.controlRadius + 6, style: .continuous)
                         .stroke(
-                            isFocused ? LookTheme.Colors.primaryPink.opacity(0.86) : LookTheme.Colors.primaryPink.opacity(0.45),
+                            isFocused ? skin.primary.opacity(0.86) : skin.primary.opacity(0.45),
                             lineWidth: isFocused ? 1.2 : 0.8
                         )
                 )
                 .shadow(
-                    color: LookTheme.Colors.primaryPink.opacity(isFocused ? 0.28 : 0.14),
+                    color: skin.primary.opacity(isFocused ? 0.28 : 0.14),
                     radius: isFocused ? 14 : 8
                 )
 
             TextEditor(text: $text)
                 .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundColor(LookTheme.Colors.textPrimary)
+                .foregroundColor(skin.textPrimary)
                 .focused($isFocused)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
-                .tint(LookTheme.Colors.primaryPink)
+                .tint(skin.primary)
                 .padding(.horizontal, 12)
                 .padding(.top, 10)
                 .padding(.bottom, 26)
@@ -44,7 +45,7 @@ struct NeonTextInput: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(L10n.key(placeholder))
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundColor(LookTheme.Colors.textTertiary.opacity(0.82))
+                        .foregroundColor(skin.textTertiary.opacity(0.82))
                         .padding(.top, 16)
                         .padding(.horizontal, 16)
 
@@ -54,7 +55,7 @@ struct NeonTextInput: View {
                         Spacer()
                         Text(L10n.key(example))
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundColor(LookTheme.Colors.softPink.opacity(0.78))
+                            .foregroundColor(skin.textSecondary.opacity(0.78))
                         Spacer(minLength: 36)
                     }
                     .padding(.bottom, 17)
@@ -68,7 +69,7 @@ struct NeonTextInput: View {
                     Spacer()
                     Text("\(text.count)/\(limit)")
                         .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
-                        .foregroundColor(text.count >= limit ? LookTheme.Colors.warning : LookTheme.Colors.textTertiary.opacity(0.82))
+                        .foregroundColor(text.count >= limit ? LookTheme.Colors.warning : skin.textTertiary.opacity(0.82))
                 }
                 .padding(.trailing, 14)
                 .padding(.bottom, 17)

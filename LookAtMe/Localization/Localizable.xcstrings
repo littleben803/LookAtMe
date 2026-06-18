@@ -651,13 +651,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fun"
+            "value" : "Party"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ネタ"
+            "value" : "パーティー"
           }
         },
         "zh-Hans" : {
@@ -699,6 +699,122 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "接機"
+          }
+        }
+      }
+    },
+    "banner_scene.school" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "School"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "学校"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "校园"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "校園"
+          }
+        }
+      }
+    },
+    "banner_scene.sports" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sports"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スポーツ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "運動"
+          }
+        }
+      }
+    },
+    "banner_scene.travel" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Travel"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "旅サイン"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "旅行"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "旅行"
+          }
+        }
+      }
+    },
+    "banner_scene.oshi" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oshi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推し活"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推し"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推し"
           }
         }
       }
@@ -2356,6 +2472,93 @@
         }
       }
     },
+    "home.hero_pill.led_ready" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LED READY"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LED準備OK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LED 就绪"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LED 就緒"
+          }
+        }
+      }
+    },
+    "home.hero_pill.live_mode" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LIVE MODE"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブ用"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现场模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現場模式"
+          }
+        }
+      }
+    },
+    "home.hero_pill.templates" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "72 TEMPLATES"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テンプレ72"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "72 条模板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "72 條模板"
+          }
+        }
+      }
+    },
     "home.input.example" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3764,25 +3967,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All neon effects"
+            "value" : "12 premium effect packs"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "すべてのネオン効果"
+            "value" : "12種類のプレミアムエフェクト"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部霓虹特效"
+            "value" : "12 种高级特效包"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部霓虹特效"
+            "value" : "12 種高級特效包"
           }
         }
       }
@@ -3793,25 +3996,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save custom styles"
+            "value" : "Save complete looks"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "カスタムスタイル保存"
+            "value" : "完成した見た目を保存"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义样式保存"
+            "value" : "保存完整灯牌组合"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自訂樣式儲存"
+            "value" : "儲存完整燈牌組合"
           }
         }
       }
@@ -3822,25 +4025,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Future premium updates"
+            "value" : "Future V2 drops included"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今後の新スタイルを無料更新"
+            "value" : "今後のV2追加パックも対象"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未来新样式免费更新"
+            "value" : "后续 V2 新内容持续解锁"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未來新樣式免費更新"
+            "value" : "後續 V2 新內容持續解鎖"
           }
         }
       }
@@ -3880,25 +4083,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Premium templates"
+            "value" : "Premium template packs"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プレミアム応援テンプレート"
+            "value" : "プレミアムテンプレートパック"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高级应援模板"
+            "value" : "高级模板包"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "進階應援模板"
+            "value" : "高級模板包"
           }
         }
       }
@@ -4112,25 +4315,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlock premium styles, templates, fonts, and unlimited favorites."
+            "value" : "Get every Pro effect, premium template pack, font, and saved look in one unlock."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プレミアムスタイル、テンプレート、フォント、無制限のお気に入りをまとめてアンロック。"
+            "value" : "Proエフェクト、テンプレートパック、フォント、保存枠をまとめてアンロック。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高级样式、模板、字体和无限收藏一次解锁。"
+            "value" : "一次解锁全部 Pro 特效、模板包、字体和收藏能力。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "進階樣式、模板、字體和無限收藏一次解鎖。"
+            "value" : "一次解鎖全部 Pro 特效、模板包、字體和收藏能力。"
           }
         }
       }
@@ -4141,25 +4344,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlock every premium banner"
+            "value" : "Unlock the full neon kit"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "すべてのプレミアムボードをアンロック"
+            "value" : "ネオン表現をフル解放"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解锁全部高级灯牌"
+            "value" : "解锁完整霓虹套装"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解鎖全部進階燈牌"
+            "value" : "解鎖完整霓虹套裝"
           }
         }
       }
@@ -4286,25 +4489,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "After purchase, the selected premium style will be applied."
+            "value" : "Use this effect now and unlock all 12 Pro effect packs."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "購入後、選択したプレミアムスタイルに自動で戻ります。"
+            "value" : "このエフェクトを使い、12種類すべてのProエフェクトをアンロック。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "购买后会自动回到刚才选择的高级样式。"
+            "value" : "立即使用当前特效，并解锁全部 12 种 Pro 特效包。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "購買後會自動回到剛才選擇的進階樣式。"
+            "value" : "立即使用目前特效，並解鎖全部 12 種 Pro 特效包。"
           }
         }
       }
@@ -4344,25 +4547,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "After purchase, the selected premium template will be used."
+            "value" : "Use this line now and unlock every premium template pack."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "購入後、選択したプレミアムテンプレートが自動で使用されます。"
+            "value" : "この一言を使い、すべてのプレミアムテンプレートパックをアンロック。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "购买后会自动使用刚才选择的高级模板。"
+            "value" : "立即使用这条文案，并解锁全部高级模板包。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "購買後會自動使用剛才選擇的進階模板。"
+            "value" : "立即使用這條文案，並解鎖全部高級模板包。"
           }
         }
       }
@@ -4657,6 +4860,93 @@
         }
       }
     },
+    "pro.hero_badge.effects" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 EFFECTS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12エフェクト"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 个特效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 個特效"
+          }
+        }
+      }
+    },
+    "pro.hero_badge.saved_looks" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SAVED LOOKS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "見た目保存"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存样式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存樣式"
+          }
+        }
+      }
+    },
+    "pro.hero_badge.templates" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TEMPLATE PACKS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テンプレパック"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板包"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板包"
+          }
+        }
+      }
+    },
     "pro.later" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4866,25 +5156,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlock every premium banner feature"
+            "value" : "Effects, templates, fonts, saved looks"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "すべてのプレミアムボード機能をアンロック"
+            "value" : "エフェクト、テンプレ、フォント、保存機能"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解锁全部高级灯牌功能"
+            "value" : "特效、模板、字体、收藏一次解锁"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解鎖全部進階燈牌功能"
+            "value" : "特效、模板、字體、收藏一次解鎖"
           }
         }
       }
@@ -7031,6 +7321,93 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "進階"
+          }
+        }
+      }
+    },
+    "style_picker.pro_teaser.action" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Browse Pro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proを見る"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看 Pro"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看 Pro"
+          }
+        }
+      }
+    },
+    "style_picker.pro_teaser.subtitle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meteor trails, lasers, fireworks, aurora waves, spotlight and glitch modes for live moments."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流星、レーザー、花火、オーロラ、スポットライト、グリッチでライブ感を強化。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流星、激光、烟花、极光、聚光和故障脉冲，让现场灯牌更有冲击力。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流星、雷射、煙花、極光、聚光和故障脈衝，讓現場燈牌更有衝擊力。"
+          }
+        }
+      }
+    },
+    "style_picker.pro_teaser.title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 Pro effect packs"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12種類のProエフェクト"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 种 Pro 特效包"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 種 Pro 特效包"
           }
         }
       }

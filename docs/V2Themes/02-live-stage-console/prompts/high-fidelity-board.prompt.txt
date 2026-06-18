@@ -1,0 +1,12 @@
+Generated with built-in Image Gen.
+Source rollout line: 1256
+Timestamp: 2026-06-17T19:25:03.025Z
+Call ID: ig_05eea055be06e849016a32f451ee7c819189b21bb50b764236
+
+Use case: ui-mockup
+Asset type: high-fidelity mobile app design board for an iOS LED sign app
+Primary request: Create a polished high-fidelity design board for theme 2 named "Live Stage Console" for the United States. Show four iPhone app screens side by side: Home LED composer, Template Center, Style Gallery, Pro Paywall. The app turns a phone into a glowing LED sign for concerts, sports, parties, birthday, crush messages, and airport pickup.
+Visual direction: American live event control console, premium festival lighting, energetic but utilitarian. Dark graphite/black base, magenta, cyan, amber, laser green accents, LED matrix previews, crisp control surfaces, stage-light depth, strong CTA hierarchy.
+Composition/framing: 16:9 landscape design board, four tall phone screens evenly spaced, native iOS product UI, first screen clearly shows a large LED preview and useful controls. Template Center must look like a polished searchable library, not a plain list. Style Gallery cards should use the whole card area with preview art and compact title/badge layout.
+UI content: readable short labels such as Home, Templates, Styles, Pro, Live Sign, Concert, Sports, Birthday, Pickup, Start, Restore. Large LED example text like "LOOK HERE" or "ENCORE" only if clean.
+Constraints: high-fidelity UI mockup, not a marketing landing page, no fake brand logos, no random gibberish text, no generic AI purple-blue blobs, no HTML/CSS screenshot look, no watermark.

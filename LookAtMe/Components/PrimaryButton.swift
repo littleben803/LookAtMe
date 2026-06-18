@@ -7,6 +7,7 @@ public struct PrimaryButton: View {
     private let action: () -> Void
 
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.lookSkin) private var skin
 
     public init(
         _ title: String,
@@ -38,14 +39,14 @@ public struct PrimaryButton: View {
             }
             .frame(maxWidth: .infinity, minHeight: 56)
             .padding(.horizontal, LookSpacing.md)
-            .foregroundColor(LookTheme.Colors.textPrimary)
-            .background(LookTheme.primaryButtonGradient)
+            .foregroundColor(skin.textPrimary)
+            .background(skin.primaryButtonGradient)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(LookTheme.Colors.softPink.opacity(0.55), lineWidth: 1)
+                    .stroke(skin.textSecondary.opacity(0.5), lineWidth: 1)
             )
-            .lookShadow(LookShadow.neon)
+            .shadow(color: skin.primary.opacity(0.46), radius: 16, y: 6)
             .opacity(isEnabled && !isLoading ? 1.0 : 0.52)
         }
         .buttonStyle(.plain)
